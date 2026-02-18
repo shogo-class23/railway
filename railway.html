@@ -249,42 +249,57 @@
             width: 4px;
             background: #ccc;
         }
+        /* 駅の役割ごとの配置・サイズ */
         .timeline-item {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
         }
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            left: -27px;
-            top: 6px;
-            width: 12px;
-            height: 12px;
-            background: #fff;
-            border: 3px solid #999;
-            border-radius: 50%;
-            z-index: 2;
+        .station-content {
+            width: 100%;
         }
-        .timeline-item.important::after {
-            border-color: var(--primary-color);
-            width: 16px;
-            height: 16px;
-            left: -29px;
-            top: 4px;
+        
+        /* 乗る駅 (左) */
+        .type-boarding {
+            align-items: flex-start;
+            text-align: left;
         }
-        .timeline-item.important .station-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #000;
+        
+        /* 降りる駅 (中央) */
+        .type-alighting {
+            align-items: center;
+            text-align: center;
+            margin-left: -30px; /* タイムラインのパディング分を補正して中央に */
         }
-        .station-time {
-            font-size: 0.85rem;
+        .type-alighting .station-name {
+            font-size: 1.4rem !important;
+            color: var(--danger-color) !important;
+        }
+        
+        /* 途中駅 (右) */
+        .type-intermediate {
+            align-items: flex-end;
+            text-align: right;
+            padding-right: 10px;
+        }
+        .type-intermediate .station-name {
+            font-size: 0.95rem;
             color: #666;
         }
-        .line-info {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
-            margin: 5px 0;
+
+        /* 経由駅 (小さく) */
+        .type-via .station-name {
+            font-size: 0.85rem !important;
+            color: #777 !important;
+        }
+        
+        .station-label {
+            font-size: 0.75rem;
+            color: #e67e22;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -516,18 +531,18 @@
                 startTime: startTimeStr, endTime: getEndTime(45), duration: "45", fare: "650",
                 labels: ["tag-fast", "tag-easy"],
                 steps: [
-                    {name: from, time: startTimeStr + "発", important: true, line: "JR本線 (快速)", typeLabel: "【乗る場所】"},
-                    {name: via || "中央駅", time: "途中乗り換え", important: true, line: "地下鉄ブルーライン", typeLabel: "【乗り換える場所】"},
-                    {name: to, time: getEndTime(45) + "着", important: true, typeLabel: "【降りる場所】"}
+                    {name: from, time: startTimeStr + "発", type: 'boarding', important: true, line: "JR本線 (快速)", typeLabel: "【乗る場所】"},
+                    {name: via || "中央駅", time: "途中乗り換え", type: 'via', important: false, line: "地下鉄ブルーライン", typeLabel: "【乗り換える場所】"},
+                    {name: to, time: getEndTime(45) + "着", type: 'alighting', important: true, typeLabel: "【降りる場所】"}
                 ]
             },
             {
                 startTime: startTimeStr, endTime: getEndTime(60), duration: "60", fare: "420",
                 labels: ["tag-cheap"],
                 steps: [
-                    {name: from, time: startTimeStr + "発", important: true, line: "各駅停車", typeLabel: "【乗る場所】"},
-                    {name: "（途中停車駅）", time: "通過", important: false, line: "各駅停車"},
-                    {name: to, time: getEndTime(60) + "着", important: true, typeLabel: "【降りる場所】"}
+                    {name: from, time: startTimeStr + "発", type: 'boarding', important: true, line: "各駅停車", typeLabel: "【乗る場所】"},
+                    {name: "途中ポイントX", time: "通過", type: 'intermediate', important: false, line: "各駅停車", typeLabel: ""},
+                    {name: to, time: getEndTime(60) + "着", type: 'alighting', important: true, typeLabel: "【降りる場所】"}
                 ]
             }
         ];
@@ -552,11 +567,15 @@
             `;
             
             r.steps.forEach(s => {
+                // typeに基づいたクラスを付与
+                const typeClass = `type-${s.type}`;
+                const importantClass = s.important ? 'important' : '';
+                
                 html += `
-                    <div class="timeline-item ${s.important ? 'important' : ''}">
+                    <div class="timeline-item ${typeClass} ${importantClass}">
                         <div class="station-time">${s.time}</div>
-                        <div style="display: flex; align-items: baseline; gap: 10px;">
-                            <span style="font-size: 0.8rem; color: #e67e22; font-weight: bold;">${s.typeLabel || ''}</span>
+                        <div class="station-content">
+                            ${s.typeLabel ? `<span class="station-label">${s.typeLabel}</span>` : ''}
                             <span class="station-name">${s.name}</span>
                         </div>
                         ${s.line ? `<div class="line-info">↓ ${s.line}</div>` : ''}

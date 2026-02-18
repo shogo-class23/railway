@@ -34,6 +34,26 @@
 
         .btn-search { background: var(--secondary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
+        /* 前後の列車ボタン */
+        .time-shift-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-shift {
+            flex: 1;
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .btn-shift:hover {
+            background: #bdc3c7;
+        }
+
         /* --- 検索結果 (デザイン統一版) --- */
         .route-box { border: 2px solid #eee; border-radius: 12px; padding: 25px; margin-top: 30px; background: #fff; }
         .route-time-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 20px; }
@@ -138,6 +158,19 @@
         if(activeBtn) activeBtn.classList.add('active');
     }
 
+    function shiftTime(minutes) {
+        const h = parseInt(hs.value);
+        const m = parseInt(ms.value);
+        let totalM = h * 60 + m + minutes;
+        
+        if (totalM < 0) totalM += 24 * 60;
+        if (totalM >= 24 * 60) totalM -= 24 * 60;
+        
+        hs.value = Math.floor(totalM / 60);
+        ms.value = totalM % 60;
+        search();
+    }
+
     function search() {
         const from = document.getElementById('fromSt').value;
         const via = document.getElementById('viaSt').value;
@@ -192,6 +225,10 @@
                         <span class="station-name-text">${to}</span>
                         <span class="time-info-text">${endTime} 着</span>
                     </div>
+                </div>
+                <div class="time-shift-buttons">
+                    <button class="btn-shift" onclick="shiftTime(-15)">1本前 (-15分)</button>
+                    <button class="btn-shift" onclick="shiftTime(15)">1本後 (+15分)</button>
                 </div>
             </div>
         `;

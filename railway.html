@@ -177,7 +177,7 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        const activeBtn = Array.from(document.querySelectorAll('nav button')).find(b => b.getAttribute('onclick').includes(id));
+        const btn = Array.from(document.querySelectorAll('nav button')).find(b => b.getAttribute('onclick').includes(id));
         if(btn) btn.classList.add('active');
     }
 
@@ -191,27 +191,29 @@
         const type = document.querySelector('input[name="stype"]:checked').value;
         
         if (type === "始発" && minutes < 0) {
-            // 始発の1本前は終電
             setRadioValue("終電");
         } else if (type === "終電" && minutes > 0) {
-            // 終電の1本後は始発
             setRadioValue("始発");
-        } else if (type === "始発" || type === "終電") {
-            // 始発/終電から外れる場合は出発モードにして時刻調整
+        } else if (type === "始発") {
             setRadioValue("出発");
-            let baseH = (type === "始発") ? 4 : 1;
-            let baseM = (type === "始発") ? 30 : 0;
-            let totalM = baseH * 60 + baseM + minutes;
+            hs.value = 4;
+            ms.value = 30 + minutes;
+            if (parseInt(ms.value) >= 60) { hs.value = 5; ms.value = parseInt(ms.value) - 60; }
+        } else if (type === "終電") {
+            setRadioValue("出発");
+            let totalM = 1 * 60 + minutes;
             if (totalM < 0) totalM += 24 * 60;
             hs.value = Math.floor(totalM / 60);
             ms.value = totalM % 60;
         } else {
-            // 通常のシフト
             let totalM = parseInt(hs.value) * 60 + parseInt(ms.value) + minutes;
             if (totalM < 0) totalM += 24 * 60;
             if (totalM >= 24 * 60) totalM -= 24 * 60;
             hs.value = Math.floor(totalM / 60);
             ms.value = totalM % 60;
+            
+            if (hs.value == 4 && ms.value == 30) setRadioValue("始発");
+            else if (hs.value == 1 && ms.value == 0) setRadioValue("終電");
         }
         search();
     }
@@ -237,10 +239,9 @@
         const from = document.getElementById('fromSt').value;
         const via = document.getElementById('viaSt').value;
         const to = document.getElementById('toSt').value;
-        const inputT = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`;
         const type = document.querySelector('input[name="stype"]:checked').value;
 
-        if(!from || !to) return alert('駅名を入力してください');
+        if(!from || !to) return;
 
         const fromInfo = getStationInfo(from);
         const toInfo = getStationInfo(to);
@@ -251,14 +252,23 @@
                 duration = calculateLineDuration(fromInfo.data, fromInfo.index, toInfo.index);
                 steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
             } else {
-                const transferPoint = via || "中央駅";
-                const fromHubIdx = fromInfo.data.stations.indexOf(transferPoint);
-                const toHubIdx = toInfo.data.stations.indexOf(transferPoint);
-                if (fromHubIdx !== -1 && toHubIdx !== -1) {
-                    const d1 = calculateLineDuration(fromInfo.data, fromInfo.index, fromHubIdx);
-                    const d2 = calculateLineDuration(toInfo.data, toInfo.index, toHubIdx);
+                const hubs = ["中央駅", "市駅", "北駅", "空港駅"];
+                let bestHub = via || "";
+                if (!bestHub) {
+                    for (let h of hubs) {
+                        if (fromInfo.data.stations.includes(h) && toInfo.data.stations.includes(h)) {
+                            bestHub = h; break;
+                        }
+                    }
+                }
+                if (!bestHub) bestHub = "中央駅";
+                const hIdx1 = fromInfo.data.stations.indexOf(bestHub);
+                const hIdx2 = toInfo.data.stations.indexOf(bestHub);
+                if (hIdx1 !== -1 && hIdx2 !== -1) {
+                    const d1 = calculateLineDuration(fromInfo.data, fromInfo.index, hIdx1);
+                    const d2 = calculateLineDuration(toInfo.data, toInfo.index, hIdx2);
                     duration = d1 + d2 + 5;
-                    steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【経由場所】", name: transferPoint, type: "via-station", sub: "乗換 5分" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
+                    steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【経由場所】", name: bestHub, type: "via-station", sub: "乗換 5分" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
                 }
             }
         }
@@ -277,8 +287,8 @@
         let startTime, endTime;
         if (type === "始発") { startTime = "04:30"; endTime = calcTime(4, 30, duration); }
         else if (type === "終電") { startTime = "01:00"; endTime = calcTime(1, 0, duration); }
-        else if (type === "到着") { endTime = inputT; startTime = calcTime(hs.value, ms.value, -duration); }
-        else { startTime = inputT; endTime = calcTime(hs.value, ms.value, duration); }
+        else if (type === "到着") { endTime = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`; startTime = calcTime(hs.value, ms.value, -duration); }
+        else { startTime = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`; endTime = calcTime(hs.value, ms.value, duration); }
 
         const fare = Math.floor(100 + (duration / 3) * 50);
         let stepsHtml = steps.map(s => `<div class="station-item ${s.type}"><span class="role-tag">${s.role}</span><span class="station-name-text">${s.name}</span><span class="time-info-text">${s.type === 'alighting-station' ? endTime + ' 着' : s.type === 'boarding-station' ? startTime + ' 発' : s.sub}</span></div>`).join('');

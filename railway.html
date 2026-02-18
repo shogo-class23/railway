@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鉄道総合案内システム</title>
+    <title>ねりか区営地下鉄 - 総合案内</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -67,7 +67,7 @@
 </head>
 <body>
 
-<header><h1>鉄道総合案内システム</h1></header>
+<header><h1>ねりか区営地下鉄</h1></header>
 
 <nav id="mainNav">
     <button onclick="showPage('status')" class="active">運行情報</button>
@@ -85,7 +85,7 @@
     </section>
 
     <section id="routeMap" class="page">
-        <h2>路線図</h2>
+        <h2>ねりか区営地下鉄 路線図</h2>
         <div style="overflow-x: auto; background: #fff; padding: 10px; border-radius: 8px;">
             <svg class="route-map-svg" viewBox="0 0 800 550">
                 <!-- 東西線 (緑) -->
@@ -96,7 +96,7 @@
                 <circle cx="500" cy="250" r="10" fill="white" stroke="#333" stroke-width="4" /><text x="515" y="265" font-size="14" font-weight="bold">中央駅</text>
                 <circle cx="650" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="635" y="280" font-size="12">東駅</text>
 
-                <!-- 南北線 (青) - 少し左へずらす -->
+                <!-- 南北線 (青) -->
                 <line x1="496" y1="50" x2="496" y2="500" stroke="#3498db" stroke-width="8" />
                 <circle cx="496" cy="50" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="465" y="45" font-size="12" font-weight="bold">北駅</text>
                 <circle cx="496" cy="150" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="155" font-size="12">新駅</text>
@@ -113,13 +113,12 @@
                 <circle cx="275" cy="435" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="210" y="440" font-size="12">大学前駅</text>
                 <circle cx="200" cy="500" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="170" y="515" font-size="12">口駅</text>
 
-                <!-- 都市線 (紫) - 南北線の右側を並行に、白-中央は斜め、市-發は右下へ -->
-                <line x1="750" y1="50" x2="400" y2="50" stroke="#9b59b6" stroke-width="6" opacity="0.7" /> <!-- 空港-北 -->
-                <line x1="400" y1="50" x2="400" y2="180" stroke="#9b59b6" stroke-width="6" opacity="0.7" /> <!-- 北-白 -->
-                <line x1="400" y1="180" x2="504" y2="250" stroke="#9b59b6" stroke-width="6" opacity="0.7" /> <!-- 白-中央(斜め) -->
-                <line x1="504" y1="250" x2="504" y2="380" stroke="#9b59b6" stroke-width="6" opacity="0.7" /> <!-- 中央-市(並行) -->
-                <line x1="504" y1="380" x2="600" y2="480" stroke="#9b59b6" stroke-width="6" opacity="0.7" /> <!-- 市-發(右下) -->
-                
+                <!-- 都市線 (紫) -->
+                <line x1="750" y1="50" x2="400" y2="50" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="400" y1="50" x2="400" y2="180" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="400" y1="180" x2="504" y2="250" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="504" y1="250" x2="504" y2="380" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="504" y1="380" x2="600" y2="480" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
                 <circle cx="625" cy="50" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="40" font-size="11">車庫駅</text>
                 <circle cx="400" cy="100" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="345" y="105" font-size="11">丸ヶ丘駅</text>
                 <circle cx="400" cy="180" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="365" y="185" font-size="11">白駅</text>
@@ -178,16 +177,42 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        const btn = Array.from(document.querySelectorAll('nav button')).find(b => b.getAttribute('onclick').includes(id));
+        const activeBtn = Array.from(document.querySelectorAll('nav button')).find(b => b.getAttribute('onclick').includes(id));
         if(btn) btn.classList.add('active');
     }
 
+    function setRadioValue(value) {
+        document.querySelectorAll('input[name="stype"]').forEach(r => {
+            r.checked = (r.value === value);
+        });
+    }
+
     function shiftTime(minutes) {
-        let totalM = parseInt(hs.value) * 60 + parseInt(ms.value) + minutes;
-        if (totalM < 0) totalM += 24 * 60;
-        if (totalM >= 24 * 60) totalM -= 24 * 60;
-        hs.value = Math.floor(totalM / 60);
-        ms.value = totalM % 60;
+        const type = document.querySelector('input[name="stype"]:checked').value;
+        
+        if (type === "始発" && minutes < 0) {
+            // 始発の1本前は終電
+            setRadioValue("終電");
+        } else if (type === "終電" && minutes > 0) {
+            // 終電の1本後は始発
+            setRadioValue("始発");
+        } else if (type === "始発" || type === "終電") {
+            // 始発/終電から外れる場合は出発モードにして時刻調整
+            setRadioValue("出発");
+            let baseH = (type === "始発") ? 4 : 1;
+            let baseM = (type === "始発") ? 30 : 0;
+            let totalM = baseH * 60 + baseM + minutes;
+            if (totalM < 0) totalM += 24 * 60;
+            hs.value = Math.floor(totalM / 60);
+            ms.value = totalM % 60;
+        } else {
+            // 通常のシフト
+            let totalM = parseInt(hs.value) * 60 + parseInt(ms.value) + minutes;
+            if (totalM < 0) totalM += 24 * 60;
+            if (totalM >= 24 * 60) totalM -= 24 * 60;
+            hs.value = Math.floor(totalM / 60);
+            ms.value = totalM % 60;
+        }
         search();
     }
 
@@ -223,47 +248,21 @@
 
         if (fromInfo && toInfo) {
             if (!via && fromInfo.line === toInfo.line) {
-                // 【直通】同じ路線内
                 duration = calculateLineDuration(fromInfo.data, fromInfo.index, toInfo.index);
-                steps = [
-                    { role: "【乗る場所】", name: from, type: "boarding-station" },
-                    { role: "【降りる場所】", name: to, type: "alighting-station" }
-                ];
+                steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
             } else {
-                // 【乗り換え】路線が違う、または経由指定あり
-                // 接続駅の候補（中央駅、市駅、北駅、空港駅）
-                const hubs = ["中央駅", "市駅", "北駅", "空港駅"];
-                let bestHub = via || "";
-                
-                if (!bestHub) {
-                    // 両方の路線に含まれる駅を探す
-                    for (let h of hubs) {
-                        if (fromInfo.data.stations.includes(h) && toInfo.data.stations.includes(h)) {
-                            bestHub = h;
-                            break;
-                        }
-                    }
-                }
-                
-                if (!bestHub) bestHub = "中央駅"; // デフォルト
-
-                const hIdx1 = fromInfo.data.stations.indexOf(bestHub);
-                const hIdx2 = toInfo.data.stations.indexOf(bestHub);
-
-                if (hIdx1 !== -1 && hIdx2 !== -1) {
-                    const d1 = calculateLineDuration(fromInfo.data, fromInfo.index, hIdx1);
-                    const d2 = calculateLineDuration(toInfo.data, toInfo.index, hIdx2);
-                    duration = d1 + d2 + 5; // 乗り換え時間 5分
-                    steps = [
-                        { role: "【乗る場所】", name: from, type: "boarding-station" },
-                        { role: "【経由場所】", name: bestHub, type: "via-station", sub: "乗換 5分" },
-                        { role: "【降りる場所】", name: to, type: "alighting-station" }
-                    ];
+                const transferPoint = via || "中央駅";
+                const fromHubIdx = fromInfo.data.stations.indexOf(transferPoint);
+                const toHubIdx = toInfo.data.stations.indexOf(transferPoint);
+                if (fromHubIdx !== -1 && toHubIdx !== -1) {
+                    const d1 = calculateLineDuration(fromInfo.data, fromInfo.index, fromHubIdx);
+                    const d2 = calculateLineDuration(toInfo.data, toInfo.index, toHubIdx);
+                    duration = d1 + d2 + 5;
+                    steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【経由場所】", name: transferPoint, type: "via-station", sub: "乗換 5分" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
                 }
             }
         }
 
-        // 以下、計算不能な場合のフォールバック
         if (steps.length === 0) {
             duration = 30;
             steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【経由場所】", name: via || "中央駅", type: "via-station", sub: "乗換 5分" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];

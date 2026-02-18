@@ -147,11 +147,17 @@
 
         if(!from || !to) return alert('駅名を入力してください');
 
-        // 到着指定の場合は入力時刻を到着時刻(endTime)に、それ以外は出発時刻(startTime)にする
+        // 時刻の決定ロジック
         let startTime, endTime;
-        if (type === "到着") {
+        
+        if (type === "始発") {
+            startTime = "04:30";
+            endTime = "05:15";
+        } else if (type === "終電") {
+            startTime = "01:00";
+            endTime = "01:45";
+        } else if (type === "到着") {
             endTime = inputTime;
-            // 出発時刻をダミーで45分前に設定
             const h = parseInt(hs.value);
             const m = parseInt(ms.value);
             let totalM = h * 60 + m - 45;

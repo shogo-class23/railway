@@ -54,6 +54,9 @@
         .search-form { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .input-row { margin-bottom: 15px; }
         .input-row label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .radio-group label { display: flex !important; align-items: center; gap: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .radio-group input { width: auto !important; margin: 0; }
         input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .btn-search { background: var(--secondary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
@@ -117,7 +120,7 @@
                 <div class="input-row" style="display:flex; gap:10px; align-items:center;">
                     <select id="hSel" style="width:70px;"></select>時 <select id="mSel" style="width:70px;"></select>分
                 </div>
-                <div class="input-row">
+                <div class="radio-group">
                     <label><input type="radio" name="stype" value="出発" checked>出発</label>
                     <label><input type="radio" name="stype" value="到着">到着</label>
                     <label><input type="radio" name="stype" value="始発">始発</label>

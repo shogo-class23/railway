@@ -189,19 +189,13 @@
 
     function shiftTime(minutes) {
         const type = document.querySelector('input[name="stype"]:checked').value;
-        
-        if (type === "始発" && minutes < 0) {
-            setRadioValue("終電");
-        } else if (type === "終電" && minutes > 0) {
-            setRadioValue("始発");
-        } else if (type === "始発") {
+        if (type === "始発" && minutes < 0) { setRadioValue("終電"); }
+        else if (type === "終電" && minutes > 0) { setRadioValue("始発"); }
+        else if (type === "始発" || type === "終電") {
             setRadioValue("出発");
-            hs.value = 4;
-            ms.value = 30 + minutes;
-            if (parseInt(ms.value) >= 60) { hs.value = 5; ms.value = parseInt(ms.value) - 60; }
-        } else if (type === "終電") {
-            setRadioValue("出発");
-            let totalM = 1 * 60 + minutes;
+            let baseH = (type === "始発") ? 4 : 1;
+            let baseM = (type === "始発") ? 30 : 0;
+            let totalM = baseH * 60 + baseM + minutes;
             if (totalM < 0) totalM += 24 * 60;
             hs.value = Math.floor(totalM / 60);
             ms.value = totalM % 60;
@@ -211,7 +205,6 @@
             if (totalM >= 24 * 60) totalM -= 24 * 60;
             hs.value = Math.floor(totalM / 60);
             ms.value = totalM % 60;
-            
             if (hs.value == 4 && ms.value == 30) setRadioValue("始発");
             else if (hs.value == 1 && ms.value == 0) setRadioValue("終電");
         }
@@ -255,11 +248,7 @@
                 const hubs = ["中央駅", "市駅", "北駅", "空港駅"];
                 let bestHub = via || "";
                 if (!bestHub) {
-                    for (let h of hubs) {
-                        if (fromInfo.data.stations.includes(h) && toInfo.data.stations.includes(h)) {
-                            bestHub = h; break;
-                        }
-                    }
+                    for (let h of hubs) { if (fromInfo.data.stations.includes(h) && toInfo.data.stations.includes(h)) { bestHub = h; break; } }
                 }
                 if (!bestHub) bestHub = "中央駅";
                 const hIdx1 = fromInfo.data.stations.indexOf(bestHub);
@@ -280,16 +269,36 @@
 
         const calcTime = (h, m, offset) => {
             let tm = parseInt(h) * 60 + parseInt(m) + offset;
-            if (tm < 0) tm += 24 * 60;
-            return `${Math.floor((tm/60)%24).toString().padStart(2,'0')}:${(tm%60).toString().padStart(2,'0')}`;
+            while (tm < 0) tm += 24 * 60;
+            tm = tm % (24 * 60);
+            return `${Math.floor(tm/60).toString().padStart(2,'0')}:${(tm%60).toString().padStart(2,'0')}`;
         };
 
-        let startTime, endTime;
-        if (type === "始発") { startTime = "04:30"; endTime = calcTime(4, 30, duration); }
-        else if (type === "終電") { startTime = "01:00"; endTime = calcTime(1, 0, duration); }
-        else if (type === "到着") { endTime = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`; startTime = calcTime(hs.value, ms.value, -duration); }
-        else { startTime = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`; endTime = calcTime(hs.value, ms.value, duration); }
+        // 15分間隔のダイヤ調整ロジック
+        const getScheduledDep = (rawMinutes, dur, isArrival) => {
+            if (isArrival) {
+                let latestDep = rawMinutes - dur;
+                return Math.floor(latestDep / 15) * 15;
+            } else {
+                return Math.floor(rawMinutes / 15) * 15;
+            }
+        };
 
+        let startMins = parseInt(hs.value) * 60 + parseInt(ms.value);
+        let depMins, arrMins;
+
+        if (type === "始発") { depMins = 4 * 60 + 30; arrMins = depMins + duration; }
+        else if (type === "終電") { depMins = 1 * 60; arrMins = depMins + duration; }
+        else if (type === "到着") {
+            depMins = getScheduledDep(startMins, duration, true);
+            arrMins = depMins + duration;
+        } else {
+            depMins = getScheduledDep(startMins, duration, false);
+            arrMins = depMins + duration;
+        }
+
+        const startTime = calcTime(0, depMins, 0);
+        const endTime = calcTime(0, arrMins, 0);
         const fare = Math.floor(100 + (duration / 3) * 50);
         let stepsHtml = steps.map(s => `<div class="station-item ${s.type}"><span class="role-tag">${s.role}</span><span class="station-name-text">${s.name}</span><span class="time-info-text">${s.type === 'alighting-station' ? endTime + ' 着' : s.type === 'boarding-station' ? startTime + ' 発' : s.sub}</span></div>`).join('');
 

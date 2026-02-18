@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鉄道総合ポータル - Railway Select</title>
+    <title>ねりか区営地下鉄 - 総合案内</title>
     <style>
         :root {
             --primary: #2c3e50;
             --secondary: #1abc9c;
-            --bg: #f0f2f5;
+            --danger: #e74c3c;
+            --bg: #f4f7f6;
         }
 
         body { font-family: sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: #333; }
         
-        /* ポータル画面 (会社選択) */
+        /* ポータル画面 */
         #portalScreen {
             display: flex;
             flex-direction: column;
@@ -23,31 +24,21 @@
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
         }
-        .portal-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            width: 90%;
-            max-width: 800px;
-            margin-top: 30px;
-        }
         .company-card {
             background: rgba(255,255,255,0.1);
             border: 2px solid rgba(255,255,255,0.2);
-            padding: 30px;
-            border-radius: 15px;
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         .company-card:hover { background: var(--secondary); transform: translateY(-5px); border-color: white; }
-        .company-card h3 { margin: 0; font-size: 1.5rem; }
 
-        /* メイン案内画面 (非表示で開始) */
+        /* メインアプリ */
         #mainApp { display: none; }
-
         header { background: var(--primary); color: white; text-align: center; padding: 15px; position: relative; }
-        .back-to-portal { position: absolute; left: 15px; top: 15px; background: none; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
+        .back-btn { position: absolute; left: 15px; top: 15px; background: none; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
 
         nav { background: #34495e; text-align: center; position: sticky; top: 0; z-index: 1000; }
         nav button { background: none; border: none; color: white; padding: 15px 20px; cursor: pointer; font-size: 0.9rem; }
@@ -59,98 +50,74 @@
 
         h2 { border-bottom: 3px solid var(--secondary); padding-bottom: 5px; color: var(--primary); }
 
-        /* フォーム系 */
+        /* フォーム */
         .search-form { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .input-row { margin-bottom: 15px; }
         .input-row label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
         input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
         .btn-search { background: var(--secondary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
-        /* 乗換結果 (垂直スタック) */
+        /* 乗換結果表示 */
         .route-box { border: 2px solid #eee; border-radius: 12px; padding: 25px; margin-top: 30px; background: #fff; }
+        .res-time-main { font-size: 1.6rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; display: block; }
+        
         .vertical-station-list { padding-left: 35px; border-left: 3px solid #eee; margin-left: 15px; margin-top: 20px; }
         .station-item { display: block; position: relative; margin-bottom: 30px; }
-        .station-item::before { content: ''; position: absolute; left: -44px; top: 8px; width: 14px; height: 14px; background: white; border: 3px solid #ccc; border-radius: 50%; }
+        .station-item::before { content: ''; position: absolute; left: -44px; top: 8px; width: 14px; height: 14px; background: white; border: 3px solid #ccc; border-radius: 50%; z-index: 10; }
+        
         .station-name-text { display: block; font-size: 1.25rem; font-weight: bold; color: #000; }
         .role-tag { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; }
 
-        /* 各駅の色 */
+        /* 色分け設定 */
         .boarding-station::before { border-color: #2ecc71; background: #2ecc71; }
         .boarding-station .role-tag { color: #2ecc71; }
         .via-station::before { border-color: #f1c40f; background: #f1c40f; }
         .via-station .role-tag { color: #f1c40f; }
         .alighting-station::before { border-color: #e74c3c; background: #e74c3c; }
         .alighting-station .role-tag { color: #e74c3c; }
-        .alighting-station .station-name-text { font-size: 1.6rem; font-weight: 900; }
+        .alighting-station .station-name-text { font-size: 1.8rem; font-weight: 900; }
 
         .time-info-text { display: block; font-size: 0.9rem; color: #666; margin-top: 5px; }
         .time-shift-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .btn-shift { flex: 1; background: #ecf0f1; border: 1px solid #bdc3c7; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-        .route-map-svg { width: 100%; height: auto; min-width: 600px; }
+        .route-map-svg { width: 100%; height: auto; min-width: 650px; }
     </style>
 </head>
 <body>
 
-<!-- 会社選択画面 (Portal) -->
 <div id="portalScreen">
-    <h1>鉄道会社を選択してください</h1>
-    <div class="portal-grid">
-        <div class="company-card" onclick="selectCompany('nerika')">
-            <h3>ねりか区営地下鉄</h3>
-            <p>東西線・南北線・空港線・都市線</p>
-        </div>
-        <div class="company-card" onclick="alert('準備中です')">
-            <h3>練馬急行電鉄</h3>
-            <p>Coming Soon...</p>
-        </div>
-        <div class="company-card" onclick="alert('準備中です')">
-            <h3>西武練馬鉄道</h3>
-            <p>Coming Soon...</p>
-        </div>
+    <div class="company-card" onclick="selectCompany('nerika')">
+        <h1>ねりか区営地下鉄</h1>
+        <p>東西線・南北線・空港線・都市線 総合案内</p>
+        <small>クリックして入場</small>
     </div>
 </div>
 
-<!-- メインアプリ画面 (案内システム) -->
 <div id="mainApp">
     <header>
-        <button class="back-to-portal" onclick="showPortal()">◀ 会社選択へ</button>
-        <h1 id="appTitle">鉄道案内システム</h1>
+        <button class="back-btn" onclick="location.reload()">◀ 会社選択へ</button>
+        <h1 id="appTitle">案内システム</h1>
     </header>
-
-    <nav id="mainNav">
-        <button onclick="showPage('status')" class="active">運行情報</button>
-        <button onclick="showPage('routeMap')">路線図</button>
-        <button onclick="showPage('transfer')">乗換案内</button>
+    <nav id="topNav">
+        <button id="btn-status" onclick="showPage('status')" class="active">運行情報</button>
+        <button id="btn-routeMap" onclick="showPage('routeMap')">路線図</button>
+        <button id="btn-transfer" onclick="showPage('transfer')">乗換案内</button>
     </nav>
-
     <div class="container">
-        <!-- 運行情報 -->
-        <section id="status" class="page active">
-            <h2 id="statusTitle">運行情報</h2>
-            <div id="statusList"></div>
-        </section>
-
-        <!-- 路線図 -->
-        <section id="routeMap" class="page">
-            <h2 id="mapTitle">路線図</h2>
-            <div id="mapContainer" style="overflow-x: auto; background: #fff; padding: 10px; border-radius: 8px;">
-                <!-- ここにSVGが入る -->
-            </div>
-        </section>
-
-        <!-- 乗換案内 -->
+        <section id="status" class="page active"><h2>運行情報</h2><div id="statusList"></div></section>
+        <section id="routeMap" class="page"><h2>路線図</h2><div id="mapContainer" style="overflow-x:auto;"></div></section>
         <section id="transfer" class="page">
             <h2>乗換案内</h2>
             <div class="search-form">
-                <div class="input-row"><label>出発駅</label><input type="text" id="fromSt" placeholder="出発駅" list="stationList"></div>
+                <div class="input-row"><label>出発駅</label><input type="text" id="fromSt" placeholder="例: 奥駅" list="stationList"></div>
                 <div class="input-row"><label>経由駅</label><input type="text" id="viaSt" placeholder="任意" list="stationList"></div>
-                <div class="input-row"><label>降りる駅</label><input type="text" id="toSt" placeholder="降りる駅" list="stationList"></div>
+                <div class="input-row"><label>降りる駅</label><input type="text" id="toSt" placeholder="例: 發駅" list="stationList"></div>
                 <datalist id="stationList"></datalist>
-                <div class="input-row" style="display:flex; gap:10px;">
+                <div class="input-row" style="display:flex; gap:10px; align-items:center;">
                     <select id="hSel" style="width:70px;"></select>時 <select id="mSel" style="width:70px;"></select>分
                 </div>
-                <div style="margin-bottom:15px;">
+                <div class="input-row">
                     <label><input type="radio" name="stype" value="出発" checked>出発</label>
                     <label><input type="radio" name="stype" value="到着">到着</label>
                     <label><input type="radio" name="stype" value="始発">始発</label>
@@ -164,7 +131,6 @@
 </div>
 
 <script>
-    // 会社データ
     const companies = {
         nerika: {
             name: "ねりか区営地下鉄",
@@ -175,93 +141,96 @@
                 "都市線": { stations: ["空港駅", "車庫駅", "北駅", "丸ヶ丘駅", "白駅", "中央駅", "市駅", "發駅"], intervals: [5, 5, 3, 3, 3, 3, 3] }
             },
             status: ["東西線: 平常", "南北線: 遅延(5分)", "空港線: 平常", "都市線: 平常"],
-            svg: `
-                <svg class="route-map-svg" viewBox="0 0 800 550">
-                    <line x1="50" y1="250" x2="650" y2="250" stroke="#2ecc71" stroke-width="10" />
-                    <circle cx="50" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="35" y="280" font-size="12">奥駅</text>
-                    <circle cx="200" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="185" y="280" font-size="12">西駅</text>
-                    <circle cx="350" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="335" y="280" font-size="12">本駅</text>
-                    <circle cx="500" cy="250" r="10" fill="white" stroke="#333" stroke-width="4" /><text x="515" y="265" font-size="14" font-weight="bold">中央駅</text>
-                    <circle cx="650" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="635" y="280" font-size="12">東駅</text>
-                    <line x1="496" y1="50" x2="496" y2="500" stroke="#3498db" stroke-width="8" />
-                    <circle cx="496" cy="50" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="465" y="45" font-size="12" font-weight="bold">北駅</text>
-                    <circle cx="496" cy="150" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="155" font-size="12">新駅</text>
-                    <circle cx="500" cy="380" r="8" fill="white" stroke="#333" stroke-width="3" /><text x="515" y="385" font-size="12" font-weight="bold">市駅</text>
-                    <circle cx="496" cy="500" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="505" font-size="12">南駅</text>
-                    <line x1="750" y1="50" x2="200" y2="500" stroke="#f39c12" stroke-width="8" opacity="0.8" />
-                    <circle cx="750" cy="50" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="710" y="45" font-size="12">空港駅</text>
-                    <circle cx="675" cy="105" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="685" y="110" font-size="12">丸台駅</text>
-                    <circle cx="600" cy="165" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="610" y="170" font-size="12">上駅</text>
-                    <circle cx="425" cy="315" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="360" y="320" font-size="12">公園前駅</text>
-                    <circle cx="350" cy="375" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="300" y="380" font-size="12">下駅</text>
-                    <circle cx="275" cy="435" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="210" y="440" font-size="12">大学前駅</text>
-                    <circle cx="200" cy="500" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="170" y="515" font-size="12">口駅</text>
-                    <line x1="750" y1="50" x2="400" y2="50" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                    <line x1="400" y1="50" x2="400" y2="180" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                    <line x1="400" y1="180" x2="504" y2="250" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                    <line x1="504" y1="250" x2="504" y2="380" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                    <line x1="504" y1="380" x2="600" y2="480" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                    <circle cx="625" cy="50" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="40" font-size="11">車庫駅</text>
-                    <circle cx="400" cy="100" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="345" y="105" font-size="11">丸ヶ丘駅</text>
-                    <circle cx="400" cy="180" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="365" y="185" font-size="11">白駅</text>
-                    <circle cx="600" cy="480" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="485" font-size="11">發駅</text>
+            svg: `<svg class="route-map-svg" viewBox="0 0 800 550">
+                <line x1="50" y1="250" x2="650" y2="250" stroke="#2ecc71" stroke-width="10" />
+                <circle cx="50" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="35" y="280" font-size="12">奥駅</text>
+                <circle cx="200" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="185" y="280" font-size="12">西駅</text>
+                <circle cx="350" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="335" y="280" font-size="12">本駅</text>
+                <circle cx="500" cy="250" r="10" fill="white" stroke="#333" stroke-width="4" /><text x="515" y="265" font-size="14" font-weight="bold">中央駅</text>
+                <circle cx="650" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="635" y="280" font-size="12">東駅</text>
+                <line x1="496" y1="50" x2="496" y2="500" stroke="#3498db" stroke-width="8" />
+                <circle cx="496" cy="50" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="465" y="45" font-size="12" font-weight="bold">北駅</text>
+                <circle cx="496" cy="150" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="155" font-size="12">新駅</text>
+                <circle cx="500" cy="380" r="8" fill="white" stroke="#333" stroke-width="3" /><text x="515" y="385" font-size="12" font-weight="bold">市駅</text>
+                <circle cx="496" cy="500" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="505" font-size="12">南駅</text>
+                <line x1="750" y1="50" x2="200" y2="500" stroke="#f39c12" stroke-width="8" opacity="0.8" />
+                <circle cx="750" cy="50" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="710" y="45" font-size="12">空港駅</text>
+                <circle cx="675" cy="105" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="685" y="110" font-size="12">丸台駅</text>
+                <circle cx="600" cy="165" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="610" y="170" font-size="12">上駅</text>
+                <circle cx="425" cy="315" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="360" y="320" font-size="12">公園前駅</text>
+                <circle cx="350" cy="375" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="300" y="380" font-size="12">下駅</text>
+                <circle cx="275" cy="435" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="210" y="440" font-size="12">大学前駅</text>
+                <circle cx="200" cy="500" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="170" y="515" font-size="12">口駅</text>
+                <line x1="750" y1="50" x2="400" y2="50" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="400" y1="50" x2="400" y2="180" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="400" y1="180" x2="504" y2="250" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="504" y1="250" x2="504" y2="380" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <line x1="504" y1="380" x2="600" y2="480" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
+                <circle cx="625" cy="50" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="40" font-size="11">車庫駅</text>
+                <circle cx="400" cy="100" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="345" y="105" font-size="11">丸ヶ丘駅</text>
+                <circle cx="400" cy="180" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="365" y="185" font-size="11">白駅</text>
+                <circle cx="600" cy="480" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="485" font-size="11">發駅</text>
                 </svg>`
         }
     };
 
-    let currentCompany = null;
-
-    // 時刻初期化
-    const hs = document.getElementById('hSel');
-    const ms = document.getElementById('mSel');
+    let curComp = null;
+    const hs = document.getElementById('hSel'), ms = document.getElementById('mSel');
     for(let i=0; i<24; i++) hs.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
     for(let i=0; i<60; i++) ms.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
     hs.value = 12;
 
     function selectCompany(id) {
-        currentCompany = companies[id];
+        curComp = companies[id];
         document.getElementById('portalScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        document.getElementById('appTitle').innerText = currentCompany.name;
-        
-        // 運行情報の反映
-        const sList = document.getElementById('statusList');
-        sList.innerHTML = currentCompany.status.map(s => `<div style="padding:10px; border-left:5px solid var(--secondary); background:#f9f9f9; margin-bottom:5px;">${s}</div>`).join('');
-        
-        // 路線図の反映
-        document.getElementById('mapContainer').innerHTML = currentCompany.svg;
-        
-        // 駅リスト(Datalist)の反映
-        const dList = document.getElementById('stationList');
-        const allStations = new Set();
-        Object.values(currentCompany.routes).forEach(r => r.stations.forEach(s => allStations.add(s)));
-        dList.innerHTML = Array.from(allStations).map(s => `<option value="${s}">`).join('');
-        
+        document.getElementById('appTitle').innerText = curComp.name;
+        document.getElementById('statusList').innerHTML = curComp.status.map(s => `<div style="padding:10px; border-left:5px solid var(--secondary); background:#f9f9f9; margin-bottom:5px;">${s}</div>`).join('');
+        document.getElementById('mapContainer').innerHTML = curComp.svg;
+        const stSet = new Set();
+        Object.values(curComp.routes).forEach(r => r.stations.forEach(s => stSet.add(s)));
+        document.getElementById('stationList').innerHTML = Array.from(stSet).map(s => `<option value="${s}">`).join('');
         showPage('status');
-    }
-
-    function showPortal() {
-        document.getElementById('portalScreen').style.display = 'flex';
-        document.getElementById('mainApp').style.display = 'none';
     }
 
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        const btn = Array.from(document.querySelectorAll('nav button')).find(b => b.innerText.includes(document.querySelector(`#${id} h2`).innerText.replace(" 路線図", "")));
-        if (btn) btn.classList.add('active');
+        document.querySelectorAll('#topNav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + id).classList.add('active');
     }
 
-    function getStationInfo(name) {
-        for (const [line, data] of Object.entries(currentCompany.routes)) {
-            const index = data.stations.indexOf(name);
-            if (index !== -1) return { line, index, data };
+    function setRadio(v) { document.querySelectorAll('input[name="stype"]').forEach(r => r.checked = (r.value === v)); }
+
+    function shiftTime(minutes) {
+        const type = document.querySelector('input[name="stype"]:checked').value;
+        if(type === "始発" && minutes < 0) { setRadio("終電"); }
+        else if(type === "終電" && minutes > 0) { setRadio("始発"); }
+        else if(type === "始発" || type === "終電") {
+            setRadio("出発");
+            let bh = (type==="始発")?4:1, bm = (type==="始発")?30:0;
+            let tm = bh*60 + bm + minutes;
+            hs.value = Math.floor(tm/60); ms.value = tm%60;
+        } else {
+            let total = parseInt(hs.value)*60 + parseInt(ms.value) + minutes;
+            if(total<0) total += 1440; total %= 1440;
+            hs.value = Math.floor(total/60); ms.value = total%60;
+            if(hs.value == 4 && ms.value == 30) setRadio("始発");
+            else if(hs.value == 1 && ms.value == 0) setRadio("終電");
+        }
+        search();
+    }
+
+    function getStInfo(name) {
+        for (const [line, data] of Object.entries(curComp.routes)) {
+            const idx = data.stations.indexOf(name);
+            if (idx !== -1) return { line, idx, data };
         }
         return null;
     }
 
-    function calculateLineDuration(data, s, e) {
+    function calcD(data, s, e) {
+        if (s === e) return 0;
         if (data.intervals) {
             const min = Math.min(s, e), max = Math.max(s, e);
             return data.intervals.slice(min, max).reduce((a, b) => a + b, 0);
@@ -270,70 +239,70 @@
     }
 
     function search() {
-        const from = document.getElementById('fromSt').value;
-        const to = document.getElementById('toSt').value;
-        const via = document.getElementById('viaSt').value;
+        const from = document.getElementById('fromSt').value, to = document.getElementById('toSt').value, via = document.getElementById('viaSt').value;
         const type = document.querySelector('input[name="stype"]:checked').value;
-        if(!from || !to) return;
+        if (!from || !to) return alert("駅名を入力してください");
 
-        const fInfo = getStationInfo(from), tInfo = getStationInfo(to);
+        const fI = getStInfo(from), tI = getStInfo(to);
         let dur = 0, steps = [];
 
-        const getSteps = (line, s, e) => {
-            const res = [];
-            const st = line.stations;
-            const step = s < e ? 1 : -1;
-            for(let i=s+step; i !== e; i+=step) res.push({role:"", name:st[i], type:"intermediate"});
+        const getMid = (data, s, e) => {
+            if (s === e) return [];
+            const res = [], st = data.stations, step = s < e ? 1 : -1;
+            for(let i=s+step; i !== e; i+=step) res.push({name:st[i], type:"intermediate"});
             return res;
         };
 
-        if(fInfo && tInfo) {
-            if(!via && fInfo.line === tInfo.line) {
-                dur = calculateLineDuration(fInfo.data, fInfo.index, tInfo.index);
+        if(fI && tI) {
+            if(!via && fI.line === tI.line) {
+                dur = calcD(fI.data, fI.idx, tI.idx);
                 steps.push({role:"【乗る場所】", name:from, type:"boarding-station"});
-                steps.push(...getSteps(fInfo.data, fInfo.index, tInfo.index));
+                steps.push(...getMid(fI.data, fI.idx, tI.idx));
                 steps.push({role:"【降りる場所】", name:to, type:"alighting-station"});
             } else {
-                const hub = via || "中央駅";
-                const hIdx1 = fInfo.data.stations.indexOf(hub), hIdx2 = tInfo.data.stations.indexOf(hub);
-                if(hIdx1 !== -1 && hIdx2 !== -1) {
-                    const d1 = calculateLineDuration(fInfo.data, fInfo.index, hIdx1);
-                    const d2 = calculateLineDuration(tInfo.data, tInfo.index, hIdx2);
-                    dur = d1 + d2 + 5;
+                const hubs = ["中央駅", "市駅", "北駅", "空港駅"];
+                let hub = via || "";
+                if(!hub) { for(let h of hubs) { if(fI.data.stations.includes(h) && tI.data.stations.includes(h)) { hub=h; break; } } }
+                if(!hub) hub = "中央駅";
+                const h1 = fI.data.stations.indexOf(hub), h2 = tI.data.stations.indexOf(hub);
+                if(h1 !== -1 && h2 !== -1) {
+                    dur = calcD(fI.data, fI.idx, h1) + calcD(tI.data, tI.idx, h2) + 5;
                     steps.push({role:"【乗る場所】", name:from, type:"boarding-station"});
-                    steps.push(...getSteps(fInfo.data, fInfo.index, hIdx1));
+                    steps.push(...getMid(fI.data, fI.idx, h1));
                     steps.push({role:"【乗換場所】", name:hub, type:"via-station", sub:"乗換 5分"});
-                    steps.push(...getSteps(tInfo.data, hIdx2, tInfo.index));
+                    steps.push(...getMid(tI.data, h2, tI.idx));
                     steps.push({role:"【降りる場所】", name:to, type:"alighting-station"});
                 }
             }
         }
 
-        const calcTime = (h, m, o) => {
-            let tm = parseInt(h)*60 + parseInt(m) + o;
-            while(tm < 0) tm += 1440; tm %= 1440;
-            return `${Math.floor(tm/60).toString().padStart(2,'0')}:${(tm%60).toString().padStart(2,'0')}`;
+        if(steps.length === 0) {
+            dur = 30;
+            steps = [{role:"【乗る場所】", name:from, type:"boarding-station"}, {role:"【経由場所】", name:via||"中央駅", type:"via-station", sub:"乗換 5分"}, {role:"【降りる場所】", name:to, type:"alighting-station"}];
+        }
+
+        const formatT = (m) => {
+            while(m < 0) m += 1440; m %= 1440;
+            return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`;
         };
 
-        const depMin = (raw, d, isArr) => isArr ? Math.floor((raw-d)/15)*15 : Math.floor(raw/15)*15;
+        const snap = (raw, d, isArr) => Math.floor((isArr ? raw - d : raw)/15)*15;
         let base = parseInt(hs.value)*60 + parseInt(ms.value);
         let dm, am;
         if(type==="始発"){dm=270; am=dm+dur;} else if(type==="終電"){dm=60; am=dm+dur;}
-        else if(type==="到着"){dm=depMin(base,dur,true); am=dm+dur;} else {dm=depMin(base,dur,false); am=dm+dur;}
+        else if(type==="到着"){dm=snap(base,dur,true); am=dm+dur;} else {dm=snap(base,dur,false); am=dm+dur;}
 
-        const sT = calcTime(0, dm, 0), eT = calcTime(0, am, 0);
-        const fare = Math.floor(100 + (dur/3)*50);
-
-        let html = steps.map(s => {
+        const html = steps.map(s => {
             if(s.type === "intermediate") return `<div class="station-item" style="opacity:0.5; margin-bottom:15px;"><span class="station-name-text" style="font-size:0.9rem; font-weight:normal;">${s.name}</span></div>`;
-            return `<div class="station-item ${s.type}"><span class="role-tag">${s.role}</span><span class="station-name-text">${s.name}</span><span class="time-info-text">${s.type==='alighting-station'?eT+' 着':s.type==='boarding-station'?sT+' 発':s.sub}</span></div>`;
+            return `<div class="station-item ${s.type}"><span class="role-tag">${s.role}</span><span class="station-name-text">${s.name}</span><span class="time-info-text">${s.type==='alighting-station'?formatT(am)+' 着':s.type==='boarding-station'?formatT(dm)+' 発':s.sub}</span></div>`;
         }).join('');
 
         document.getElementById('transferResults').innerHTML = `
             <div class="route-box">
-                <div style="font-size:1.5rem; font-weight:bold; margin-bottom:10px;">${sT} 発 ～ ${eT} 着</div>
-                <div class="route-info">所要時間: ${dur}分 / 運賃: ${fare}円 / 条件: ${type}指定</div>
+                <span class="res-time-main">${formatT(dm)} 発 ～ ${formatT(am)} 着</span>
+                <div style="font-weight:bold; color:#2980b9; margin-bottom:15px;">所要時間: ${dur}分 / 運賃: ${Math.floor(100 + (dur/3)*50)}円 / 条件: ${type}指定</div>
                 <div class="vertical-station-list">${html}</div>
+                <div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>
             </div>
         `;
     }

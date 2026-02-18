@@ -240,24 +240,47 @@
         const toInfo = getStationInfo(to);
         let duration = 0, steps = [];
 
+        // 途中駅を取得するヘルパー
+        const getIntermediateStations = (lineData, startIdx, endIdx) => {
+            const stations = lineData.stations;
+            if (startIdx === endIdx) return [];
+            const step = startIdx < endIdx ? 1 : -1;
+            let result = [];
+            for (let i = startIdx + step; i !== endIdx; i += step) {
+                result.push({ role: "", name: stations[i], type: "intermediate-station" });
+            }
+            return result;
+        };
+
         if (fromInfo && toInfo) {
             if (!via && fromInfo.line === toInfo.line) {
+                // 【直通】
                 duration = calculateLineDuration(fromInfo.data, fromInfo.index, toInfo.index);
-                steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
+                steps.push({ role: "【乗る場所】", name: from, type: "boarding-station" });
+                steps.push(...getIntermediateStations(fromInfo.data, fromInfo.index, toInfo.index));
+                steps.push({ role: "【降りる場所】", name: to, type: "alighting-station" });
             } else {
+                // 【乗り換え】
                 const hubs = ["中央駅", "市駅", "北駅", "空港駅"];
                 let bestHub = via || "";
                 if (!bestHub) {
                     for (let h of hubs) { if (fromInfo.data.stations.includes(h) && toInfo.data.stations.includes(h)) { bestHub = h; break; } }
                 }
                 if (!bestHub) bestHub = "中央駅";
+                
                 const hIdx1 = fromInfo.data.stations.indexOf(bestHub);
                 const hIdx2 = toInfo.data.stations.indexOf(bestHub);
+                
                 if (hIdx1 !== -1 && hIdx2 !== -1) {
                     const d1 = calculateLineDuration(fromInfo.data, fromInfo.index, hIdx1);
                     const d2 = calculateLineDuration(toInfo.data, toInfo.index, hIdx2);
                     duration = d1 + d2 + 5;
-                    steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【経由場所】", name: bestHub, type: "via-station", sub: "乗換 5分" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
+                    
+                    steps.push({ role: "【乗る場所】", name: from, type: "boarding-station" });
+                    steps.push(...getIntermediateStations(fromInfo.data, fromInfo.index, hIdx1));
+                    steps.push({ role: "【乗換場所】", name: bestHub, type: "via-station", sub: "乗換 5分" });
+                    steps.push(...getIntermediateStations(toInfo.data, hIdx2, toInfo.index));
+                    steps.push({ role: "【降りる場所】", name: to, type: "alighting-station" });
                 }
             }
         }
@@ -267,6 +290,7 @@
             steps = [{ role: "【乗る場所】", name: from, type: "boarding-station" }, { role: "【経由場所】", name: via || "中央駅", type: "via-station", sub: "乗換 5分" }, { role: "【降りる場所】", name: to, type: "alighting-station" }];
         }
 
+        // 時刻計算
         const calcTime = (h, m, offset) => {
             let tm = parseInt(h) * 60 + parseInt(m) + offset;
             while (tm < 0) tm += 24 * 60;
@@ -274,33 +298,28 @@
             return `${Math.floor(tm/60).toString().padStart(2,'0')}:${(tm%60).toString().padStart(2,'0')}`;
         };
 
-        // 15分間隔のダイヤ調整ロジック
         const getScheduledDep = (rawMinutes, dur, isArrival) => {
-            if (isArrival) {
-                let latestDep = rawMinutes - dur;
-                return Math.floor(latestDep / 15) * 15;
-            } else {
-                return Math.floor(rawMinutes / 15) * 15;
-            }
+            if (isArrival) { let latestDep = rawMinutes - dur; return Math.floor(latestDep / 15) * 15; }
+            else { return Math.floor(rawMinutes / 15) * 15; }
         };
 
         let startMins = parseInt(hs.value) * 60 + parseInt(ms.value);
         let depMins, arrMins;
-
         if (type === "始発") { depMins = 4 * 60 + 30; arrMins = depMins + duration; }
         else if (type === "終電") { depMins = 1 * 60; arrMins = depMins + duration; }
-        else if (type === "到着") {
-            depMins = getScheduledDep(startMins, duration, true);
-            arrMins = depMins + duration;
-        } else {
-            depMins = getScheduledDep(startMins, duration, false);
-            arrMins = depMins + duration;
-        }
+        else if (type === "到着") { depMins = getScheduledDep(startMins, duration, true); arrMins = depMins + duration; }
+        else { depMins = getScheduledDep(startMins, duration, false); arrMins = depMins + duration; }
 
         const startTime = calcTime(0, depMins, 0);
         const endTime = calcTime(0, arrMins, 0);
         const fare = Math.floor(100 + (duration / 3) * 50);
-        let stepsHtml = steps.map(s => `<div class="station-item ${s.type}"><span class="role-tag">${s.role}</span><span class="station-name-text">${s.name}</span><span class="time-info-text">${s.type === 'alighting-station' ? endTime + ' 着' : s.type === 'boarding-station' ? startTime + ' 発' : s.sub}</span></div>`).join('');
+
+        let stepsHtml = steps.map(s => {
+            if (s.type === "intermediate-station") {
+                return `<div class="station-item" style="margin-bottom:15px; opacity:0.6;"><span class="station-name-text" style="font-size:0.9rem; font-weight:normal;">${s.name}</span></div>`;
+            }
+            return `<div class="station-item ${s.type}"><span class="role-tag">${s.role}</span><span class="station-name-text">${s.name}</span><span class="time-info-text">${s.type === 'alighting-station' ? endTime + ' 着' : s.type === 'boarding-station' ? startTime + ' 発' : s.sub}</span></div>`;
+        }).join('');
 
         document.getElementById('transferResults').innerHTML = `
             <div class="route-box">

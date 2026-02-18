@@ -154,9 +154,29 @@
     <section id="transfer" class="page">
         <h2>乗換案内</h2>
         <div class="search-form">
-            <div class="input-row"><label>出発駅</label><input type="text" id="fromSt" placeholder="例: 東京"></div>
-            <div class="input-row"><label>経由駅</label><input type="text" id="viaSt" placeholder="任意"></div>
-            <div class="input-row"><label>降りる駅</label><input type="text" id="toSt" placeholder="例: 新宿"></div>
+            <div class="input-row"><label>出発駅</label><input type="text" id="fromSt" placeholder="例: 奥駅" list="stationList"></div>
+            <div class="input-row"><label>経由駅</label><input type="text" id="viaSt" placeholder="任意" list="stationList"></div>
+            <div class="input-row"><label>降りる駅</label><input type="text" id="toSt" placeholder="例: 口駅" list="stationList"></div>
+            
+            <datalist id="stationList">
+                <option value="奥駅">
+                <option value="西駅">
+                <option value="本駅">
+                <option value="中央駅">
+                <option value="東駅">
+                <option value="北駅">
+                <option value="新駅">
+                <option value="市駅">
+                <option value="南駅">
+                <option value="空港駅">
+                <option value="丸台駅">
+                <option value="上駅">
+                <option value="公園前駅">
+                <option value="下駅">
+                <option value="大学前駅">
+                <option value="口駅">
+            </datalist>
+
             <div class="input-row" style="display:flex; gap:10px;">
                 <select id="hSel" style="width:70px;"></select>時
                 <select id="mSel" style="width:70px;"></select>分
@@ -226,12 +246,14 @@
 
         const fromInfo = getStationInfo(from);
         const toInfo = getStationInfo(to);
+        const viaInfo = via ? getStationInfo(via) : null;
 
-        let duration = 45; // デフォルト
+        let duration = 0;
         let steps = [];
 
         if (fromInfo && toInfo) {
-            if (fromInfo.line === toInfo.line) {
+            if (!via && fromInfo.line === toInfo.line) {
+                // 同一路線、経由なし
                 const diff = Math.abs(fromInfo.index - toInfo.index);
                 duration = diff * 3;
                 steps = [
@@ -239,18 +261,31 @@
                     { role: "【降りる場所】", name: to, type: "alighting-station" }
                 ];
             } else {
-                // 中央駅経由の簡易計算
-                const diff1 = Math.abs(fromInfo.index - fromInfo.stations.indexOf("中央駅"));
-                const diff2 = Math.abs(toInfo.index - toInfo.stations.indexOf("中央駅"));
-                duration = (diff1 + diff2) * 3 + 5; // 5分は乗り換え時間
-                steps = [
-                    { role: "【乗る場所】", name: from, type: "boarding-station" },
-                    { role: "【経由場所】", name: "中央駅", type: "via-station", sub: "乗換 5分" },
-                    { role: "【降りる場所】", name: to, type: "alighting-station" }
-                ];
+                // 乗り換え、または指定経由あり
+                const transferPoint = via || "中央駅";
+                const transInfo = getStationInfo(transferPoint);
+                
+                if (transInfo) {
+                    const diff1 = Math.abs(fromInfo.index - fromInfo.stations.indexOf(transferPoint));
+                    const diff2 = Math.abs(toInfo.index - toInfo.stations.indexOf(transferPoint));
+                    
+                    // indexが-1（その路線にない）の場合は別の路線から探す
+                    let d1 = diff1 !== -1 ? diff1 * 3 : 15;
+                    let d2 = diff2 !== -1 ? diff2 * 3 : 15;
+                    
+                    duration = d1 + d2 + 5; // 5分は乗り換え時間
+                    steps = [
+                        { role: "【乗る場所】", name: from, type: "boarding-station" },
+                        { role: "【経由場所】", name: transferPoint, type: "via-station", sub: "乗換 5分" },
+                        { role: "【降りる場所】", name: to, type: "alighting-station" }
+                    ];
+                }
             }
-        } else {
-            // 路線にない駅名の場合はダミー
+        }
+
+        if (steps.length === 0) {
+            // 計算できない場合や未知の駅の場合はデフォルト表示
+            duration = 30;
             steps = [
                 { role: "【乗る場所】", name: from, type: "boarding-station" },
                 { role: "【経由場所】", name: via || "中央駅", type: "via-station", sub: "乗換 5分" },

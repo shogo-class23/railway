@@ -258,6 +258,7 @@
 
         if(fI && tI) {
             if(!via && fI.line === tI.line) {
+                // 同一路線
                 dur = calcD(fI.data, fI.idx, tI.idx);
                 steps.push({role:"【乗る場所】", name:from, type:"boarding-station"});
                 steps.push(...getMid(fI.data, fI.idx, tI.idx));
@@ -265,10 +266,26 @@
             } else {
                 const hubs = ["中央駅", "市駅", "北駅", "空港駅"];
                 let hub = via || "";
-                if(!hub) { for(let h of hubs) { if(fI.data.stations.includes(h) && tI.data.stations.includes(h)) { hub=h; break; } } }
+                if(!hub) { 
+                    for(let h of hubs) { if(fI.data.stations.includes(h) && tI.data.stations.includes(h)) { hub=h; break; } } 
+                }
                 if(!hub) hub = "中央駅";
+
                 const h1 = fI.data.stations.indexOf(hub), h2 = tI.data.stations.indexOf(hub);
-                if(h1 !== -1 && h2 !== -1) {
+                
+                // 出発または到着が乗り換え駅と同じな場合は直通として扱う
+                if (hub === from || hub === to) {
+                    const lineData = (hub === from) ? tI.data : fI.data;
+                    const sIdx = (hub === from) ? lineData.stations.indexOf(from) : fI.idx;
+                    const eIdx = (hub === from) ? tI.idx : lineData.stations.indexOf(to);
+                    
+                    if (sIdx !== -1 && eIdx !== -1) {
+                        dur = calcD(lineData, sIdx, eIdx);
+                        steps.push({role:"【乗る場所】", name:from, type:"boarding-station"});
+                        steps.push(...getMid(lineData, sIdx, eIdx));
+                        steps.push({role:"【降りる場所】", name:to, type:"alighting-station"});
+                    }
+                } else if(h1 !== -1 && h2 !== -1) {
                     dur = calcD(fI.data, fI.idx, h1) + calcD(tI.data, tI.idx, h2) + 5;
                     steps.push({role:"【乗る場所】", name:from, type:"boarding-station"});
                     steps.push(...getMid(fI.data, fI.idx, h1));

@@ -47,13 +47,19 @@
         .station-item::before { content: ''; position: absolute; left: -44px; top: 8px; width: 14px; height: 14px; background: white; border: 3px solid #ccc; border-radius: 50%; }
 
         .role-tag { display: block; font-size: 0.75rem; font-weight: bold; color: #888; margin-bottom: 4px; }
-        .station-name-text { display: block; font-size: 1.25rem; font-weight: bold; color: #333; }
-        .time-info-text { display: block; font-size: 0.9rem; color: #7f8c8d; margin-top: 5px; }
+        .station-name-text { display: block; font-size: 1.25rem; font-weight: bold; color: #000; }
+        .time-info-text { display: block; font-size: 0.9rem; color: #666; margin-top: 5px; }
 
-        .boarding-station::before { border-color: var(--secondary); background: var(--secondary); }
-        .via-station .station-name-text { font-size: 1.1rem !important; color: #7f8c8d !important; }
-        .alighting-station .station-name-text { font-size: 1.6rem !important; color: var(--danger) !important; font-weight: 900; }
-        .alighting-station::before { width: 18px; height: 18px; left: -46px; top: 10px; background: var(--danger); border-color: var(--danger); }
+        .boarding-station::before { border-color: #2ecc71; background: #2ecc71; }
+        .boarding-station .role-tag { color: #2ecc71 !important; }
+
+        .via-station .station-name-text { font-size: 1.1rem !important; color: #000 !important; }
+        .via-station::before { width: 14px; height: 14px; left: -44px; top: 8px; background: #f1c40f; border: 3px solid #f1c40f; }
+        .via-station .role-tag { color: #f1c40f !important; }
+
+        .alighting-station .station-name-text { font-size: 1.6rem !important; color: #000 !important; font-weight: 900; }
+        .alighting-station::before { width: 18px; height: 18px; left: -46px; top: 10px; background: #e74c3c; border-color: #e74c3c; }
+        .alighting-station .role-tag { color: #e74c3c !important; }
 
         .route-info { margin-bottom: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; font-weight: bold; }
 

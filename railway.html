@@ -3,33 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鉄道総合案内システム</title>
+    <title>鉄道総合案内システム - Railway Portal</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #1abc9c;
-            --danger: #e74c3c;
-            --bg: #f8fafc;
+            --primary-color: #2c3e50;
+            --secondary-color: #1abc9c;
+            --danger-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --success-color: #2ecc71;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
         }
 
         body {
-            font-family: sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
-            background-color: var(--bg);
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
         header {
-            background: var(--primary);
+            background-color: var(--primary-color);
             color: white;
-            padding: 15px;
+            padding: 1rem;
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         nav {
-            background: #34495e;
+            background-color: #34495e;
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -39,61 +44,113 @@
             background: none;
             border: none;
             color: white;
-            padding: 12px 20px;
+            padding: 1rem 1.2rem;
             cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
         }
 
-        nav button.active {
-            background: var(--accent);
+        nav button:hover, nav button.active {
+            background-color: var(--secondary-color);
         }
 
         .container {
-            max-width: 700px;
-            margin: 20px auto;
-            padding: 0 15px;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
 
         .page {
             display: none;
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            animation: fadeIn 0.4s;
         }
 
         .page.active {
             display: block;
         }
 
-        h2 { border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .form-group { margin-bottom: 15px; }
-        input[type="text"] {
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        /* 運行情報 */
+        .status-card {
+            border-left: 8px solid #ccc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f9f9f9;
+        }
+        .status-normal { border-left-color: var(--success-color); }
+        .status-delay { border-left-color: var(--warning-color); }
+        .status-stop { border-left-color: var(--danger-color); }
+
+        /* 共通フォーム */
+        .form-group { margin-bottom: 1rem; }
+        input[type="text"], select {
+            padding: 0.6rem;
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             box-sizing: border-box;
         }
-
         .btn {
-            background: var(--accent);
+            background-color: var(--secondary-color);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            width: 100%;
-            font-weight: bold;
+            padding: 0.8rem 2rem;
+            border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
+            width: 100%;
         }
+
+        /* 乗換案内詳細レイアウト */
+        .transfer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .search-type-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .search-type-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .search-type-group input { width: auto; }
 
         /* 検索結果カード */
         .route-card {
-            border: 1px solid #eee;
+            background: white;
+            border: 1px solid #ddd;
             border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-            background: #fff;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
         }
 
         .route-header {
@@ -101,24 +158,24 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 2px solid #f0f0f0;
             padding-bottom: 10px;
         }
 
-        .tag {
+        .label-tag {
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: white;
             font-weight: bold;
             margin-left: 5px;
         }
-        .tag-fast { background: #e74c3c; }
-        .tag-easy { background: #3498db; }
-        .tag-cheap { background: #2ecc71; }
+        .tag-fast { background-color: #e74c3c; }
+        .tag-easy { background-color: #3498db; }
+        .tag-cheap { background-color: #2ecc71; }
 
-        /* 重要：垂直レイアウト */
-        .stack-timeline {
+        /* 垂直スタックタイムライン */
+        .timeline-stack {
             display: flex;
             flex-direction: column;
             padding-left: 20px;
@@ -126,153 +183,184 @@
             margin-left: 10px;
         }
 
-        .station-box {
+        .node {
             position: relative;
-            margin-bottom: 20px;
+            padding-bottom: 25px;
         }
 
-        .station-box::before {
+        .node::before {
             content: '';
             position: absolute;
             left: -27px;
-            top: 10px;
+            top: 8px;
             width: 12px;
             height: 12px;
             background: white;
-            border: 3px solid #ccc;
+            border: 3px solid #999;
             border-radius: 50%;
+            z-index: 2;
         }
 
-        .label {
+        .node-label {
             font-size: 0.7rem;
-            color: #999;
+            color: #e67e22;
+            font-weight: bold;
             display: block;
         }
 
         /* 乗る駅 */
-        .boarding .name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .boarding::before { border-color: var(--accent); background: var(--accent); }
+        .node-boarding::before { border-color: var(--secondary-color); background: var(--secondary-color); }
+        .node-boarding .name { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
 
-        /* 経由駅（極小） */
-        .via {
-            margin-top: -10px;
-            margin-bottom: 10px;
-        }
-        .via .name {
-            font-size: 0.75rem !important;
-            color: #999 !important;
-            font-weight: normal !important;
-        }
-        .via::before {
-            width: 6px;
-            height: 6px;
-            left: -24px;
-            top: 8px;
-            background: #ddd;
-            border: none;
-        }
+        /* 経由駅 (極小) */
+        .node-via { padding-bottom: 15px; margin-top: -10px; }
+        .node-via .name { font-size: 0.8rem !important; color: #888 !important; font-weight: normal; }
+        .node-via::before { width: 8px; height: 8px; left: -25px; top: 10px; background: #ddd; border: none; }
 
-        /* 降りる駅（最大） */
-        .alighting .name {
-            font-size: 1.6rem !important;
-            font-weight: 900 !important;
-            color: var(--danger) !important;
-        }
-        .alighting::before {
-            border-color: var(--danger);
-            background: var(--danger);
-            width: 16px;
-            height: 16px;
-            left: -29px;
-            top: 10px;
-        }
+        /* 降りる駅 (最大・強調) */
+        .node-alighting { padding-bottom: 0; }
+        .node-alighting .name { font-size: 1.6rem !important; font-weight: 900 !important; color: var(--danger-color) !important; }
+        .node-alighting::before { border-color: var(--danger-color); background: var(--danger-color); width: 16px; height: 16px; left: -29px; top: 12px; }
 
         .time { font-size: 0.85rem; color: #666; margin-left: 10px; }
+        
+        /* 路線図 */
+        .route-svg { width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
 
 <header><h1>鉄道総合案内システム</h1></header>
-<nav>
-    <button onclick="showPage('transfer')" class="active">乗換案内</button>
+
+<nav id="mainNav">
+    <button onclick="showPage('status')" class="active">運行情報</button>
+    <button onclick="showPage('timetable')">時刻表</button>
+    <button onclick="showPage('fare')">運賃検索</button>
+    <button onclick="showPage('stationMap')">構内図</button>
+    <button onclick="showPage('routeMap')">路線図</button>
+    <button onclick="showPage('ticket')">切符購入</button>
+    <button onclick="showPage('transfer')">乗換案内</button>
 </nav>
 
 <div class="container">
-    <section id="transfer" class="page active">
-        <h2>乗換案内</h2>
-        <div class="form-group"><label>出発駅</label><input type="text" id="transFrom" value="東京"></div>
-        <div class="form-group"><label>経由駅 (任意)</label><input type="text" id="transVia" placeholder="例: 中央駅"></div>
-        <div class="form-group"><label>降りる駅</label><input type="text" id="transTo" value="新宿"></div>
-        
-        <div class="form-group">
-            <select id="transHour" style="width: 70px;"></select> 時
-            <select id="transMin" style="width: 70px;"></select> 分
-            <label style="margin-left: 10px;"><input type="radio" name="stype" checked> 出発</label>
-        </div>
-        
-        <button class="btn" onclick="search()">ルートを検索する</button>
+    <!-- 運行情報 -->
+    <section id="status" class="page active">
+        <h2>運行情報</h2>
+        <div class="status-card status-normal"><strong>本線</strong>: 平常運転</div>
+        <div class="status-card status-delay"><strong>地下鉄線</strong>: 遅延 (約15分)</div>
+        <div class="status-card status-stop"><strong>急行線</strong>: 運転見合わせ</div>
+    </section>
 
-        <div id="results"></div>
+    <!-- 乗換案内 (修正メイン) -->
+    <section id="transfer" class="page">
+        <h2>乗換案内</h2>
+        <div class="transfer-grid">
+            <div class="form-group"><label>出発駅</label><input type="text" id="transFrom" value="東京"></div>
+            <div class="form-group"><label>経由駅 (任意)</label><input type="text" id="transVia" placeholder="例: 中央駅"></div>
+            <div class="form-group"><label>降りる駅</label><input type="text" id="transTo" value="新宿"></div>
+        </div>
+
+        <div class="form-group">
+            <select id="transHour" style="width: 80px;"></select> 時
+            <select id="transMin" style="width: 80px;"></select> 分
+        </div>
+
+        <div class="search-type-group">
+            <label><input type="radio" name="searchType" value="出発" checked> 出発</label>
+            <label><input type="radio" name="searchType" value="到着"> 到着</label>
+            <label><input type="radio" name="searchType" value="始発"> 始発</label>
+            <label><input type="radio" name="searchType" value="終電"> 終電</label>
+        </div>
+
+        <button class="btn" onclick="searchTransfer()">ルート検索</button>
+
+        <div id="transferResults" style="margin-top: 2rem;"></div>
+    </section>
+
+    <!-- 時刻表 -->
+    <section id="timetable" class="page">
+        <h2>時刻表 (中央駅)</h2>
+        <p>※ダミーデータ表示中</p>
+    </section>
+
+    <!-- 運賃検索 -->
+    <section id="fare" class="page">
+        <h2>運賃検索</h2>
+        <div class="form-group"><input type="text" placeholder="乗車駅"><input type="text" placeholder="降車駅"><button class="btn">検索</button></div>
+    </section>
+
+    <!-- 構内図 -->
+    <section id="stationMap" class="page">
+        <h2>構内図 (中央駅)</h2>
+        <div style="background: #eee; height: 200px; display: flex; align-items: center; justify-content: center;">構内図イメージ</div>
+    </section>
+
+    <!-- 路線図 -->
+    <section id="routeMap" class="page">
+        <h2>路線図</h2>
+        <svg class="route-svg" viewBox="0 0 400 200"><line x1="50" y1="100" x2="350" y2="100" stroke="#2ecc71" stroke-width="5" /><circle cx="50" cy="100" r="8" fill="#fff" stroke="#2ecc71" stroke-width="3" /><circle cx="200" cy="100" r="8" fill="#fff" stroke="#2ecc71" stroke-width="3" /><circle cx="350" cy="100" r="8" fill="#fff" stroke="#2ecc71" stroke-width="3" /></svg>
+    </section>
+
+    <!-- 切符購入 -->
+    <section id="ticket" class="page">
+        <h2>切符購入 (e-チケット)</h2>
+        <div class="form-group"><label>券種</label><select><option>普通券 (¥500)</option><option>特急券 (¥1,500)</option></select></div><button class="btn">購入</button>
     </section>
 </div>
 
 <script>
-    const hSel = document.getElementById('transHour');
-    const mSel = document.getElementById('transMin');
-    for(let i=0; i<24; i++) hSel.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
-    for(let i=0; i<60; i++) mSel.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
-    hSel.value = 12;
+    // 時刻セレクトボックス初期化
+    const hSelect = document.getElementById('transHour');
+    const mSelect = document.getElementById('transMin');
+    for(let i=0; i<24; i++) hSelect.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
+    for(let i=0; i<60; i++) mSelect.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
+    hSelect.value = 12;
 
-    function showPage(id) {
+    function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        document.getElementById(pageId).classList.add('active');
+        document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = Array.from(document.querySelectorAll('nav button')).find(btn => btn.getAttribute('onclick').includes(pageId));
+        if(activeBtn) activeBtn.classList.add('active');
     }
 
-    function search() {
+    function searchTransfer() {
         const from = document.getElementById('transFrom').value;
         const to = document.getElementById('transTo').value;
         const via = document.getElementById('transVia').value;
-        const hour = hSel.value;
-        const min = mSel.value;
+        const hour = hSelect.value;
+        const min = mSelect.value;
+        const type = document.querySelector('input[name="searchType"]:checked').value;
 
         if(!from || !to) return alert('駅名を入力してください');
 
-        // 時刻反映
-        const startT = `${hour.padStart(2,'0')}:${min.padStart(2,'0')}`;
-        const endT = "12:45"; // ダミーだが構造は正確
+        const startTimeStr = `${hour.padStart(2,'0')}:${min.padStart(2,'0')}`;
+        const endT = "12:45"; // ダミー
 
         const html = `
             <div class="route-card">
                 <div class="route-header">
-                    <div style="font-size: 1.3rem; font-weight: bold;">${startT} ～ ${endT}</div>
-                    <div>
-                        <span class="tag tag-fast">早</span><span class="tag tag-easy">楽</span>
-                    </div>
+                    <div style="font-size: 1.4rem; font-weight: bold;">${startTimeStr} ～ ${endT}</div>
+                    <div><span class="label-tag tag-fast">早</span><span class="label-tag tag-easy">楽</span><span class="label-tag tag-cheap">安</span></div>
                 </div>
-                <div style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">
-                    所要時間: 45分 / 運賃: 650円
-                </div>
-                <div class="stack-timeline">
-                    <div class="station-box boarding">
-                        <span class="label">【乗る場所】</span>
-                        <span class="name">${from}</span><span class="time">${startT}発</span>
+                <div style="margin-bottom: 20px; color: #555;">所要時間: <strong>45分</strong> / 運賃: <strong>650円</strong> (${type}指定)</div>
+                <div class="timeline-stack">
+                    <div class="node node-boarding">
+                        <span class="node-label">【乗る場所】</span>
+                        <span class="name">${from}</span><span class="time">${startTimeStr}発</span>
                     </div>
-                    <div class="station-box via">
-                        <span class="label">【経由場所】</span>
+                    <div class="node node-via">
+                        <span class="node-label">【経由場所】</span>
                         <span class="name">${via || "中央駅"}</span><span class="time">乗換</span>
                     </div>
-                    <div class="station-box alighting">
-                        <span class="label">【降りる場所】</span>
+                    <div class="node node-alighting">
+                        <span class="node-label">【降りる場所】</span>
                         <span class="name">${to}</span><span class="time">${endT}着</span>
                     </div>
                 </div>
             </div>
         `;
-        document.getElementById('results').innerHTML = `<h3>${from} ➔ ${to} の検索結果</h3>` + html;
+        document.getElementById('transferResults').innerHTML = `<h3>${from} ➔ ${to} のルート</h3>` + html;
     }
 </script>
 </body>

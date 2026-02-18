@@ -315,7 +315,7 @@
             endTime = calcTime(hs.value, ms.value, duration);
         }
 
-        const fare = 100 + (duration / 3) * 50;
+        const fare = Math.floor(100 + (duration / 3) * 50);
 
         let stepsHtml = steps.map(s => `
             <div class="station-item ${s.type}">

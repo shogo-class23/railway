@@ -249,56 +249,115 @@
             width: 4px;
             background: #ccc;
         }
-        /* 駅の役割ごとの配置・サイズ */
-        .timeline-item {
-            position: relative;
+        /* シンプルな垂直スタックレイアウト */
+        .route-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .route-summary-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .compact-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .compact-timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background: #ddd;
+        }
+
+        .node {
+            position: relative;
             display: flex;
             flex-direction: column;
         }
-        .station-content {
-            width: 100%;
+
+        .node::before {
+            content: '';
+            position: absolute;
+            left: -19px;
+            top: 8px;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            z-index: 2;
         }
-        
-        /* 乗る駅 (左) */
-        .type-boarding {
-            align-items: flex-start;
-            text-align: left;
+
+        /* 乗る駅 */
+        .node-boarding .station-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
         }
-        
-        /* 降りる駅 (中央) */
-        .type-alighting {
-            align-items: center;
-            text-align: center;
-            margin-left: -30px; /* タイムラインのパディング分を補正して中央に */
-        }
-        .type-alighting .station-name {
-            font-size: 1.4rem !important;
-            color: var(--danger-color) !important;
-        }
-        
-        /* 途中駅 (右) */
-        .type-intermediate {
-            align-items: flex-end;
-            text-align: right;
-            padding-right: 10px;
-        }
-        .type-intermediate .station-name {
-            font-size: 0.95rem;
-            color: #666;
+        .node-boarding::before {
+            border-color: var(--secondary-color);
+            background: var(--secondary-color);
         }
 
         /* 経由駅 (小さく) */
-        .type-via .station-name {
-            font-size: 0.85rem !important;
-            color: #777 !important;
+        .node-via {
+            margin-left: 10px;
+            padding: 5px 0;
         }
-        
-        .station-label {
-            font-size: 0.75rem;
-            color: #e67e22;
+        .node-via .station-name {
+            font-size: 0.8rem;
+            color: #888;
+        }
+        .node-via::before {
+            width: 6px;
+            height: 6px;
+            left: -27px;
+            top: 12px;
+        }
+
+        /* 降りる駅 */
+        .node-alighting {
+            margin-top: 5px;
+        }
+        .node-alighting .station-name {
+            font-size: 1.3rem;
             font-weight: bold;
-            display: block;
+            color: var(--primary-color);
+        }
+        .node-alighting::before {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            width: 12px;
+            height: 12px;
+            left: -20px;
+        }
+
+        .node-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .node-label {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #e67e22;
             margin-bottom: 2px;
         }
     </style>
@@ -531,23 +590,23 @@
                 startTime: startTimeStr, endTime: getEndTime(45), duration: "45", fare: "650",
                 labels: ["tag-fast", "tag-easy"],
                 steps: [
-                    {name: from, time: startTimeStr + "発", type: 'boarding', important: true, line: "JR本線 (快速)", typeLabel: "【乗る場所】"},
-                    {name: via || "中央駅", time: "途中乗り換え", type: 'via', important: false, line: "地下鉄ブルーライン", typeLabel: "【乗り換える場所】"},
-                    {name: to, time: getEndTime(45) + "着", type: 'alighting', important: true, typeLabel: "【降りる場所】"}
+                    {name: from, time: startTimeStr + "発", type: 'boarding', label: "乗る駅"},
+                    {name: via || "中央駅", time: "途中乗り換え", type: 'via', label: "経由駅"},
+                    {name: to, time: getEndTime(45) + "着", type: 'alighting', label: "降りる駅"}
                 ]
             },
             {
                 startTime: startTimeStr, endTime: getEndTime(60), duration: "60", fare: "420",
                 labels: ["tag-cheap"],
                 steps: [
-                    {name: from, time: startTimeStr + "発", type: 'boarding', important: true, line: "各駅停車", typeLabel: "【乗る場所】"},
-                    {name: "途中ポイントX", time: "通過", type: 'intermediate', important: false, line: "各駅停車", typeLabel: ""},
-                    {name: to, time: getEndTime(60) + "着", type: 'alighting', important: true, typeLabel: "【降りる場所】"}
+                    {name: from, time: startTimeStr + "発", type: 'boarding', label: "乗る駅"},
+                    {name: "（途中駅・経由）", time: "通過", type: 'via', label: "経由"},
+                    {name: to, time: getEndTime(60) + "着", type: 'alighting', label: "降りる駅"}
                 ]
             }
         ];
 
-        let html = `<h3>${from} から ${to}（降りる場所）の検索結果</h3>`;
+        let html = `<h3>${from} から ${to} のルート</h3>`;
         results.forEach(r => {
             let labelHtml = r.labels.map(l => {
                 const text = l.includes('fast') ? '早' : l.includes('easy') ? '楽' : '安';
@@ -556,29 +615,25 @@
 
             html += `
                 <div class="route-card">
-                    <div class="route-header">
-                        <div class="route-title">${r.startTime} ～ ${r.endTime}</div>
+                    <div class="route-summary-bar">
+                        <div style="font-size: 1.4rem; font-weight: bold; color: #2c3e50;">${r.startTime} ～ ${r.endTime}</div>
                         <div class="route-labels">${labelHtml}</div>
                     </div>
-                    <div style="margin-bottom: 15px; font-weight: bold; color: #2c3e50;">
-                        所要時間: ${r.duration}分 / 運賃: ${r.fare}円
+                    <div style="margin-bottom: 20px; color: #666; font-size: 0.9rem;">
+                        所要時間: <span style="font-weight: bold; color: #333;">${r.duration}分</span> / 運賃: <span style="font-weight: bold; color: #333;">${r.fare}円</span>
                     </div>
-                    <div class="timeline">
+                    <div class="compact-timeline">
             `;
             
             r.steps.forEach(s => {
-                // typeに基づいたクラスを付与
-                const typeClass = `type-${s.type}`;
-                const importantClass = s.important ? 'important' : '';
-                
+                const nodeClass = `node-${s.type}`;
                 html += `
-                    <div class="timeline-item ${typeClass} ${importantClass}">
-                        <div class="station-time">${s.time}</div>
-                        <div class="station-content">
-                            ${s.typeLabel ? `<span class="station-label">${s.typeLabel}</span>` : ''}
+                    <div class="node ${nodeClass}">
+                        <div class="node-label">${s.label}</div>
+                        <div style="display: flex; align-items: baseline; gap: 10px;">
                             <span class="station-name">${s.name}</span>
+                            <span class="node-time">${s.time}</span>
                         </div>
-                        ${s.line ? `<div class="line-info">↓ ${s.line}</div>` : ''}
                     </div>
                 `;
             });

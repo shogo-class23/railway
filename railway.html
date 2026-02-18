@@ -142,24 +142,39 @@
         const from = document.getElementById('fromSt').value;
         const via = document.getElementById('viaSt').value;
         const to = document.getElementById('toSt').value;
-        const time = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`;
+        const inputTime = `${hs.value.padStart(2,'0')}:${ms.value.padStart(2,'0')}`;
         const type = document.querySelector('input[name="stype"]:checked').value;
 
         if(!from || !to) return alert('駅名を入力してください');
 
+        // 到着指定の場合は入力時刻を到着時刻(endTime)に、それ以外は出発時刻(startTime)にする
+        let startTime, endTime;
+        if (type === "到着") {
+            endTime = inputTime;
+            // 出発時刻をダミーで45分前に設定
+            const h = parseInt(hs.value);
+            const m = parseInt(ms.value);
+            let totalM = h * 60 + m - 45;
+            if (totalM < 0) totalM += 24 * 60;
+            startTime = `${Math.floor(totalM / 60).toString().padStart(2,'0')}:${(totalM % 60).toString().padStart(2,'0')}`;
+        } else {
+            startTime = inputTime;
+            endTime = "12:45"; // ダミー
+        }
+
         document.getElementById('transferResults').innerHTML = `
             <div class="route-box">
                 <div class="route-time-header">
-                    <span class="time-range-text">${time} 発 ～ 12:45 着</span>
+                    <span class="time-range-text">${startTime} 発 ～ ${endTime} 着</span>
                 </div>
-                <div style="margin-bottom:20px; font-weight:bold; color:#2980b9;">
-                    所要時間: 45分 / 運賃: 650円 / 条件: ${type}
+                <div class="route-info">
+                    所要時間: 45分 / 運賃: 650円 / 条件: ${type}指定
                 </div>
                 <div class="vertical-station-list">
                     <div class="station-item boarding-station">
                         <span class="role-tag">【乗る場所】</span>
                         <span class="station-name-text">${from}</span>
-                        <span class="time-info-text">${time} 発</span>
+                        <span class="time-info-text">${startTime} 発</span>
                     </div>
                     <div class="station-item via-station">
                         <span class="role-tag">【経由場所】</span>
@@ -169,7 +184,7 @@
                     <div class="station-item alighting-station">
                         <span class="role-tag">【降りる場所】</span>
                         <span class="station-name-text">${to}</span>
-                        <span class="time-info-text">12:45 着</span>
+                        <span class="time-info-text">${endTime} 着</span>
                     </div>
                 </div>
             </div>

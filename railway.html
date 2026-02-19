@@ -133,7 +133,19 @@
     </nav>
     <div class="container">
         <section id="status" class="page active"><h2>運行情報</h2><div id="statusList"></div></section>
-        <section id="routeMap" class="page"><h2>路線図</h2><div id="mapContainer" style="overflow-x:auto;"></div></section>
+        <section id="routeMap" class="page">
+            <h2>路線図</h2>
+            <div id="mapContainer" style="overflow-x:auto; background: white; padding: 10px; border-radius: 12px; border: 1px solid #eee;"></div>
+            <div id="mapLegend" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                <span class="line-badge 東西線">東西線</span>
+                <span class="line-badge 南北線">南北線</span>
+                <span class="line-badge 空港線">空港線</span>
+                <span class="line-badge 都市線">都市線</span>
+                <span class="line-badge 新線">新線</span>
+                <span class="line-badge 海岸線">海岸線</span>
+                <span class="line-badge 他社線">他社線</span>
+            </div>
+        </section>
         <section id="stopMap" class="page"><h2>停車駅路線図</h2><div id="stopMapContainer"></div></section>
         <section id="transfer" class="page">
             <h2>乗換案内</h2>

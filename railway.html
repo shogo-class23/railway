@@ -152,6 +152,10 @@
                     <label><input type="radio" name="stype" value="終電">終電</label>
                 </div>
                 <button class="btn-search" onclick="search()">ルートを検索</button>
+                <div class="time-shift-buttons" style="margin-top: 10px;">
+                    <button class="btn-shift" onclick="shiftTime(-15)">1本前</button>
+                    <button class="btn-shift" onclick="shiftTime(15)">1本後</button>
+                </div>
             </div>
             <div id="transferResults"></div>
         </section>

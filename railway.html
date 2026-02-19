@@ -178,8 +178,8 @@
                     ]
                 },
                 "新線": { stations: ["發駅", "南駅", "南西駅", "下駅", "西前駅", "本駅", "白駅", "新駅", "上駅", "東駅", "東南駅", "区役所前駅", "發駅"], interval: 3 },
-                "他社線": { stations: ["中央駅", "白駅", "北東駅", "ドーム前駅"], interval: 5 },
-                "海岸線": { stations: ["ドーム前駅", "隣町駅", "川駅", "海岸駅"], interval: 4 }
+                "他社線": { stations: ["中央駅", "白駅", "北東駅", "ドーム前駅"], interval: 2 },
+                "海岸線": { stations: ["ドーム前駅", "隣町駅", "川駅", "海岸駅"], interval: 2 }
             },
             status: ["東西線: 平常", "南北線: 平常", "空港線: 平常", "都市線: 平常", "新線: 平常", "海岸線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 800 550">
@@ -445,6 +445,56 @@
                                     ],
                                     desc: `${hName}経由`
                                 });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2 transfers
+        for (const h1 of hubs) {
+            for (const h2 of hubs) {
+                if (h1 === h2 || h1 === from || h2 === to) continue;
+                for (const [L1Name, L1Data] of Object.entries(curComp.routes)) {
+                    for (const [L2Name, L2Data] of Object.entries(curComp.routes)) {
+                        for (const [L3Name, L3Data] of Object.entries(curComp.routes)) {
+                            if (L1Name === L2Name || L2Name === L3Name) continue;
+                            for (const S1 of getSvcs(L1Data)) {
+                                for (const S2 of getSvcs(L2Data)) {
+                                    for (const S3 of getSvcs(L3Data)) {
+                                        if (S1.stops.includes(from) && S1.stops.includes(h1) && 
+                                            S2.stops.includes(h1) && S2.stops.includes(h2) && 
+                                            S3.stops.includes(h2) && S3.stops.includes(to)) {
+                                            
+                                            const i1_f = L1Data.stations.indexOf(from), i1_h1 = L1Data.stations.indexOf(h1);
+                                            const i2_h1 = L2Data.stations.indexOf(h1), i2_h2 = L2Data.stations.indexOf(h2);
+                                            const i3_h2 = L3Data.stations.indexOf(h2), i3_t = L3Data.stations.indexOf(to);
+                                            
+                                            const d1 = calcD(L1Data, i1_f, i1_h1);
+                                            const d2 = calcD(L2Data, i2_h1, i2_h2);
+                                            const d3 = calcD(L3Data, i3_h2, i3_t);
+                                            
+                                            const totalDur = d1 + d2 + d3 + 10; // 2 transfers = 10 min
+                                            const durFromTerm = calcD(L1Data, 0, i1_f);
+                                            const durToTerm = calcD(L3Data, 0, i3_t);
+
+                                            possibleRoutes.push({
+                                                dur: totalDur, transfers: 2, svc: S1, tSvc: S3, durFromTerm, durToTerm,
+                                                steps: [
+                                                    {role:"boarding", lineName: `${S1.name} (${L1Name})`, name:from, type:"boarding-station", timeOffset: 0},
+                                                    ...getMid(L1Data, i1_f, i1_h1, S1.stops),
+                                                    {role:"transfer", lineName: `${S2.name} (${L2Name})`, name:h1, type:"via-station", sub:"乗換 5分", arrivalOffset: d1, departureOffset: d1 + 5},
+                                                    ...getMid(L2Data, i2_h1, i2_h2, S2.stops).map(s => ({...s, timeOffset: s.timeOffset + d1 + 5})),
+                                                    {role:"transfer", lineName: `${S3.name} (${L3Name})`, name:h2, type:"via-station", sub:"乗換 5分", arrivalOffset: d1 + 5 + d2, departureOffset: d1 + 5 + d2 + 5},
+                                                    ...getMid(L3Data, i3_h2, i3_t, S3.stops).map(s => ({...s, timeOffset: s.timeOffset + d1 + 5 + d2 + 5})),
+                                                    {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}
+                                                ],
+                                                desc: `${h1}・${h2}経由`
+                                            });
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

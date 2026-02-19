@@ -62,7 +62,6 @@
         .route-header { background: #ecf0f1; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
         .route-tag-id { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 10px; }
         
-        /* 早安楽タグ */
         .spec-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; margin-left: 5px; }
         .tag-fast { background: #e74c3c; }
         .tag-cheap { background: #f39c12; }
@@ -92,7 +91,6 @@
         .line-badge.新線 { background: #e84393; }
 
         .station-info-row { display: flex; align-items: center; }
-
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
         .role-tag { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; color: #7f8c8d; }
 
@@ -101,6 +99,12 @@
         .alighting-station::before { border-color: #e74c3c; background: #e74c3c; }
 
         .time-info-text { font-size: 1rem; color: #333; font-weight: bold; min-width: 60px; display: inline-block; }
+        
+        /* 1本前・1本後ボタン */
+        .time-shift-buttons { display: flex; gap: 10px; margin-top: 20px; padding: 0 10px; }
+        .btn-shift { flex: 1; background: #ecf0f1; border: 1px solid #bdc3c7; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #2c3e50; }
+        .btn-shift:hover { background: #bdc3c7; }
+
         .route-map-svg { width: 100%; height: auto; min-width: 650px; }
     </style>
 </head>
@@ -227,6 +231,27 @@
         document.getElementById('btn-' + id).classList.add('active');
     }
 
+    function setRadio(v) { document.querySelectorAll('input[name="stype"]').forEach(r => r.checked = (r.value === v)); }
+
+    function shiftTime(minutes) {
+        const type = document.querySelector('input[name="stype"]:checked').value;
+        if(type === "始発" && minutes < 0) { setRadio("終電"); }
+        else if(type === "終電" && minutes > 0) { setRadio("始発"); }
+        else if(type === "始発" || type === "終電") {
+            setRadio("出発");
+            let bh = (type==="始発")?4:1, bm = (type==="始発")?30:0;
+            let tm = bh*60 + bm + minutes;
+            hs.value = Math.floor(tm/60); ms.value = tm%60;
+        } else {
+            let total = parseInt(hs.value)*60 + parseInt(ms.value) + minutes;
+            if(total<0) total += 1440; total %= 1440;
+            hs.value = Math.floor(total/60); ms.value = total%60;
+            if(hs.value == 4 && ms.value == 30) setRadio("始発");
+            else if(hs.value == 1 && ms.value == 0) setRadio("終電");
+        }
+        search();
+    }
+
     function calcD(data, s, e) {
         if (s === e) return 0;
         const n = data.stations.length;
@@ -313,8 +338,7 @@
         if (results.length === 0) { document.getElementById('transferResults').innerHTML = "<p>経路が見つかりませんでした。</p>"; return; }
         
         results.sort((a, b) => a.dur - b.dur);
-        const minDur = results[0].dur;
-        const minTransfer = Math.min(...results.map(r => r.transfers));
+        const minDur = results[0].dur, minTransfer = Math.min(...results.map(r => r.transfers));
         const minCost = Math.min(...results.map(r => Math.floor(100 + (r.dur/3)*50)));
 
         results = results.slice(0, 3);
@@ -323,7 +347,7 @@
         const snap = (raw, d, isArr) => Math.floor((isArr ? raw - d : raw)/15)*15;
         let base = parseInt(hs.value)*60 + parseInt(ms.value);
 
-        const html = results.map((res, idx) => {
+        let finalHtml = results.map((res, idx) => {
             let dm, am;
             if(type==="始発"){dm=270; am=dm+res.dur;} else if(type==="終電"){dm=60; am=dm+res.dur;}
             else if(type==="到着"){dm=snap(base,res.dur,true); am=dm+res.dur;} else {dm=snap(base,res.dur,false); am=dm+res.dur;}
@@ -336,37 +360,26 @@
 
             const stepHtml = res.steps.map(s => {
                 if(s.type === "intermediate") return `<div class="station-item" style="opacity:0.5; margin-bottom:10px; margin-left: 65px;"><span class="station-name-text" style="font-size:0.9rem; font-weight:normal;">${s.name}</span></div>`;
-                
                 let time = s.type==='alighting-station'?formatT(am):s.type==='boarding-station'?formatT(dm):'';
                 let badge = s.lineName ? `<span class="line-badge ${s.lineName}">${s.lineName} に乗る</span>` : '';
-
                 return `
                     <div class="station-item ${s.type}">
                         <div class="role-tag">${s.role === 'boarding' ? '【乗車】' : s.role === 'transfer' ? '【乗換】' : s.role}</div>
-                        <div class="station-info-row">
-                            <span class="time-info-text">${time}</span>
-                            <span class="station-name-text">${s.name}</span>
-                            ${badge}
-                        </div>
+                        <div class="station-info-row"><span class="time-info-text">${time}</span><span class="station-name-text">${s.name}</span>${badge}</div>
                         ${s.sub ? `<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>` : ''}
                     </div>`;
             }).join('');
 
             return `
                 <div class="route-result-item">
-                    <div class="route-header">
-                        <span><span class="route-tag-id">経路 ${idx+1}</span><strong>${res.desc}</strong>${tags}</span>
-                        <span style="color:#2980b9; font-weight:bold;">${res.dur}分 / ${cost}円</span>
-                    </div>
-                    <div class="route-box">
-                        <span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span>
-                        <div class="vertical-station-list">${stepHtml}</div>
-                    </div>
+                    <div class="route-header"><span><span class="route-tag-id">経路 ${idx+1}</span><strong>${res.desc}</strong>${tags}</span><span style="color:#2980b9; font-weight:bold;">${res.dur}分 / ${cost}円</span></div>
+                    <div class="route-box"><span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span><div class="vertical-station-list">${stepHtml}</div></div>
                 </div>
             `;
         }).join('');
 
-        document.getElementById('transferResults').innerHTML = html;
+        finalHtml += `<div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>`;
+        document.getElementById('transferResults').innerHTML = finalHtml;
     }
 </script>
 </body>

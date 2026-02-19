@@ -365,8 +365,9 @@
                                 const dur2 = calcD(tLData, thI, tI);
                                 const dur = dur1 + dur2 + 5;
                                 const durFromTerm = calcD(fLData, 0, fI);
+                                const durToTerm = calcD(tLData, 0, tI);
                                 possibleRoutes.push({
-                                    dur, transfers: 1, svc: fSvc, durFromTerm,
+                                    dur, transfers: 1, svc: fSvc, tSvc: tSvc, durFromTerm, durToTerm,
                                     steps: [
                                         {role:"boarding", lineName: `${fSvc.name} (${fLName})`, name:from, type:"boarding-station", timeOffset: 0},
                                         ...getMid(fLData, fI, fhI, fSvc.stops),
@@ -402,7 +403,8 @@
             if(type==="始発"){dm=getSnap(270,res.svc,res.durFromTerm,false); am=dm+res.dur;} 
             else if(type==="終電"){dm=getSnap(60,res.svc,res.durFromTerm,true); am=dm+res.dur;}
             else if(type==="到着"){
-                let arrival_time = getSnap(base, res.svc, res.durToTerm, true);
+                let arrival_svc = res.tSvc || res.svc;
+                let arrival_time = getSnap(base, arrival_svc, res.durToTerm, true);
                 dm = arrival_time - res.dur;
                 am = arrival_time;
             } 

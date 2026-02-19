@@ -91,6 +91,8 @@
         .line-badge.新線 { background: #e84393; }
         .line-badge.他社線 { background: #95a5a6; }
         .line-badge.海岸線 { background: #00cec9; }
+        .line-badge.北部線 { background: #3498db; }
+        .line-badge.上野線 { background: #e67e22; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -173,15 +175,7 @@
         <section id="routeMap" class="page">
             <h2>路線図</h2>
             <div id="mapContainer" style="overflow-x:auto; background: white; padding: 10px; border-radius: 12px; border: 1px solid #eee;"></div>
-            <div id="mapLegend" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                <span class="line-badge 東西線">東西線</span>
-                <span class="line-badge 南北線">南北線</span>
-                <span class="line-badge 空港線">空港線</span>
-                <span class="line-badge 都市線">都市線</span>
-                <span class="line-badge 新線">新線</span>
-                <span class="line-badge 海岸線">海岸線</span>
-                <span class="line-badge 他社線">他社線</span>
-            </div>
+            <div id="mapLegend" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
         </section>
         <section id="stopMap" class="page"><h2>停車駅路線図</h2><div id="stopMapContainer"></div></section>
         <section id="transfer" class="page">
@@ -287,15 +281,35 @@
                 "北部線": { 
                     stations: ["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"],
                     interval: 3 
+                },
+                "上野線": {
+                    stations: ["池袋", "上池袋", "西巣鴨", "王子", "堀船", "江北", "大師", "西新井", "足立", "梅田", "北千住", "千住大橋", "南千住", "浅草", "北上野", "上野"],
+                    interval: 3
                 }
             },
-            status: ["北部線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="0 0 1000 300">
-                <line x1="50" y1="150" x2="950" y2="150" stroke="#3498db" stroke-width="10" />
-                <text x="50" y="120" fill="#2980b9" font-size="16" font-weight="bold">北部線</text>
+            status: ["北部線: 平常", "上野線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 550">
+                <!-- 北部線 (Blue) -->
+                <line x1="50" y1="250" x2="950" y2="250" stroke="#3498db" stroke-width="10" />
+                <text x="50" y="220" fill="#2980b9" font-size="16" font-weight="bold">北部線</text>
+                
+                <!-- 上野線 (Orange) -->
+                <path d="M150 500 L150 400 L250 300 L400 250 L550 250 L700 250 L700 350 L700 500 L850 500" fill="none" stroke="#e67e22" stroke-width="8" opacity="0.8" />
+                <text x="850" y="480" fill="#d35400" font-size="16" font-weight="bold" text-anchor="end">上野線</text>
+
+                <!-- 北部線の駅 (駅名を上に配置) -->
                 ${["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"].map((st, i) => `
-                    <circle cx="${50 + i * 50}" cy="150" r="6" fill="white" stroke="#333" stroke-width="2" />
-                    <text x="${50 + i * 50}" y="180" font-size="10" text-anchor="middle" transform="rotate(45, ${50 + i * 50}, 180)">${st}</text>
+                    <circle cx="${50 + i * 50}" cy="250" r="6" fill="white" stroke="#333" stroke-width="2" />
+                    <text x="${50 + i * 50}" y="235" font-size="10" text-anchor="middle" transform="rotate(-45, ${50 + i * 50}, 235)">${st}</text>
+                `).join('')}
+
+                <!-- 上野線の駅 (共通駅以外, 座標をパスに合わせる) -->
+                ${[
+                    {name: "池袋", x: 150, y: 500}, {name: "上池袋", x: 150, y: 450}, {name: "西巣鴨", x: 150, y: 400}, {name: "王子", x: 250, y: 300}, {name: "堀船", x: 350, y: 265},
+                    {name: "梅田", x: 700, y: 300}, {name: "北千住", x: 700, y: 350}, {name: "千住大橋", x: 700, y: 400}, {name: "南千住", x: 700, y: 450}, {name: "浅草", x: 700, y: 500}, {name: "北上野", x: 775, y: 500}, {name: "上野", x: 850, y: 500}
+                ].map(st => `
+                    <circle cx="${st.x}" cy="${st.y}" r="5" fill="white" stroke="#e67e22" stroke-width="2" />
+                    <text x="${st.x + 10}" y="${st.y + 5}" font-size="9">${st.name}</text>
                 `).join('')}
             </svg>`
         }
@@ -314,6 +328,10 @@
         document.getElementById('appTitle').innerText = curComp.name;
         document.getElementById('statusList').innerHTML = curComp.status.map(s => `<div style="padding:10px; border-left:5px solid var(--secondary); background:#f9f9f9; margin-bottom:5px;">${s}</div>`).join('');
         document.getElementById('mapContainer').innerHTML = curComp.svg;
+        
+        // Generate Legend
+        document.getElementById('mapLegend').innerHTML = Object.keys(curComp.routes).map(line => `<span class="line-badge ${line}">${line}</span>`).join('');
+
         const stSet = new Set();
         Object.values(curComp.routes).forEach(r => r.stations.forEach(s => stSet.add(s)));
         document.getElementById('stationList').innerHTML = Array.from(stSet).map(s => `<option value="${s}">`).join('');

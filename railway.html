@@ -294,8 +294,8 @@
                 <text x="50" y="220" fill="#2980b9" font-size="16" font-weight="bold">北部線</text>
                 
                 <!-- 上野線 (Orange) -->
-                <path d="M150 500 L150 400 L250 300 L400 250 L550 250 L700 250 L700 350 L700 500 L850 500" fill="none" stroke="#e67e22" stroke-width="8" opacity="0.8" />
-                <text x="850" y="480" fill="#d35400" font-size="16" font-weight="bold" text-anchor="end">上野線</text>
+                <path d="M150 500 L150 400 L250 300 L400 275 L550 250 L700 250 L700 530" fill="none" stroke="#e67e22" stroke-width="8" opacity="0.8" />
+                <text x="730" y="530" fill="#d35400" font-size="16" font-weight="bold">上野線</text>
 
                 <!-- 北部線の駅 (駅名を上に配置) -->
                 ${["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"].map((st, i) => `
@@ -305,11 +305,11 @@
 
                 <!-- 上野線の駅 (共通駅以外, 座標をパスに合わせる) -->
                 ${[
-                    {name: "池袋", x: 150, y: 500}, {name: "上池袋", x: 150, y: 450}, {name: "西巣鴨", x: 150, y: 400}, {name: "王子", x: 250, y: 300}, {name: "堀船", x: 350, y: 265},
-                    {name: "梅田", x: 700, y: 300}, {name: "北千住", x: 700, y: 350}, {name: "千住大橋", x: 700, y: 400}, {name: "南千住", x: 700, y: 450}, {name: "浅草", x: 700, y: 500}, {name: "北上野", x: 775, y: 500}, {name: "上野", x: 850, y: 500}
+                    {name: "池袋", x: 150, y: 500}, {name: "上池袋", x: 150, y: 460}, {name: "西巣鴨", x: 150, y: 420}, {name: "王子", x: 250, y: 300}, {name: "堀船", x: 400, y: 275},
+                    {name: "梅田", x: 700, y: 290}, {name: "北千住", x: 700, y: 330}, {name: "千住大橋", x: 700, y: 370}, {name: "南千住", x: 700, y: 410}, {name: "浅草", x: 700, y: 450}, {name: "北上野", x: 700, y: 490}, {name: "上野", x: 700, y: 530}
                 ].map(st => `
                     <circle cx="${st.x}" cy="${st.y}" r="5" fill="white" stroke="#e67e22" stroke-width="2" />
-                    <text x="${st.x + 10}" y="${st.y + 5}" font-size="9">${st.name}</text>
+                    <text x="${st.x - 15}" y="${st.y + 5}" font-size="9" text-anchor="end">${st.name}</text>
                 `).join('')}
             </svg>`
         }

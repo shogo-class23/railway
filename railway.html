@@ -277,27 +277,38 @@
 
     function getMid(data, sIdx, eIdx, svcStops) {
         const st = svcStops || data.stations;
-        const s = st.indexOf(data.stations[sIdx]), e = st.indexOf(data.stations[eIdx]);
+        const sName = data.stations[sIdx], eName = data.stations[eIdx];
+        const s = st.indexOf(sName), e = st.indexOf(eName);
         if (s === -1 || e === -1 || s === e) return [];
+        
         const res = [], n = st.length;
         const isLoop = st[0] === st[n-1], loopLen = n - 1;
         let diff = e - s, step = diff > 0 ? 1 : -1, dist = Math.abs(diff);
         if (isLoop && dist > loopLen / 2) { step = -step; dist = loopLen - dist; }
+        
         let curr = s;
         for(let i = 1; i < dist; i++) {
             curr = (curr + step + (isLoop ? loopLen : 0)) % (isLoop ? loopLen : n);
-            res.push({name: st[curr], type: "intermediate"});
+            const name = st[curr];
+            const currIdx = data.stations.indexOf(name);
+            res.push({
+                name: name, 
+                type: "intermediate", 
+                timeOffset: calcD(data, sIdx, currIdx)
+            });
         }
         return res;
     }
 
-    function getSnap(base, svc, dur, isArr) {
+    function getSnap(base, svc, durFromTerm, isArr) {
+        // base: 検索目標時刻, durFromTerm: 始発駅(index 0)からその駅までの走行時間
         if (svc.specific) {
             let opts = [];
-            for(let h=0; h<24; h++) svc.specific.forEach(m => opts.push(h*60 + m));
+            for(let h=0; h<24; h++) svc.specific.forEach(m => opts.push(h*60 + m + durFromTerm));
+            opts.sort((a, b) => a - b);
             if (isArr) {
                 let last = -1;
-                opts.forEach(o => { if (o + dur <= base) last = o; });
+                opts.forEach(o => { if (o <= base) last = o; });
                 if (last === -1) last = opts[opts.length-1] - 1440;
                 return last;
             } else {
@@ -307,8 +318,8 @@
                 return first;
             }
         }
-        const interval = svc.interval || 15, offset = svc.offset || 0;
-        if (isArr) return Math.floor((base - dur - offset) / interval) * interval + offset;
+        const interval = svc.interval || 15, offset = (svc.offset || 0) + durFromTerm;
+        if (isArr) return Math.floor((base - offset) / interval) * interval + offset;
         return Math.ceil((base - offset) / interval) * interval + offset;
     }
 
@@ -324,12 +335,14 @@
                 if (svc.stops.includes(from) && svc.stops.includes(to)) {
                     const fI = data.stations.indexOf(from), tI = data.stations.indexOf(to);
                     const dur = calcD(data, fI, tI);
+                    const durFromTerm = calcD(data, 0, fI);
+                    const durToTerm = calcD(data, 0, tI);
                     possibleRoutes.push({
-                        dur, transfers: 0, svc,
+                        dur, transfers: 0, svc, durFromTerm, durToTerm,
                         steps: [
-                            {role:"boarding", lineName: `${svc.name} (${line})`, name:from, type:"boarding-station"},
+                            {role:"boarding", lineName: `${svc.name} (${line})`, name:from, type:"boarding-station", timeOffset: 0},
                             ...getMid(data, fI, tI, svc.stops),
-                            {role:"【降りる場所】", name:to, type:"alighting-station"}
+                            {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: dur}
                         ],
                         desc: `${svc.name} 直通`
                     });
@@ -348,15 +361,18 @@
                             if (fSvc.stops.includes(from) && fSvc.stops.includes(hName) && tSvc.stops.includes(to) && tSvc.stops.includes(hName)) {
                                 const fI = fLData.stations.indexOf(from), fhI = fLData.stations.indexOf(hName);
                                 const tI = tLData.stations.indexOf(to), thI = tLData.stations.indexOf(hName);
-                                const dur = calcD(fLData, fI, fhI) + calcD(tLData, thI, tI) + 5;
+                                const dur1 = calcD(fLData, fI, fhI);
+                                const dur2 = calcD(tLData, thI, tI);
+                                const dur = dur1 + dur2 + 5;
+                                const durFromTerm = calcD(fLData, 0, fI);
                                 possibleRoutes.push({
-                                    dur, transfers: 1, svc: fSvc,
+                                    dur, transfers: 1, svc: fSvc, durFromTerm,
                                     steps: [
-                                        {role:"boarding", lineName: `${fSvc.name} (${fLName})`, name:from, type:"boarding-station"},
+                                        {role:"boarding", lineName: `${fSvc.name} (${fLName})`, name:from, type:"boarding-station", timeOffset: 0},
                                         ...getMid(fLData, fI, fhI, fSvc.stops),
-                                        {role:"transfer", lineName: `${tSvc.name} (${tLName})`, name:hName, type:"via-station", sub:"乗換 5分"},
-                                        ...getMid(tLData, thI, tI, tSvc.stops),
-                                        {role:"【降りる場所】", name:to, type:"alighting-station"}
+                                        {role:"transfer", lineName: `${tSvc.name} (${tLName})`, name:hName, type:"via-station", sub:"乗換 5分", arrivalOffset: dur1, departureOffset: dur1 + 5},
+                                        ...getMid(tLData, thI, tI, tSvc.stops).map(s => ({...s, timeOffset: s.timeOffset + dur1 + 5})),
+                                        {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: dur}
                                     ],
                                     desc: `${hName}経由`
                                 });
@@ -383,10 +399,17 @@
 
         let finalHtml = results.map((res, idx) => {
             let dm, am;
-            if(type==="始発"){dm=getSnap(270,res.svc,res.dur,false); am=dm+res.dur;} 
-            else if(type==="終電"){dm=getSnap(60,res.svc,res.dur,true); am=dm+res.dur;}
-            else if(type==="到着"){dm=getSnap(base,res.svc,res.dur,true); am=dm+res.dur;} 
-            else {dm=getSnap(base,res.svc,res.dur,false); am=dm+res.dur;}
+            if(type==="始発"){dm=getSnap(270,res.svc,res.durFromTerm,false); am=dm+res.dur;} 
+            else if(type==="終電"){dm=getSnap(60,res.svc,res.durFromTerm,true); am=dm+res.dur;}
+            else if(type==="到着"){
+                let arrival_time = getSnap(base, res.svc, res.durToTerm, true);
+                dm = arrival_time - res.dur;
+                am = arrival_time;
+            } 
+            else {
+                dm = getSnap(base, res.svc, res.durFromTerm, false);
+                am = dm + res.dur;
+            }
             
             const cost = Math.floor(100 + (res.dur/3)*50);
             let tags = "";
@@ -395,8 +418,25 @@
             if(cost === minCost) tags += `<span class="spec-tag tag-cheap">安</span>`;
 
             const stepHtml = res.steps.map(s => {
-                if(s.type === "intermediate") return `<div class="station-item" style="opacity:0.5; margin-bottom:10px; margin-left: 65px;"><span class="station-name-text" style="font-size:0.9rem; font-weight:normal;">${s.name}</span></div>`;
-                let time = s.type==='alighting-station'?formatT(am):s.type==='boarding-station'?formatT(dm):'';
+                let timeText = "";
+                if (s.role === 'transfer') {
+                    timeText = `<div style="display:flex; flex-direction:column; line-height:1.2;">
+                        <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + s.arrivalOffset)} 着</span>
+                        <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + s.departureOffset)} 発</span>
+                    </div>`;
+                } else {
+                    timeText = `<span class="time-info-text">${formatT(dm + s.timeOffset)}</span>`;
+                }
+
+                if(s.type === "intermediate") {
+                    return `
+                        <div class="station-item" style="opacity:0.8; margin-bottom:10px; margin-left: 15px;">
+                            <div class="station-info-row">
+                                ${timeText}
+                                <span class="station-name-text" style="font-size:1.1rem; font-weight:normal;">${s.name}</span>
+                            </div>
+                        </div>`;
+                }
                 let lineClass = "";
                 if (s.lineName) {
                     const match = s.lineName.match(/\(([^)]+)\)/);
@@ -406,7 +446,7 @@
                 return `
                     <div class="station-item ${s.type}">
                         <div class="role-tag">${s.role === 'boarding' ? '【乗車】' : s.role === 'transfer' ? '【乗換】' : s.role}</div>
-                        <div class="station-info-row"><span class="time-info-text">${time}</span><span class="station-name-text">${s.name}</span>${badge}</div>
+                        <div class="station-info-row">${timeText}<span class="station-name-text">${s.name}</span>${badge}</div>
                         ${s.sub ? `<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>` : ''}
                     </div>`;
             }).join('');

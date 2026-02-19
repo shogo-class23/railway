@@ -147,15 +147,25 @@
 </div>
 
 <div id="portalScreen">
-    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; padding: 20px;">
         <div class="company-card" onclick="selectCompany('nerika')">
             <h1>ねりか区営地下鉄</h1>
-            <p>東西線・南北線・空港線・都市線・新線・海岸線 総合案内</p>
+            <p>東西・南北・空港・都市・新線・海岸線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #3498db;" onclick="selectCompany('keihin')">
             <h1>京浜日本鉄道</h1>
-            <p>北部線・上野線・本線・芋窪線 総合案内</p>
+            <p>北部・上野・本線・芋窪線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #e67e22;" onclick="selectCompany('chiba')">
+            <h1>千葉日本鉄道</h1>
+            <p>千葉・取手線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('motegi')">
+            <h1>茂木日本鉄道</h1>
+            <p>茂木線 総合案内</p>
             <small>クリックして入場</small>
         </div>
     </div>
@@ -346,6 +356,42 @@
                 ].map(st => `
                     <circle cx="${st.x}" cy="${st.y}" r="5" fill="white" stroke="#e67e22" stroke-width="2" />
                     <text x="${st.x - 15}" y="${st.y + 5}" font-size="9" text-anchor="end">${st.name}</text>
+                `).join('')}
+            </svg>`
+        },
+        chiba: {
+            name: "千葉日本鉄道",
+            routes: {
+                "千葉日本線": {
+                    stations: ["千葉", "長沼", "新勝田台", "米本", "小室", "取手"],
+                    interval: 5
+                }
+            },
+            status: ["千葉日本線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 400 600">
+                <line x1="200" y1="100" x2="200" y2="500" stroke="#e67e22" stroke-width="10" />
+                <text x="220" y="80" fill="#d35400" font-size="16" font-weight="bold">千葉日本線</text>
+                ${["千葉", "長沼", "新勝田台", "米本", "小室", "取手"].reverse().map((st, i) => `
+                    <circle cx="200" cy="${100 + i * 80}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="220" y="${105 + i * 80}" font-size="12" font-weight="bold">${st}</text>
+                `).join('')}
+            </svg>`
+        },
+        motegi: {
+            name: "茂木日本鉄道",
+            routes: {
+                "茂木日本線": {
+                    stations: ["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"],
+                    interval: 4
+                }
+            },
+            status: ["茂木日本線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 300">
+                <line x1="100" y1="150" x2="880" y2="150" stroke="#2ecc71" stroke-width="10" />
+                <text x="50" y="120" fill="#27ae60" font-size="16" font-weight="bold">茂木日本線</text>
+                ${["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"].map((st, i) => `
+                    <circle cx="${100 + i * 130}" cy="150" r="8" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${100 + i * 130}" y="${st.length > 8 ? 190 : 180}" font-size="10" text-anchor="middle" font-weight="bold">${st}</text>
                 `).join('')}
             </svg>`
         }

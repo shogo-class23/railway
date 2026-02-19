@@ -141,38 +141,52 @@
                 "東西線": { stations: ["奥駅", "西駅", "本駅", "中央駅", "東駅"], interval: 3 },
                 "南北線": { stations: ["北駅", "新駅", "中央駅", "市駅", "南駅"], interval: 3 },
                 "空港線": { stations: ["空港駅", "丸台駅", "上駅", "中央駅", "公園前駅", "下駅", "大学前駅", "口駅"], interval: 3 },
-                "都市線": { stations: ["空港駅", "車庫駅", "北駅", "丸ヶ丘駅", "白駅", "中央駅", "市駅", "發駅"], intervals: [5, 5, 3, 3, 3, 3, 3] }
+                "都市線": { stations: ["空港駅", "車庫駅", "北駅", "丸ヶ丘駅", "白駅", "中央駅", "市駅", "發駅"], intervals: [5, 5, 3, 3, 3, 3, 3] },
+                "新線": { stations: ["發駅", "南駅", "南西駅", "下駅", "西前駅", "本駅", "白駅", "新駅", "上駅", "東駅", "東南駅", "区役所前駅", "發駅"], interval: 4 }
             },
-            status: ["東西線: 平常", "南北線: 遅延(5分)", "空港線: 平常", "都市線: 平常"],
+            status: ["東西線: 平常", "南北線: 遅延(5分)", "空港線: 平常", "都市線: 平常", "新線: 新規開業"],
             svg: `<svg class="route-map-svg" viewBox="0 0 800 550">
-                <line x1="50" y1="250" x2="650" y2="250" stroke="#2ecc71" stroke-width="10" />
-                <circle cx="50" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="35" y="280" font-size="12">奥駅</text>
-                <circle cx="200" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="185" y="280" font-size="12">西駅</text>
-                <circle cx="350" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="335" y="280" font-size="12">本駅</text>
-                <circle cx="500" cy="250" r="10" fill="white" stroke="#333" stroke-width="4" /><text x="515" y="265" font-size="14" font-weight="bold">中央駅</text>
-                <circle cx="650" cy="250" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="635" y="280" font-size="12">東駅</text>
-                <line x1="496" y1="50" x2="496" y2="500" stroke="#3498db" stroke-width="8" />
-                <circle cx="496" cy="50" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="465" y="45" font-size="12" font-weight="bold">北駅</text>
-                <circle cx="496" cy="150" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="155" font-size="12">新駅</text>
-                <circle cx="500" cy="380" r="8" fill="white" stroke="#333" stroke-width="3" /><text x="515" y="385" font-size="12" font-weight="bold">市駅</text>
-                <circle cx="496" cy="500" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="510" y="505" font-size="12">南駅</text>
-                <line x1="750" y1="50" x2="200" y2="500" stroke="#f39c12" stroke-width="8" opacity="0.8" />
+                <!-- 路線レイヤー -->
+                <ellipse cx="450" cy="300" rx="300" ry="200" fill="none" stroke="#e84393" stroke-width="8" opacity="0.4" /> <!-- 新線 -->
+                <line x1="50" y1="200" x2="750" y2="200" stroke="#2ecc71" stroke-width="10" /> <!-- 東西線 -->
+                
+                <!-- 南北線（少し左にオフセット） -->
+                <line x1="446" y1="50" x2="446" y2="500" stroke="#3498db" stroke-width="8" /> 
+                
+                <!-- 都市線（少し右にオフセットして並走を避ける） -->
+                <path d="M750 50 L600 75 L454 50 L375 88 L300 127 L454 200 L454 400 L600 473" fill="none" stroke="#9b59b6" stroke-width="6" opacity="0.7" /> 
+                
+                <path d="M750 50 L600 127 L450 200 L320 300 L190 400 L100 500" fill="none" stroke="#f39c12" stroke-width="8" opacity="0.8" /> <!-- 空港線 -->
+
+                <!-- 駅：新線（楕円上に配置） -->
+                <circle cx="446" cy="100" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="456" y="95" font-size="12">新駅</text>
+                <circle cx="600" cy="127" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="610" y="120" font-size="12">上駅</text>
+                <circle cx="710" cy="200" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="720" y="190" font-size="12">東駅</text>
+                <circle cx="750" cy="300" r="6" fill="white" stroke="#e84393" stroke-width="2" /><text x="760" y="305" font-size="12">東南駅</text>
+                <circle cx="710" cy="400" r="6" fill="white" stroke="#e84393" stroke-width="2" /><text x="720" y="415" font-size="12">区役所前駅</text>
+                <circle cx="600" cy="473" r="6" fill="white" stroke="#e84393" stroke-width="2" /><text x="610" y="490" font-size="12">發駅</text>
+                <circle cx="446" cy="500" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="456" y="520" font-size="12">南駅</text>
+                <circle cx="300" cy="473" r="6" fill="white" stroke="#e84393" stroke-width="2" /><text x="250" y="490" font-size="12">南西駅</text>
+                <circle cx="190" cy="400" r="6" fill="white" stroke="#e84393" stroke-width="2" /><text x="140" y="415" font-size="12">下駅</text>
+                <circle cx="150" cy="300" r="6" fill="white" stroke="#e84393" stroke-width="2" /><text x="100" y="305" font-size="12">西前駅</text>
+                <circle cx="190" cy="200" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="170" y="190" font-size="12">本駅</text>
+                <circle cx="300" cy="127" r="6" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="260" y="120" font-size="12">白駅</text>
+
+                <!-- その他の主要駅 -->
+                <circle cx="450" cy="200" r="10" fill="white" stroke="#333" stroke-width="4" /><text x="465" y="220" font-size="14" font-weight="bold">中央駅</text>
+                <circle cx="450" cy="400" r="8" fill="white" stroke="#333" stroke-width="3" /><text x="465" y="410" font-size="12" font-weight="bold">市駅</text>
+                <circle cx="450" cy="50" r="6" fill="white" stroke="#3498db" stroke-width="2" /><text x="420" y="45" font-size="12" font-weight="bold">北駅</text>
+                <circle cx="375" cy="88" r="4" fill="white" stroke="#9b59b6" stroke-width="1" /><text x="330" y="80" font-size="10">丸ヶ丘駅</text>
+                <circle cx="50" cy="200" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="35" y="225" font-size="12">奥駅</text>
+                <circle cx="120" cy="200" r="6" fill="white" stroke="#2ecc71" stroke-width="2" /><text x="105" y="225" font-size="12">西駅</text>
                 <circle cx="750" cy="50" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="710" y="45" font-size="12">空港駅</text>
-                <circle cx="675" cy="105" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="685" y="110" font-size="12">丸台駅</text>
-                <circle cx="600" cy="165" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="610" y="170" font-size="12">上駅</text>
-                <circle cx="425" cy="315" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="360" y="320" font-size="12">公園前駅</text>
-                <circle cx="350" cy="375" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="300" y="380" font-size="12">下駅</text>
-                <circle cx="275" cy="435" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="210" y="440" font-size="12">大学前駅</text>
-                <circle cx="200" cy="500" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="170" y="515" font-size="12">口駅</text>
-                <line x1="750" y1="50" x2="400" y2="50" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                <line x1="400" y1="50" x2="400" y2="180" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                <line x1="400" y1="180" x2="504" y2="250" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                <line x1="504" y1="250" x2="504" y2="380" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                <line x1="504" y1="380" x2="600" y2="480" stroke="#9b59b6" stroke-width="6" opacity="0.7" />
-                <circle cx="625" cy="50" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="40" font-size="11">車庫駅</text>
-                <circle cx="400" cy="100" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="345" y="105" font-size="11">丸ヶ丘駅</text>
-                <circle cx="400" cy="180" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="365" y="185" font-size="11">白駅</text>
-                <circle cx="600" cy="480" r="5" fill="white" stroke="#9b59b6" stroke-width="2" /><text x="615" y="485" font-size="11">發駅</text>
+                <circle cx="320" cy="300" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="330" y="305" font-size="12">公園前駅</text>
+                <circle cx="100" cy="500" r="6" fill="white" stroke="#f39c12" stroke-width="2" /><text x="70" y="515" font-size="12">口駅</text>
+
+                <!-- 補助駅 -->
+                <circle cx="675" cy="87" r="4" fill="white" stroke="#f39c12" stroke-width="1" /><text x="685" y="87" font-size="10">丸台駅</text>
+                <circle cx="145" cy="450" r="4" fill="white" stroke="#f39c12" stroke-width="1" /><text x="105" y="455" font-size="10">大学前駅</text>
+                <circle cx="600" cy="75" r="4" fill="white" stroke="#9b59b6" stroke-width="1" /><text x="610" y="75" font-size="10">車庫駅</text>
                 </svg>`
         }
     };

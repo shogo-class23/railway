@@ -143,10 +143,17 @@
 </div>
 
 <div id="portalScreen">
-    <div class="company-card" onclick="selectCompany('nerika')">
-        <h1>ねりか区営地下鉄</h1>
-        <p>東西線・南北線・空港線・都市線・新線・海岸線 総合案内</p>
-        <small>クリックして入場</small>
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+        <div class="company-card" onclick="selectCompany('nerika')">
+            <h1>ねりか区営地下鉄</h1>
+            <p>東西線・南北線・空港線・都市線・新線・海岸線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #3498db;" onclick="selectCompany('keihin')">
+            <h1>京浜日本鉄道</h1>
+            <p>北部線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
     </div>
 </div>
 
@@ -273,6 +280,24 @@
                 <circle cx="110" cy="40" r="6" fill="white" stroke="#00cec9" stroke-width="2" /><text x="110" y="30" font-size="10" text-anchor="middle">川駅</text>
                 <circle cx="60" cy="40" r="6" fill="white" stroke="#00cec9" stroke-width="2" /><text x="60" y="30" font-size="10" text-anchor="middle">海岸駅</text>
                 </svg>`
+        },
+        keihin: {
+            name: "京浜日本鉄道",
+            routes: {
+                "北部線": { 
+                    stations: ["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"],
+                    interval: 3 
+                }
+            },
+            status: ["北部線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 300">
+                <line x1="50" y1="150" x2="950" y2="150" stroke="#3498db" stroke-width="10" />
+                <text x="50" y="120" fill="#2980b9" font-size="16" font-weight="bold">北部線</text>
+                ${["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"].map((st, i) => `
+                    <circle cx="${50 + i * 50}" cy="150" r="6" fill="white" stroke="#333" stroke-width="2" />
+                    <text x="${50 + i * 50}" y="180" font-size="10" text-anchor="middle" transform="rotate(45, ${50 + i * 50}, 180)">${st}</text>
+                `).join('')}
+            </svg>`
         }
     };
 

@@ -1138,12 +1138,24 @@
                     return;
                 }
 
-                let html = possibleRoutes.map((res, idx) => renderRouteHtml(res, idx + 1)).join('');
+                // Calculate min values for tags
+                const minDur = Math.min(...possibleRoutes.map(r => r.dur));
+                const minTransfers = Math.min(...possibleRoutes.map(r => r.transfers));
+                const minCost = Math.min(...possibleRoutes.map(r => Math.floor(100 + (r.dur/3)*50)));
+
+                let html = possibleRoutes.map((res, idx) => {
+                    const isFast = res.dur === minDur;
+                    const isEasy = res.transfers === minTransfers;
+                    const cost = Math.floor(100 + (res.dur/3)*50);
+                    const isCheap = cost === minCost;
+                    return renderRouteHtml(res, idx + 1, { isFast, isEasy, isCheap });
+                }).join('');
+                
                 html += `<div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>`;
                 foundResultsDiv.innerHTML = html;
             }
 
-            function renderRouteHtml(res, idx) {
+            function renderRouteHtml(res, idx, tags) {
                 const type = document.querySelector('input[name="stype"]:checked').value;
                 const formatT = (m) => { 
                     if (isNaN(m)) return "--:--";
@@ -1170,6 +1182,18 @@
                 }
                 const cost = Math.floor(100 + (safeDur/3)*50);
                 
+                const formatDur = (m) => {
+                    if (m < 60) return `${m}分`;
+                    const h = Math.floor(m / 60);
+                    const rm = m % 60;
+                    return rm > 0 ? `${h}時間${rm}分` : `${h}時間`;
+                };
+
+                let tagHtml = "";
+                if (tags && tags.isFast) tagHtml += `<span class="spec-tag tag-fast">早</span>`;
+                if (tags && tags.isEasy) tagHtml += `<span class="spec-tag tag-easy">楽</span>`;
+                if (tags && tags.isCheap) tagHtml += `<span class="spec-tag tag-cheap">安</span>`;
+
                 const stepHtml = res.steps.map(s => {
                     let timeText = "";
                     if (s.role === 'transfer') {
@@ -1187,7 +1211,7 @@
                 }).join('');
 
                 return `<div class="route-result-item">
-                    <div class="route-header"><span><span class="route-tag-id">経路 ${idx}</span><strong>${res.desc}</strong></span><div style="display:flex; align-items:center; gap:10px;"><span style="color:#2980b9; font-weight:bold;">${res.dur}分 / ${cost}円</span><button onclick="buyTicket('${from}', '${to}', ${cost})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div>
+                    <div class="route-header"><span><span class="route-tag-id">経路 ${idx}</span><strong>${res.desc}</strong>${tagHtml}</span><div style="display:flex; align-items:center; gap:10px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(safeDur)} / ${cost}円</span><button onclick="buyTicket('${document.getElementById('fromSt').value}', '${document.getElementById('toSt').value}', ${cost})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div>
                     <div class="route-box"><span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span><div class="vertical-station-list">${stepHtml}</div></div>
                 </div>`;
             }

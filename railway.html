@@ -111,6 +111,12 @@
         .line-badge.山手線 { background: #2ecc71; }
         .line-badge.中央線 { background: #e67e22; }
         .line-badge.東海道本線 { background: #f39c12; }
+        .line-badge.山陽・九州新幹線 { background: #3498db; }
+        .line-badge.姫新線 { background: #f1c40f; }
+        .line-badge.上越新幹線 { background: #2ecc71; }
+        .line-badge.名鉄線 { background: #e84118; }
+        .line-badge.天竜浜名湖鉄道 { background: #27ae60; }
+        .line-badge.大井川鉄道 { background: #d35400; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -181,7 +187,12 @@
         </div>
         <div class="company-card" style="border-color: #1e3799;" onclick="selectCompany('tokai')">
             <h1>東海日本鉄道</h1>
-            <p>静岡線・空港線・愛知線・名安線</p>
+            <p>静岡・愛知・名安・各自社線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #27ae60;" onclick="selectCompany('private_railways')">
+            <h1>私鉄線</h1>
+            <p>名鉄・天浜・大井川線 総合案内</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #0984e3;" onclick="selectCompany('kansai')">
@@ -199,9 +210,9 @@
             <p>中山道・中部縦貫・西九州急幹線 総合案内</p>
             <small>クリックして入場</small>
         </div>
-        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('jr_east')">
-            <h1 style="color: #2ecc71;">JR東日本</h1>
-            <p>山手・中央・東海道・各線 総合案内</p>
+        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('jr_lines')">
+            <h1 style="color: #2ecc71;">JR線</h1>
+            <p>山手・中央・新幹線・姫新・各線 総合案内</p>
             <small>実在路線のデモ接続</small>
         </div>
         <div class="company-card" style="border-color: #2c3e50; background: #fff; color: #2c3e50;" onclick="selectCompany('all')">
@@ -451,7 +462,7 @@
             name: "東海日本鉄道",
             routes: {
                 "静岡線": {
-                    stations: ["掛川", "満水", "西方", "北菊川", "富田"],
+                    stations: ["掛川", "金谷", "満水", "西方", "北菊川", "富田"],
                     interval: 10
                 },
                 "東海空港線": {
@@ -471,12 +482,12 @@
                     interval: 10
                 }
             },
-            status: ["静岡線: 平常", "空港線: 平常", "愛知線: 平常", "名安線: 平常"],
+            status: ["東海日本鉄道: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 1400 800">
                 <!-- 静岡線・空港線 -->
                 <line x1="1000" y1="50" x2="1300" y2="50" stroke="#1e3799" stroke-width="8" />
                 <line x1="1300" y1="50" x2="1300" y2="150" stroke="#4a69bd" stroke-width="6" />
-                ${["掛川", "満水", "西方", "北菊川", "富田"].map((st, i) => `<circle cx="${1000 + i * 75}" cy="50" r="8" fill="white" stroke="#1e3799" stroke-width="3" /><text x="${1000 + i * 75}" y="${i%2===0?85:105}" font-size="15" text-anchor="middle" font-weight="bold">${st}</text>`).join('')}
+                ${["掛川", "金谷", "満水", "西方", "北菊川", "富田"].map((st, i) => `<circle cx="${1000 + i * 75}" cy="50" r="8" fill="white" stroke="#1e3799" stroke-width="3" /><text x="${1000 + i * 75}" y="${i%2===0?85:105}" font-size="15" text-anchor="middle" font-weight="bold">${st}</text>`).join('')}
                 ${["牧之原", "静岡空港"].map((st, i) => `<circle cx="1300" cy="${80 + i * 40}" r="8" fill="white" stroke="#4a69bd" stroke-width="3" /><text x="1315" y="${85 + i * 40}" font-size="15" font-weight="bold">${st}</text>`).join('')}
 
                 <!-- 愛知線 -->
@@ -514,6 +525,28 @@
                     `;
                 }).join('')}
             </svg>`
+        },
+        private_railways: {
+            name: "私鉄線",
+            routes: {
+                "名鉄線": {
+                    stations: ["新安城", "蒲郡"],
+                    interval: 15,
+                    unit_dur: 67
+                },
+                "天竜浜名湖鉄道": {
+                    stations: ["新所原", "掛川"],
+                    interval: 30,
+                    unit_dur: 130
+                },
+                "大井川鉄道": {
+                    stations: ["金谷", "千頭"],
+                    interval: 60,
+                    unit_dur: 90
+                }
+            },
+            status: ["私鉄各線: 平常"],
+            svg: `<p style="text-align:center; padding:20px;">私鉄路線の図面は準備中です。</p>`
         },
         kansai: {
             name: "関西日本鉄道",
@@ -563,8 +596,8 @@
                 <text x="1440" y="300" font-size="16" font-weight="bold" fill="#666" text-anchor="end">梅田エリア乗換</text>
             </svg>`
         },
-        jr_east: {
-            name: "JR東日本",
+        jr_lines: {
+            name: "JR線",
             routes: {
                 "山手線": {
                     stations: ["上野", "日暮里", "田端", "池袋", "新宿", "渋谷", "品川", "東京", "秋葉原", "上野"],
@@ -577,11 +610,26 @@
                 "東海道本線": {
                     stations: ["東京", "品川", "川崎", "横浜", "大船", "藤沢", "茅ヶ崎", "平塚", "小田原", "熱海"],
                     interval: 10
+                },
+                "山陽・九州新幹線": {
+                    stations: ["姫路", "小倉", "熊本", "出水"],
+                    interval: 30,
+                    intervals: [118, 50, 32]
+                },
+                "姫新線": {
+                    stations: ["姫路", "佐用"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "上越新幹線": {
+                    stations: ["長岡", "新潟"],
+                    interval: 40,
+                    intervals: [22]
                 }
             },
-            status: ["山手線: 平常", "中央線: 平常", "東海道本線: 平常"],
+            status: ["山手線: 平常", "中央線: 平常", "東海道本線: 平常", "新幹線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 600 600">
-                <circle cx="300" cy="300" r="200" fill="none" stroke="#2ecc71" stroke-width="10" />
+                <circle cx="300" cy="300" r="200" fill="none" stroke="#2ecc71" stroke-width="10" />      
                 <text x="300" y="80" fill="#27ae60" font-size="24" font-weight="bold" text-anchor="middle">山手線</text>
                 <line x1="300" y1="300" x2="100" y2="300" stroke="#e67e22" stroke-width="10" />
                 <text x="120" y="280" fill="#d35400" font-size="20" font-weight="bold">中央線</text>
@@ -1117,6 +1165,24 @@
 
         finalHtml += `<div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>`;
         document.getElementById('transferResults').innerHTML = finalHtml;
+    }
+
+    function buyTicket(from, to, price) {
+        const modal = document.createElement('div');
+        modal.id = 'ticketModal';
+        modal.innerHTML = `
+            <div class="ticket">
+                <div class="ticket-header">日本鉄道 旅客鉄道株式会社</div>
+                <div class="ticket-main">
+                    <div class="ticket-st">${from} から</div>
+                    <div class="ticket-price">${to} まで</div>
+                    <div style="font-size: 2rem; margin: 10px 0;">${price}円</div>
+                </div>
+                <div class="ticket-footer">${new Date().toLocaleDateString()} 発行</div>
+                <button class="btn-close-ticket" onclick="document.body.removeChild(this.parentElement.parentElement)">閉じる</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
     }
 </script>
 </body>

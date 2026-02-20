@@ -95,6 +95,11 @@
         .line-badge.上野線 { background: #e67e22; }
         .line-badge.京浜日本本線 { background: #c0392b; }
         .line-badge.芋窪線 { background: #27ae60; }
+        .line-badge.静岡線 { background: #1e3799; }
+        .line-badge.東海空港線 { background: #4a69bd; }
+        .line-badge.愛知線 { background: #e84118; }
+        .line-badge.名安線 { background: #f0932b; }
+        .line-badge.桜通線 { background: #EA3223; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -166,6 +171,11 @@
         <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('motegi')">
             <h1>茂木日本鉄道</h1>
             <p>茂木線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #1e3799;" onclick="selectCompany('tokai')">
+            <h1>東海日本鉄道</h1>
+            <p>静岡線・空港線 総合案内</p>
             <small>クリックして入場</small>
         </div>
     </div>
@@ -393,6 +403,72 @@
                     <circle cx="${100 + i * 130}" cy="150" r="8" fill="white" stroke="#333" stroke-width="3" />
                     <text x="${100 + i * 130}" y="${st.length > 8 ? 190 : 180}" font-size="10" text-anchor="middle" font-weight="bold">${st}</text>
                 `).join('')}
+            </svg>`
+        },
+        tokai: {
+            name: "東海日本鉄道",
+            routes: {
+                "静岡線": {
+                    stations: ["掛川", "満水", "西方", "北菊川", "富田"],
+                    interval: 10
+                },
+                "東海空港線": {
+                    stations: ["富田", "牧之原", "静岡空港"],
+                    interval: 15
+                },
+                "愛知線": {
+                    stations: ["新所原", "東二川", "二川", "山田町", "豊橋", "豊川", "新小坂井", "新小田渕", "国府", "御油", "赤坂", "南長沢", "北蒲郡", "中蒲郡", "蒲郡"],
+                    interval: 15
+                },
+                "名安線": {
+                    stations: ["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"],
+                    interval: 15
+                },
+                "桜通線": {
+                    stations: ["徳重", "神沢", "相生山", "鳴子北", "野並", "鶴里", "桜本町", "新瑞橋", "瑞穂運動場西", "瑞穂区役所", "桜山", "御器所", "吹上", "今池", "車道", "高岳", "久屋大通", "丸の内", "国際センター", "名古屋", "太閤通"],
+                    interval: 10
+                }
+            },
+            status: ["静岡線: 平常", "空港線: 平常", "愛知線: 平常", "名安線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1400 600">
+                <!-- 静岡線・空港線 -->
+                <line x1="1000" y1="50" x2="1300" y2="50" stroke="#1e3799" stroke-width="8" />
+                <line x1="1300" y1="50" x2="1300" y2="150" stroke="#4a69bd" stroke-width="6" />
+                ${["掛川", "満水", "西方", "北菊川", "富田"].map((st, i) => `<circle cx="${1000 + i * 75}" cy="50" r="5" fill="white" stroke="#1e3799" stroke-width="2" /><text x="${1000 + i * 75}" y="70" font-size="10" text-anchor="middle">${st}</text>`).join('')}
+                ${["牧之原", "静岡空港"].map((st, i) => `<circle cx="1300" cy="${80 + i * 40}" r="5" fill="white" stroke="#4a69bd" stroke-width="2" /><text x="1310" y="${85 + i * 40}" font-size="10">${st}</text>`).join('')}
+
+                <!-- 愛知線 -->
+                <path d="M1300 300 L600 300" fill="none" stroke="#e84118" stroke-width="10" />
+                <text x="1300" y="280" fill="#e84118" font-size="16" font-weight="bold" text-anchor="end">愛知線</text>
+                ${["新所原", "東二川", "二川", "山田町", "豊橋", "豊川", "新小坂井", "新小田渕", "国府", "御油", "赤坂", "南長沢", "北蒲郡", "中蒲郡", "蒲郡"].reverse().map((st, i) => `
+                    <circle cx="${600 + i * 50}" cy="300" r="6" fill="white" stroke="#333" stroke-width="2" />
+                    <text x="${600 + i * 50}" y="325" font-size="9" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${600 + i * 50}, 325)">${st}</text>
+                `).join('')}
+
+                <!-- 名安線 (蒲郡との間を空ける) -->
+                <path d="M538 300 L50 300" fill="none" stroke="#f0932b" stroke-width="10" />
+                <text x="50" y="280" fill="#f0932b" font-size="16" font-weight="bold">名安線</text>
+                ${["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"].reverse().map((st, i) => {
+                    const x = 50 + i * 61;
+                    return `
+                        <circle cx="${x}" cy="300" r="6" fill="white" stroke="#333" stroke-width="2" />
+                        <text x="${x}" y="${i%2===0?325:345}" font-size="9" text-anchor="middle" font-weight="bold">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 桜通線 (他社線) -->
+                <path d="M50 300 L50 550 L1200 550" fill="none" stroke="#EA3223" stroke-width="2" opacity="0.6" />
+                <text x="1200" y="535" fill="#EA3223" font-size="14" font-weight="bold" text-anchor="end">名古屋市営地下鉄 桜通線 (他社線)</text>
+                ${["徳重", "神沢", "相生山", "鳴子北", "野並", "鶴里", "桜本町", "新瑞橋", "瑞穂運動場西", "瑞穂区役所", "桜山", "御器所", "吹上", "今池", "車道", "高岳", "久屋大通", "丸の内", "国際センター", "名古屋", "太閤通"].map((st, i) => {
+                    let x, y;
+                    if (i === 0) { x = 50; y = 300; }
+                    else if (i < 6) { x = 50; y = 300 + i * 40; }
+                    else { x = 50 + (i - 5) * 55; y = 550; }
+                    return `
+                        <circle cx="${x}" cy="${y}" r="3" fill="white" stroke="#EA3223" stroke-width="1" />
+                        <text x="${x + 8}" y="${y + 4}" font-size="8">${st}</text>
+                    `;
+                }).join('')}
             </svg>`
         }
     };

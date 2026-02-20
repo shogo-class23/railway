@@ -106,6 +106,11 @@
         .line-badge.新潟線 { background: #0fbcf9; }
         .line-badge.中山道急幹線 { background: #d4af37; }
         .line-badge.中部縦貫急幹線 { background: #d4af37; }
+        .line-badge.金沢支線 { background: #d4af37; }
+        .line-badge.西九州急幹線 { background: #d4af37; }
+        .line-badge.山手線 { background: #2ecc71; }
+        .line-badge.中央線 { background: #e67e22; }
+        .line-badge.東海道本線 { background: #f39c12; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -159,11 +164,6 @@
 
 <div id="portalScreen">
     <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; padding: 20px;">
-        <div class="company-card" onclick="selectCompany('nerika')">
-            <h1>ねりか区営地下鉄</h1>
-            <p>東西・南北・空港・都市・新線・海岸線</p>
-            <small>クリックして入場</small>
-        </div>
         <div class="company-card" style="border-color: #3498db;" onclick="selectCompany('keihin')">
             <h1>京浜日本鉄道</h1>
             <p>北部・上野・本線・芋窪線</p>
@@ -196,8 +196,24 @@
         </div>
         <div class="company-card" style="border-color: #d4af37;" onclick="selectCompany('kyukansen')">
             <h1>日本急幹線</h1>
-            <p>中山道・中部縦貫急幹線 総合案内</p>
+            <p>中山道・中部縦貫・西九州急幹線 総合案内</p>
             <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('jr_east')">
+            <h1 style="color: #2ecc71;">JR東日本</h1>
+            <p>山手・中央・東海道・各線 総合案内</p>
+            <small>実在路線のデモ接続</small>
+        </div>
+        <div class="company-card" style="border-color: #2c3e50; background: #fff; color: #2c3e50;" onclick="selectCompany('all')">
+            <h1 style="color: #2c3e50;">全路線 総合案内</h1>
+            <p>日本全国 ネットワーク検索</p>
+            <small>(ねりか区営地下鉄を除く全社)</small>
+        </div>
+        <!-- 開発用サンプル -->
+        <div class="company-card" style="border-color: #7f8c8d; opacity: 0.6; transform: scale(0.9);" onclick="selectCompany('nerika')">
+            <h1 style="font-size: 1.2rem; color: #ccc;">ねりか区営地下鉄</h1>
+            <p style="font-size: 0.8rem;">(開発用サンプル)</p>
+            <small>東西・南北・空港・都市・新線・海岸線</small>
         </div>
     </div>
 </div>
@@ -339,42 +355,46 @@
                 }
             },
             status: ["北部線: 平常", "上野線: 平常", "京浜日本本線: 平常", "芋窪線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="0 0 1100 1200">
+            svg: `<svg class="route-map-svg" viewBox="0 0 1100 1800">
                 <!-- 京浜日本本線 (Red) -->
-                <line x1="500" y1="50" x2="500" y2="1150" stroke="#c0392b" stroke-width="12" opacity="0.8" />
+                <line x1="500" y1="50" x2="500" y2="1750" stroke="#c0392b" stroke-width="12" opacity="0.8" />
                 <text x="525" y="70" fill="#c0392b" font-size="24" font-weight="bold">京浜日本本線</text>
 
                 <!-- 北部線 (Blue) -->
-                <line x1="150" y1="350" x2="1050" y2="350" stroke="#3498db" stroke-width="12" />
-                <text x="150" y="310" fill="#2980b9" font-size="20" font-weight="bold">北部線</text>
+                <line x1="50" y1="500" x2="1050" y2="500" stroke="#3498db" stroke-width="12" />
+                <text x="50" y="460" fill="#2980b9" font-size="20" font-weight="bold">北部線</text>
                 
                 <!-- 上野線 (Orange) -->
-                <path d="M250 600 L250 500 L350 400 L500 375 L650 350 L800 350 L800 630" fill="none" stroke="#e67e22" stroke-width="10" opacity="0.8" />
-                <text x="830" y="635" fill="#d35400" font-size="20" font-weight="bold">上野線</text>
+                <path d="M250 800 L250 650 L350 550 L500 525 L650 500 L850 500 L850 850" fill="none" stroke="#e67e22" stroke-width="10" opacity="0.8" />
+                <text x="880" y="860" fill="#d35400" font-size="20" font-weight="bold">上野線</text>
 
                 <!-- 芋窪線 (Green) -->
-                <line x1="100" y1="450" x2="100" y2="650" stroke="#27ae60" stroke-width="8" opacity="0.8" />
-                <text x="80" y="430" fill="#27ae60" font-size="18" font-weight="bold">芋窪線</text>
+                <line x1="100" y1="650" x2="100" y2="850" stroke="#27ae60" stroke-width="8" opacity="0.8" />
+                <text x="80" y="630" fill="#27ae60" font-size="18" font-weight="bold">芋窪線</text>
 
-                <!-- 本線の駅 -->
-                ${["大宮", "西与野", "与野公園", "桜浦和", "町谷", "西浦和", "西戸田", "美女木", "笹目", "南戸田", "西高島平", "徳丸", "新赤塚", "平和台", "練馬春日町", "谷原", "練馬高野台", "南田中", "井荻", "桃井", "荻窪", "宮前", "高井戸", "南高井戸", "八幡山", "希望丘", "千歳船橋", "砧", "新用賀", "瀬田", "上野毛", "下野毛", "宮内", "南等々力", "武蔵小杉", "沼部", "御嶽山", "久が原", "西馬込", "南久が原", "徳持", "幸", "川崎口", "鶴見川", "三ッ池公園", "獅子ヶ谷", "新大倉山", "新横浜", "三枚町", "三ツ沢公園", "横浜"].map((st, i) => `
-                    <circle cx="500" cy="${50 + i * 22}" r="6" fill="white" stroke="#c0392b" stroke-width="2.5" />
-                    <text x="${i % 2 === 0 ? 515 : 485}" y="${55 + i * 22}" font-size="10" font-weight="bold" text-anchor="${i % 2 === 0 ? 'start' : 'end'}">${st}</text>
-                `).join('')}
-
-                <!-- 北部線の駅 -->
-                ${["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"].map((st, i) => {
-                    if (st === "平和台") return ''; 
-                    const x = 150 + i * 50;
+                <!-- 本線の駅 (間隔を32pxに拡大) -->
+                ${["大宮", "西与野", "与野公園", "桜浦和", "町谷", "西浦和", "西戸田", "美女木", "笹目", "南戸田", "西高島平", "徳丸", "新赤塚", "平和台", "練馬春日町", "谷原", "練馬高野台", "南田中", "井荻", "桃井", "荻窪", "宮前", "高井戸", "南高井戸", "八幡山", "希望丘", "千歳船橋", "砧", "新用賀", "瀬田", "上野毛", "下野毛", "宮内", "南等々力", "武蔵小杉", "沼部", "御嶽山", "久が原", "西馬込", "南久が原", "徳持", "幸", "川崎口", "鶴見川", "三ッ池公園", "獅子ヶ谷", "新大倉山", "新横浜", "三枚町", "三ツ沢公園", "横浜"].map((st, i) => {
+                    const y = 50 + i * 34;
                     return `
-                        <circle cx="${x}" cy="350" r="8" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x}" y="330" font-size="13" font-weight="bold" text-anchor="middle" transform="rotate(-45, ${x}, 330)">${st}</text>
+                        <circle cx="500" cy="${y}" r="7" fill="white" stroke="#c0392b" stroke-width="2.5" />
+                        <text x="${i % 2 === 0 ? 515 : 485}" y="${y + 5}" font-size="12" font-weight="bold" text-anchor="${i % 2 === 0 ? 'start' : 'end'}">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 北部線の駅 (間隔を広げ、平和台を本線に合わせる) -->
+                ${["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "鹿浜", "江北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"].map((st, i) => {
+                    const x = 50 + i * 55;
+                    const y = 500;
+                    if (st === "平和台") return ''; 
+                    return `
+                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${y - 20}" font-size="12" font-weight="bold" text-anchor="start" transform="rotate(-45, ${x}, ${y - 20})">${st}</text>
                     `;
                 }).join('')}
 
                 <!-- 芋窪線の駅 -->
                 ${[
-                    {name: "西武球場前", x: 100, y: 450}, {name: "芋窪", x: 100, y: 550}, {name: "上北台", x: 100, y: 650}
+                    {name: "西武球場前", x: 100, y: 650}, {name: "芋窪", x: 100, y: 750}, {name: "上北台", x: 100, y: 850}
                 ].map(st => `
                     <circle cx="${st.x}" cy="${st.y}" r="8" fill="white" stroke="#27ae60" stroke-width="3" />
                     <text x="${st.x + 20}" y="${st.y + 8}" font-size="14" font-weight="bold">${st.name}</text>
@@ -382,11 +402,11 @@
 
                 <!-- 上野線の駅 -->
                 ${[
-                    {name: "池袋", x: 250, y: 600}, {name: "上池袋", x: 250, y: 560}, {name: "西巣鴨", x: 250, y: 520}, {name: "王子", x: 350, y: 400}, {name: "堀船", x: 500, y: 375},
-                    {name: "梅田", x: 800, y: 390}, {name: "北千住", x: 800, y: 430}, {name: "千住大橋", x: 800, y: 470}, {name: "南千住", x: 800, y: 510}, {name: "浅草", x: 800, y: 550}, {name: "北上野", x: 800, y: 590}, {name: "上野", x: 800, y: 630}
+                    {name: "池袋", x: 250, y: 800}, {name: "上池袋", x: 250, y: 760}, {name: "西巣鴨", x: 250, y: 720}, {name: "王子", x: 350, y: 550}, {name: "堀船", x: 500, y: 525},
+                    {name: "梅田", x: 850, y: 550}, {name: "北千住", x: 850, y: 600}, {name: "千住大橋", x: 850, y: 650}, {name: "南千住", x: 850, y: 700}, {name: "浅草", x: 850, y: 750}, {name: "北上野", x: 850, y: 800}, {name: "上野", x: 850, y: 850}
                 ].map(st => `
                     <circle cx="${st.x}" cy="${st.y}" r="7" fill="white" stroke="#e67e22" stroke-width="2.5" />
-                    <text x="${st.x - 15}" y="${st.y + 5}" font-size="12" font-weight="bold" text-anchor="end">${st.name}</text>
+                    <text x="${st.x + 15}" y="${st.y + 5}" font-size="12" font-weight="bold" text-anchor="start">${st.name}</text>
                 `).join('')}
             </svg>`
         },
@@ -395,7 +415,8 @@
             routes: {
                 "千葉日本線": {
                     stations: ["千葉", "長沼", "新勝田台", "米本", "小室", "取手"],
-                    interval: 5
+                    interval: 15,
+                    unit_dur: 5
                 }
             },
             status: ["千葉日本線: 平常"],
@@ -507,7 +528,8 @@
                 },
                 "播磨線": {
                     stations: ["佐用", "宍粟山崎", "夢前", "新福崎", "北条町"],
-                    interval: 15
+                    interval: 15,
+                    unit_dur: 10
                 }
             },
             status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常"],
@@ -541,6 +563,35 @@
                 <text x="1440" y="300" font-size="16" font-weight="bold" fill="#666" text-anchor="end">梅田エリア乗換</text>
             </svg>`
         },
+        jr_east: {
+            name: "JR東日本",
+            routes: {
+                "山手線": {
+                    stations: ["上野", "日暮里", "田端", "池袋", "新宿", "渋谷", "品川", "東京", "秋葉原", "上野"],
+                    interval: 5
+                },
+                "中央線": {
+                    stations: ["東京", "神田", "御茶ノ水", "四ツ谷", "新宿", "中野", "荻窪", "吉祥寺", "三鷹", "国分寺", "立川", "八王子"],
+                    interval: 5
+                },
+                "東海道本線": {
+                    stations: ["東京", "品川", "川崎", "横浜", "大船", "藤沢", "茅ヶ崎", "平塚", "小田原", "熱海"],
+                    interval: 10
+                }
+            },
+            status: ["山手線: 平常", "中央線: 平常", "東海道本線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 600 600">
+                <circle cx="300" cy="300" r="200" fill="none" stroke="#2ecc71" stroke-width="10" />
+                <text x="300" y="80" fill="#27ae60" font-size="24" font-weight="bold" text-anchor="middle">山手線</text>
+                <line x1="300" y1="300" x2="100" y2="300" stroke="#e67e22" stroke-width="10" />
+                <text x="120" y="280" fill="#d35400" font-size="20" font-weight="bold">中央線</text>
+                <line x1="300" y1="500" x2="300" y2="580" stroke="#f39c12" stroke-width="10" />
+                <text x="320" y="560" fill="#d35400" font-size="20" font-weight="bold">東海道本線</text>
+                ${[
+                    {name:"東京", x:473, y:400}, {name:"品川", x:300, y:500}, {name:"新宿", x:100, y:300}, {name:"池袋", x:127, y:200}, {name:"上野", x:300, y:100}
+                ].map(st => `<circle cx="${st.x}" cy="${st.y}" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="${st.x+15}" y="${st.y+5}" font-size="14" font-weight="bold">${st.name}</text>`).join('')}
+            </svg>`
+        },
         hokuriku: {
             name: "北陸日本鉄道",
             routes: {
@@ -564,14 +615,26 @@
             routes: {
                 "中山道急幹線": {
                     stations: ["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"],
-                    interval: 20
+                    interval: 15,
+                    unit_dur: 30
                 },
                 "中部縦貫急幹線": {
                     stations: ["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"],
-                    interval: 20
+                    interval: 15,
+                    unit_dur: 30
+                },
+                "金沢支線": {
+                    stations: ["高山", "白川", "福光", "金沢"],
+                    interval: 15,
+                    unit_dur: 30
+                },
+                "西九州急幹線": {
+                    stations: ["熊本", "島原", "口之津", "天草空港", "長島", "出水"],
+                    interval: 15,
+                    unit_dur: 30
                 }
             },
-            status: ["中山道急幹線: 平常", "中部縦貫急幹線: 平常"],
+            status: ["中山道急幹線: 平常", "中部縦貫急幹線: 平常", "金沢支線: 平常", "西九州急幹線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 1600 1200">
                 <!-- 中山道急幹線 (水平) -->
                 <line x1="50" y1="600" x2="1550" y2="600" stroke="#d4af37" stroke-width="12" opacity="0.8" />
@@ -579,9 +642,36 @@
                 ${["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"].map((st, i) => {
                     const x = 50 + i * 88;
                     const y = 600;
+                    const isBelow = (i < 11 ? i % 2 === 0 : i % 2 !== 0);
+                    const textY = isBelow ? y + 50 : y - 35;
                     return `
-                        <circle cx="${x}" cy="${y}" r="${st==='松本'?16:10}" fill="white" stroke="#333" stroke-width="4" />
-                        <text x="${x}" y="${i % 2 === 0 ? y + 50 : y - 35}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${i % 2 === 0 ? y + 50 : y - 35})">${st}</text>
+                        <circle cx="${x}" cy="${y}" r="${(st==='松本'||st==='高山')?16:10}" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x}" y="${textY}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${textY})">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 金沢支線 (垂直) -->
+                <line x1="1018" y1="600" x2="1018" y2="360" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <text x="1040" y="340" fill="#d4af37" font-size="28" font-weight="bold">金沢支線</text>
+                ${["高山", "白川", "福光", "金沢"].map((st, i) => {
+                    if (st === "高山") return '';
+                    const x = 1018;
+                    const y = 600 - i * 80;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x + 25}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 西九州急幹線 (左下水平) -->
+                <line x1="50" y1="1000" x2="650" y2="1000" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <text x="50" y="940" fill="#d4af37" font-size="32" font-weight="bold">西九州急幹線</text>
+                ${["熊本", "島原", "口之津", "天草空港", "長島", "出水"].map((st, i) => {
+                    const x = 50 + i * 120;
+                    const y = 1000;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x}" y="${y + 50}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${y + 50})">${st}</text>
                     `;
                 }).join('')}
 
@@ -623,12 +713,25 @@
     hs.value = 12;
 
     function selectCompany(id) {
-        curComp = companies[id];
+        if (id === 'all') {
+            curComp = {
+                name: "全路線 総合案内 (ねりか除く)",
+                routes: {},
+                status: []
+            };
+            for (const [cid, cdata] of Object.entries(companies)) {
+                if (cid === 'nerika') continue;
+                Object.assign(curComp.routes, cdata.routes);
+                curComp.status.push(...cdata.status);
+            }
+        } else {
+            curComp = companies[id];
+        }
         document.getElementById('portalScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('appTitle').innerText = curComp.name;
         document.getElementById('statusList').innerHTML = curComp.status.map(s => `<div style="padding:10px; border-left:5px solid var(--secondary); background:#f9f9f9; margin-bottom:5px;">${s}</div>`).join('');
-        document.getElementById('mapContainer').innerHTML = curComp.svg;
+        document.getElementById('mapContainer').innerHTML = curComp.svg || '<p style="text-align:center; padding:20px;">全路線図は個別の会社ページでご確認ください。</p>';
         
         // Generate Legend
         document.getElementById('mapLegend').innerHTML = Object.keys(curComp.routes).map(line => `<span class="line-badge ${line}">${line}</span>`).join('');
@@ -730,7 +833,7 @@
         }
         let d = Math.abs(s - e);
         if (isLoop) { d = Math.min(d, (n - 1) - d); }
-        return d * (data.interval || 3);
+        return d * (data.unit_dur || data.interval || 3);
     }
 
     function getMid(data, sIdx, eIdx, svcStops) {
@@ -784,112 +887,149 @@
     function search() {
         const from = document.getElementById('fromSt').value, to = document.getElementById('toSt').value, via = document.getElementById('viaSt').value;
         if (!from || !to) return alert("駅名を入力してください");
+
+        const getSvcs = (d) => d.services || [{ name: "各駅停車", stops: d.stations, offset: 0 }];
+        const allRoutes = [];
+        for (const [lineName, data] of Object.entries(curComp.routes)) {
+            for (const svc of getSvcs(data)) {
+                allRoutes.push({ lineName, data, svc });
+            }
+        }
+
+        // 徒歩連絡
+        const walkPairs = [["大阪梅田", "南梅田", 30]];
+
+        // BFS-based search for multiple transfers
+        let queue = [{
+            currSt: from,
+            dur: 0,
+            transfers: 0,
+            steps: [],
+            visitedLines: new Set(),
+            visitedStations: new Set([from])
+        }];
         
         const possibleRoutes = [];
-        const getSvcs = (d) => d.services || [{ name: "各駅停車", stops: d.stations, offset: 0 }];
+        const maxTransfers = 6; // Increase to 6 for long-distance across companies
 
-        for (const [line, data] of Object.entries(curComp.routes)) {
-            for (const svc of getSvcs(data)) {
-                if (svc.stops.includes(from) && svc.stops.includes(to)) {
-                    const fI = data.stations.indexOf(from), tI = data.stations.indexOf(to);
-                    const dur = calcD(data, fI, tI);
-                    const durFromTerm = calcD(data, 0, fI);
-                    const durToTerm = calcD(data, 0, tI);
-                    possibleRoutes.push({
-                        dur, transfers: 0, svc, durFromTerm, durToTerm,
-                        steps: [
-                            {role:"boarding", lineName: `${svc.name} (${line})`, name:from, type:"boarding-station", timeOffset: 0},
-                            ...getMid(data, fI, tI, svc.stops),
-                            {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: dur}
-                        ],
-                        desc: `${svc.name} 直通`
+        while (queue.length > 0) {
+            const path = queue.shift();
+            if (path.transfers > maxTransfers) continue;
+            if (possibleRoutes.length >= 10 && path.dur > possibleRoutes[0].dur * 2) continue; // Pruning
+
+            // Try all lines passing through current station
+            for (const { lineName, data, svc } of allRoutes) {
+                if (path.visitedLines.has(lineName)) continue;
+                if (!svc.stops.includes(path.currSt)) continue;
+
+                const fromIdx = data.stations.indexOf(path.currSt);
+                
+                // Optimized: only look for target or transfer points to other lines
+                for (const targetSt of svc.stops) {
+                    if (targetSt === path.currSt) continue;
+                    if (path.visitedStations.has(targetSt)) continue;
+
+                    const toIdx = data.stations.indexOf(targetSt);
+                    const legDur = calcD(data, fromIdx, toIdx);
+                    
+                    const newSteps = [...path.steps];
+                    if (newSteps.length > 0 && newSteps[newSteps.length - 1].type === "via-station") {
+                        const prev = newSteps[newSteps.length - 1];
+                        prev.lineName = `${svc.name} (${lineName})`;
+                        prev.departureOffset = path.dur + 5;
+                    }
+
+                    const currentLegSteps = [
+                        {
+                            role: path.steps.length === 0 ? "boarding" : "transfer-info",
+                            lineName: `${svc.name} (${lineName})`,
+                            name: path.currSt,
+                            type: path.steps.length === 0 ? "boarding-station" : "info-only",
+                            timeOffset: path.dur
+                        },
+                        ...getMid(data, fromIdx, toIdx, svc.stops).map(s => ({...s, timeOffset: s.timeOffset + path.dur})),
+                    ];
+
+                    const totalDur = path.dur + legDur;
+                    const finalSteps = [...newSteps, ...currentLegSteps];
+
+                    if (targetSt === to) {
+                        possibleRoutes.push({
+                            dur: totalDur,
+                            transfers: path.transfers,
+                            svc: path.steps.length === 0 ? svc : path.firstSvc,
+                            lastSvc: svc,
+                            durFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx) : path.firstDurFromTerm,
+                            durToTerm: calcD(data, 0, toIdx),
+                            steps: [...finalSteps, {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}],
+                            desc: path.transfers === 0 ? `${svc.name} 直通` : `${path.transfers}回乗換`
+                        });
+                        if (possibleRoutes.length > 20) break;
+                    } else if (path.transfers < maxTransfers) {
+                        // To speed up, we only transfer at stations that are on other lines or special hubs
+                        const isTransferPoint = allRoutes.some(r => r.lineName !== lineName && r.svc.stops.includes(targetSt)) || 
+                                              walkPairs.some(w => w[0] === targetSt || w[1] === targetSt);
+                        
+                        if (isTransferPoint) {
+                            const nextVisitedLines = new Set(path.visitedLines);
+                            nextVisitedLines.add(lineName);
+                            const nextVisitedStations = new Set(path.visitedStations);
+                            nextVisitedStations.add(targetSt);
+
+                            queue.push({
+                                currSt: targetSt,
+                                dur: totalDur + 5, 
+                                transfers: path.transfers + 1,
+                                firstSvc: path.steps.length === 0 ? svc : path.firstSvc,
+                                firstDurFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx) : path.firstDurFromTerm,
+                                steps: [...finalSteps, {
+                                    role: "transfer",
+                                    name: targetSt,
+                                    type: "via-station",
+                                    sub: "乗換 5分",
+                                    arrivalOffset: totalDur,
+                                    departureOffset: totalDur + 5
+                                }],
+                                visitedLines: nextVisitedLines,
+                                visitedStations: nextVisitedStations
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Handle walking transfers (Osaka Umeda - Minami Umeda)
+            for (const [w1, w2, wDur] of walkPairs) {
+                if (path.currSt === w1 || path.currSt === w2) {
+                    const targetSt = (path.currSt === w1) ? w2 : w1;
+                    if (path.visitedStations.has(targetSt)) continue;
+
+                    const totalDur = path.dur + wDur;
+                    const nextVisitedStations = new Set(path.visitedStations);
+                    nextVisitedStations.add(targetSt);
+
+                    queue.push({
+                        currSt: targetSt,
+                        dur: totalDur,
+                        transfers: path.transfers, 
+                        firstSvc: path.firstSvc,
+                        firstDurFromTerm: path.firstDurFromTerm,
+                        steps: [...path.steps, {
+                            role: "transfer",
+                            name: `${path.currSt}→${targetSt}`,
+                            type: "via-station",
+                            sub: `徒歩 ${wDur}分`,
+                            arrivalOffset: path.dur,
+                            departureOffset: totalDur
+                        }],
+                        visitedLines: new Set(path.visitedLines),
+                        visitedStations: nextVisitedStations
                     });
                 }
             }
-        }
-
-        const hubs = ["中央駅", "市駅", "北駅", "空港駅", "發駅", "南駅", "下駅", "本駅", "東駅", "白駅", "新駅", "上駅", "ドーム前駅", "平和台", "江北", "西新井", "足立"];
-        for (const hName of hubs) {
-            if (hName === from || hName === to) continue;
-            for (const [fLName, fLData] of Object.entries(curComp.routes)) {
-                for (const [tLName, tLData] of Object.entries(curComp.routes)) {
-                    if (fLName === tLName) continue;
-                    for (const fSvc of getSvcs(fLData)) {
-                        for (const tSvc of getSvcs(tLData)) {
-                            if (fSvc.stops.includes(from) && fSvc.stops.includes(hName) && tSvc.stops.includes(to) && tSvc.stops.includes(hName)) {
-                                const fI = fLData.stations.indexOf(from), fhI = fLData.stations.indexOf(hName);
-                                const tI = tLData.stations.indexOf(to), thI = tLData.stations.indexOf(hName);
-                                const dur1 = calcD(fLData, fI, fhI);
-                                const dur2 = calcD(tLData, thI, tI);
-                                const dur = dur1 + dur2 + 5;
-                                const durFromTerm = calcD(fLData, 0, fI);
-                                const durToTerm = calcD(tLData, 0, tI);
-                                possibleRoutes.push({
-                                    dur, transfers: 1, svc: fSvc, tSvc: tSvc, durFromTerm, durToTerm,
-                                    steps: [
-                                        {role:"boarding", lineName: `${fSvc.name} (${fLName})`, name:from, type:"boarding-station", timeOffset: 0},
-                                        ...getMid(fLData, fI, fhI, fSvc.stops),
-                                        {role:"transfer", lineName: `${tSvc.name} (${tLName})`, name:hName, type:"via-station", sub:"乗換 5分", arrivalOffset: dur1, departureOffset: dur1 + 5},
-                                        ...getMid(tLData, thI, tI, tSvc.stops).map(s => ({...s, timeOffset: s.timeOffset + dur1 + 5})),
-                                        {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: dur}
-                                    ],
-                                    desc: `${hName}経由`
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 2 transfers
-        for (const h1 of hubs) {
-            for (const h2 of hubs) {
-                if (h1 === h2 || h1 === from || h2 === to) continue;
-                for (const [L1Name, L1Data] of Object.entries(curComp.routes)) {
-                    for (const [L2Name, L2Data] of Object.entries(curComp.routes)) {
-                        for (const [L3Name, L3Data] of Object.entries(curComp.routes)) {
-                            if (L1Name === L2Name || L2Name === L3Name) continue;
-                            for (const S1 of getSvcs(L1Data)) {
-                                for (const S2 of getSvcs(L2Data)) {
-                                    for (const S3 of getSvcs(L3Data)) {
-                                        if (S1.stops.includes(from) && S1.stops.includes(h1) && 
-                                            S2.stops.includes(h1) && S2.stops.includes(h2) && 
-                                            S3.stops.includes(h2) && S3.stops.includes(to)) {
-                                            
-                                            const i1_f = L1Data.stations.indexOf(from), i1_h1 = L1Data.stations.indexOf(h1);
-                                            const i2_h1 = L2Data.stations.indexOf(h1), i2_h2 = L2Data.stations.indexOf(h2);
-                                            const i3_h2 = L3Data.stations.indexOf(h2), i3_t = L3Data.stations.indexOf(to);
-                                            
-                                            const d1 = calcD(L1Data, i1_f, i1_h1);
-                                            const d2 = calcD(L2Data, i2_h1, i2_h2);
-                                            const d3 = calcD(L3Data, i3_h2, i3_t);
-                                            
-                                            const totalDur = d1 + d2 + d3 + 10; // 2 transfers = 10 min
-                                            const durFromTerm = calcD(L1Data, 0, i1_f);
-                                            const durToTerm = calcD(L3Data, 0, i3_t);
-
-                                            possibleRoutes.push({
-                                                dur: totalDur, transfers: 2, svc: S1, tSvc: S3, durFromTerm, durToTerm,
-                                                steps: [
-                                                    {role:"boarding", lineName: `${S1.name} (${L1Name})`, name:from, type:"boarding-station", timeOffset: 0},
-                                                    ...getMid(L1Data, i1_f, i1_h1, S1.stops),
-                                                    {role:"transfer", lineName: `${S2.name} (${L2Name})`, name:h1, type:"via-station", sub:"乗換 5分", arrivalOffset: d1, departureOffset: d1 + 5},
-                                                    ...getMid(L2Data, i2_h1, i2_h2, S2.stops).map(s => ({...s, timeOffset: s.timeOffset + d1 + 5})),
-                                                    {role:"transfer", lineName: `${S3.name} (${L3Name})`, name:h2, type:"via-station", sub:"乗換 5分", arrivalOffset: d1 + 5 + d2, departureOffset: d1 + 5 + d2 + 5},
-                                                    ...getMid(L3Data, i3_h2, i3_t, S3.stops).map(s => ({...s, timeOffset: s.timeOffset + d1 + 5 + d2 + 5})),
-                                                    {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}
-                                                ],
-                                                desc: `${h1}・${h2}経由`
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            
+            if (queue.length > 1000) queue = queue.slice(0, 1000);
+            queue.sort((a, b) => a.dur - b.dur);
         }
 
         let results = possibleRoutes;
@@ -911,7 +1051,7 @@
             if(type==="始発"){dm=getSnap(270,res.svc,res.durFromTerm,false); am=dm+res.dur;} 
             else if(type==="終電"){dm=getSnap(60,res.svc,res.durFromTerm,true); am=dm+res.dur;}
             else if(type==="到着"){
-                let arrival_svc = res.tSvc || res.svc;
+                let arrival_svc = res.lastSvc || res.tSvc || res.svc;
                 let arrival_time = getSnap(base, arrival_svc, res.durToTerm, true);
                 dm = arrival_time - res.dur;
                 am = arrival_time;

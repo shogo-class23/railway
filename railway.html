@@ -104,6 +104,8 @@
         .line-badge.東平野線 { background: #00b894; }
         .line-badge.播磨線 { background: #a52a2a; }
         .line-badge.新潟線 { background: #0fbcf9; }
+        .line-badge.中山道急幹線 { background: #d4af37; }
+        .line-badge.中部縦貫急幹線 { background: #d4af37; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -190,6 +192,11 @@
         <div class="company-card" style="border-color: #0fbcf9;" onclick="selectCompany('hokuriku')">
             <h1>北陸日本鉄道</h1>
             <p>新潟線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #d4af37;" onclick="selectCompany('kyukansen')">
+            <h1>日本急幹線</h1>
+            <p>中山道・中部縦貫急幹線 総合案内</p>
             <small>クリックして入場</small>
         </div>
     </div>
@@ -511,6 +518,62 @@
                     <circle cx="${50 + i * 82}" cy="150" r="7" fill="white" stroke="#333" stroke-width="2.5" />
                     <text x="${50 + i * 82}" y="${i % 2 === 0 ? 190 : 210}" font-size="11" text-anchor="middle" font-weight="bold" transform="rotate(-20, ${50 + i * 82}, ${i % 2 === 0 ? 190 : 210})">${st}</text>
                 `).join('')}
+            </svg>`
+        },
+        kyukansen: {
+            name: "日本急幹線",
+            routes: {
+                "中山道急幹線": {
+                    stations: ["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"],
+                    interval: 20
+                },
+                "中部縦貫急幹線": {
+                    stations: ["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"],
+                    interval: 20
+                }
+            },
+            status: ["中山道急幹線: 平常", "中部縦貫急幹線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1600 1200">
+                <!-- 中山道急幹線 (水平) -->
+                <line x1="50" y1="600" x2="1550" y2="600" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <text x="50" y="570" fill="#d4af37" font-size="24" font-weight="bold">中山道急幹線</text>
+                ${["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"].map((st, i) => {
+                    const x = 50 + i * 88;
+                    const y = 600;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="${st==='松本'?12:8}" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${y + 35}" font-size="11" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${y+35})">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 中部縦貫急幹線 (仙台〜長岡は水平、長岡〜静岡は垂直) -->
+                <path d="M1500 150 L314 150 L314 1100" fill="none" stroke="#d4af37" stroke-width="12" stroke-linejoin="round" />
+                <text x="1500" y="120" fill="#d4af37" font-size="24" font-weight="bold" text-anchor="end">中部縦貫急幹線</text>
+                
+                <!-- 仙台〜長岡 (水平区間) -->
+                ${["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡"].reverse().map((st, i) => {
+                    const x = 314 + i * 237; // 長岡から右へ
+                    const y = 150;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${y - 20}" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 長岡〜静岡 (垂直区間) -->
+                ${["長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"].map((st, i) => {
+                    if (st === "長岡") return ''; // 上で描画済み
+                    const x = 314;
+                    let y = 150 + i * 135;
+                    if (st === "松本") y = 600; // 中山道線と交差
+                    if (st === "飯田市") y = 750;
+                    if (st === "千頭") y = 925;
+                    if (st === "静岡") y = 1100;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="${st==='松本'?12:8}" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x + 20}" y="${y + 5}" font-size="12" font-weight="bold" text-anchor="start">${st}</text>
+                    `;
+                }).join('')}
             </svg>`
         }
     };

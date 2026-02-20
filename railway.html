@@ -102,6 +102,7 @@
         .line-badge.桜通線 { background: #EA3223; }
         .line-badge.神丹線 { background: #0984e3; }
         .line-badge.東平野線 { background: #00b894; }
+        .line-badge.播磨線 { background: #a52a2a; }
         .line-badge.新潟線 { background: #0fbcf9; }
 
         .station-info-row { display: flex; align-items: center; }
@@ -183,7 +184,7 @@
         </div>
         <div class="company-card" style="border-color: #0984e3;" onclick="selectCompany('kansai')">
             <h1>関西日本鉄道</h1>
-            <p>神丹線・東平野線 総合案内</p>
+            <p>神丹線・東平野線・播磨線 総合案内</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #0fbcf9;" onclick="selectCompany('hokuriku')">
@@ -457,9 +458,13 @@
                 "東平野線": {
                     stations: ["南梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "東松原", "大堀"],
                     interval: 5
+                },
+                "播磨線": {
+                    stations: ["佐用", "宍粟山崎", "夢前", "新福崎", "北条町"],
+                    interval: 15
                 }
             },
-            status: ["神丹線: 平常", "東平野線: 平常"],
+            status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 1600 900">
                 <!-- 神丹線 -->
                 <path d="M50 150 L1500 150" fill="none" stroke="#0984e3" stroke-width="10" />
@@ -477,6 +482,14 @@
                     <text x="1515" y="${255 + i * 40}" font-size="10" font-weight="bold">${st}</text>
                 `).join('')}
                 
+                <!-- 播磨線 -->
+                <path d="M50 500 L770 500" fill="none" stroke="#a52a2a" stroke-width="8" />
+                <text x="50" y="470" fill="#a52a2a" font-size="18" font-weight="bold">播磨線</text>
+                ${["佐用", "宍粟山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
+                    <circle cx="${50 + i * 180}" cy="500" r="8" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${50 + i * 180}" y="535" font-size="14" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+
                 <!-- 接続イメージ（梅田エリア） -->
                 <rect x="1450" y="130" width="100" height="150" fill="rgba(0,0,0,0.05)" stroke="#ccc" stroke-dasharray="4" />
                 <text x="1400" y="230" font-size="12" fill="#666">梅田エリア乗換</text>

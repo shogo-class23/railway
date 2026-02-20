@@ -546,34 +546,34 @@
                     `;
                 }).join('')}
 
-                <!-- 中部縦貫急幹線 (仙台〜長岡は水平、長岡〜静岡は垂直) -->
-                <path d="M1500 150 L314 150 L314 1100" fill="none" stroke="#d4af37" stroke-width="12" stroke-linejoin="round" />
-                <text x="1500" y="120" fill="#d4af37" font-size="24" font-weight="bold" text-anchor="end">中部縦貫急幹線</text>
+                                <!-- 中部縦貫急幹線 (仙台〜長岡は水平、長岡〜静岡は垂直) -->
+                                <path d="M1550 150 L1194 150 L1194 1100" fill="none" stroke="#d4af37" stroke-width="12" stroke-linejoin="round" />
+                                <text x="1550" y="120" fill="#d4af37" font-size="24" font-weight="bold" text-anchor="end">中部縦貫急幹線</text>
                 
-                <!-- 仙台〜長岡 (水平区間) -->
-                ${["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡"].reverse().map((st, i) => {
-                    const x = 314 + i * 237; // 長岡から右へ
-                    const y = 150;
-                    return `
-                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x}" y="${y - 20}" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>
-                    `;
-                }).join('')}
-
-                <!-- 長岡〜静岡 (垂直区間) -->
-                ${["長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"].map((st, i) => {
-                    if (st === "長岡") return ''; // 上で描画済み
-                    const x = 314;
-                    let y = 150 + i * 135;
-                    if (st === "松本") y = 600; // 中山道線と交差
-                    if (st === "飯田市") y = 750;
-                    if (st === "千頭") y = 925;
-                    if (st === "静岡") y = 1100;
-                    return `
-                        <circle cx="${x}" cy="${y}" r="${st==='松本'?12:8}" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x + 20}" y="${y + 5}" font-size="12" font-weight="bold" text-anchor="start">${st}</text>
-                    `;
-                }).join('')}
+                                <!-- 仙台〜長岡 (水平区間) -->
+                                ${["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡"].reverse().map((st, i) => {
+                                    const x = 1194 + i * 71.2; // 長岡(1194)から仙台(1550)へ
+                                    const y = 150;
+                                    return `
+                                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                                        <text x="${x}" y="${y - 20}" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>
+                                    `;
+                                }).join('')}
+                
+                                <!-- 長岡〜静岡 (垂直区間) -->
+                                ${["長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"].map((st, i) => {
+                                    if (st === "長岡") return ''; 
+                                    const x = 1194;
+                                    let y;
+                                    if (i <= 4) y = 150 + i * 112.5; // 長岡(150)から松本(600)まで
+                                    else y = 600 + (i - 4) * 166.6; // 松本(600)から静岡(1100)まで
+                                    if (st === "松本") y = 600; 
+                                    return `
+                                        <circle cx="${x}" cy="${y}" r="${st==='松本'?12:8}" fill="white" stroke="#333" stroke-width="3" />
+                                        <text x="${x + 20}" y="${y + 5}" font-size="12" font-weight="bold" text-anchor="start">${st}</text>
+                                    `;
+                                }).join('')}
+                
             </svg>`
         }
     };

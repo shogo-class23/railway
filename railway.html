@@ -117,6 +117,14 @@
         .line-badge.名鉄線 { background: #e84118; }
         .line-badge.天竜浜名湖鉄道 { background: #27ae60; }
         .line-badge.大井川鉄道 { background: #d35400; }
+        .line-badge.総武快速線 { background: #3498db; }
+        .line-badge.常総線 { background: #e67e22; }
+        .line-badge.真岡線 { background: #EA3223; }
+        .line-badge.常磐線 { background: #27ae60; }
+        .line-badge.北条線 { background: #2ecc71; }
+        .line-badge.神戸電鉄 { background: #e84118; }
+        .line-badge.地下鉄西神山手線 { background: #2ecc71; }
+        .line-badge.阪急神戸線 { background: #9b59b6; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -543,6 +551,46 @@
                     stations: ["金谷", "千頭"],
                     interval: 60,
                     unit_dur: 90
+                },
+                "常総線": {
+                    stations: ["取手", "水海道"],
+                    interval: 30,
+                    unit_dur: 90
+                },
+                "真岡線": {
+                    stations: ["下館", "真岡", "茂木"],
+                    interval: 60,
+                    intervals: [70, 30]
+                },
+                "北条線": {
+                    stations: ["粟生", "網引", "田原", "法華口", "播磨下里", "長", "播磨横田", "北条町"],
+                    interval: 60,
+                    unit_dur: 3
+                },
+                "神戸電鉄 粟生線": {
+                    stations: ["鈴蘭台", "鈴蘭台西口", "西鈴蘭台", "藍那", "木津", "木幡", "栄", "押部谷", "緑が丘", "広野ゴルフ場前", "志染", "恵比須", "三木上の丸", "三木", "大村", "樫山", "市場", "小野", "葉多", "粟生"],
+                    interval: 15,
+                    unit_dur: 3
+                },
+                "神戸電鉄 有馬線": {
+                    stations: ["湊川", "長田", "丸山", "鵯越", "菊水山", "鈴蘭台"],
+                    interval: 15,
+                    unit_dur: 4
+                },
+                "地下鉄西神山手線": {
+                    stations: ["湊川公園", "大倉山", "県庁前", "三宮", "新神戸"],
+                    interval: 7,
+                    unit_dur: 3
+                },
+                "神戸高速線": {
+                    stations: ["湊川", "新開地"],
+                    interval: 10,
+                    unit_dur: 6
+                },
+                "阪急神戸線": {
+                    stations: ["新開地", "神戸三宮"],
+                    interval: 10,
+                    unit_dur: 7
                 }
             },
             status: ["私鉄各線: 平常"],
@@ -558,14 +606,9 @@
                 "東平野線": {
                     stations: ["南梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "東松原", "大堀"],
                     interval: 5
-                },
-                "播磨線": {
-                    stations: ["佐用", "宍粟山崎", "夢前", "新福崎", "北条町"],
-                    interval: 15,
-                    unit_dur: 10
                 }
             },
-            status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常"],
+            status: ["神丹線: 平常", "東平野線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 1600 900">
                 <!-- 神丹線 -->
                 <path d="M50 150 L1500 150" fill="none" stroke="#0984e3" stroke-width="10" />
@@ -583,14 +626,6 @@
                     <text x="1520" y="${255 + i * 40}" font-size="14" font-weight="bold">${st}</text>
                 `).join('')}
                 
-                <!-- 播磨線 -->
-                <path d="M50 500 L770 500" fill="none" stroke="#a52a2a" stroke-width="8" />
-                <text x="50" y="470" fill="#a52a2a" font-size="22" font-weight="bold">播磨線</text>
-                ${["佐用", "宍粟山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
-                    <circle cx="${50 + i * 180}" cy="500" r="10" fill="white" stroke="#333" stroke-width="3" />
-                    <text x="${50 + i * 180}" y="${i%2===0?545:570}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
-                `).join('')}
-
                 <!-- 接続イメージ（梅田エリア） -->
                 <rect x="1450" y="130" width="100" height="150" fill="rgba(0,0,0,0.05)" stroke="#ccc" stroke-dasharray="4" />
                 <text x="1440" y="300" font-size="16" font-weight="bold" fill="#666" text-anchor="end">梅田エリア乗換</text>
@@ -612,9 +647,9 @@
                     interval: 10
                 },
                 "山陽・九州新幹線": {
-                    stations: ["姫路", "小倉", "熊本", "出水"],
+                    stations: ["新大阪", "姫路", "小倉", "熊本", "出水"],
                     interval: 30,
-                    intervals: [118, 50, 32]
+                    intervals: [15, 118, 50, 32]
                 },
                 "姫新線": {
                     stations: ["姫路", "佐用"],
@@ -625,6 +660,16 @@
                     stations: ["長岡", "新潟"],
                     interval: 40,
                     intervals: [22]
+                },
+                "総武快速線": {
+                    stations: ["東京", "千葉"],
+                    interval: 15,
+                    unit_dur: 38
+                },
+                "常磐線": {
+                    stations: ["上野", "取手"],
+                    interval: 15,
+                    unit_dur: 30
                 }
             },
             status: ["山手線: 平常", "中央線: 平常", "東海道本線: 平常", "新幹線: 平常"],
@@ -910,6 +955,7 @@
     }
 
     function getSnap(base, svc, durFromTerm, isArr) {
+        if (!svc) svc = { interval: 15, offset: 0 };
         // base: 検索目標時刻, durFromTerm: 始発駅(index 0)からその駅までの走行時間
         if (svc.specific) {
             let opts = [];
@@ -936,237 +982,219 @@
         const from = document.getElementById('fromSt').value, to = document.getElementById('toSt').value, via = document.getElementById('viaSt').value;
         if (!from || !to) return alert("駅名を入力してください");
 
-        const getSvcs = (d) => d.services || [{ name: "各駅停車", stops: d.stations, offset: 0 }];
-        const allRoutes = [];
-        for (const [lineName, data] of Object.entries(curComp.routes)) {
-            for (const svc of getSvcs(data)) {
-                allRoutes.push({ lineName, data, svc });
+        const resultsArea = document.getElementById('transferResults');
+        resultsArea.innerHTML = `<div id="searching-status" style="text-align:center; padding:40px; color:#7f8c8d;">
+            <div style="font-size:2rem; margin-bottom:10px;">🔍</div>
+            <strong>経路を探索中...</strong><br>
+            <small id="search-progress">最適なルートを探しています。</small>
+        </div><div id="found-results"></div>`;
+
+        setTimeout(() => {
+            const getSvcs = (d) => d.services || [{ name: "各駅停車", stops: d.stations, offset: 0 }];
+            const allRoutes = [];
+            for (const [lineName, data] of Object.entries(curComp.routes)) {
+                for (const svc of getSvcs(data)) {
+                    allRoutes.push({ lineName, data, svc });
+                }
             }
-        }
 
-        // 徒歩連絡
-        const walkPairs = [["大阪梅田", "南梅田", 30]];
+            const walkPairs = [
+                ["大阪梅田", "南梅田", 30], 
+                ["水海道", "下館", 30],
+                ["湊川", "湊川公園", 5],
+                ["三宮", "神戸三宮", 0]
+            ];
 
-        // BFS-based search for multiple transfers
-        let queue = [{
-            currSt: from,
-            dur: 0,
-            transfers: 0,
-            steps: [],
-            visitedLines: new Set(),
-            visitedStations: new Set([from])
-        }];
-        
-        const possibleRoutes = [];
-        const maxTransfers = 6; // Increase to 6 for long-distance across companies
-
-        while (queue.length > 0) {
-            const path = queue.shift();
-            if (path.transfers > maxTransfers) continue;
-            if (possibleRoutes.length >= 10 && path.dur > possibleRoutes[0].dur * 2) continue; // Pruning
-
-            // Try all lines passing through current station
-            for (const { lineName, data, svc } of allRoutes) {
-                if (path.visitedLines.has(lineName)) continue;
-                if (!svc.stops.includes(path.currSt)) continue;
-
-                const fromIdx = data.stations.indexOf(path.currSt);
-                
-                // Optimized: only look for target or transfer points to other lines
-                for (const targetSt of svc.stops) {
-                    if (targetSt === path.currSt) continue;
-                    if (path.visitedStations.has(targetSt)) continue;
-
-                    const toIdx = data.stations.indexOf(targetSt);
-                    const legDur = calcD(data, fromIdx, toIdx);
-                    
-                    const newSteps = [...path.steps];
-                    if (newSteps.length > 0 && newSteps[newSteps.length - 1].type === "via-station") {
-                        const prev = newSteps[newSteps.length - 1];
-                        prev.lineName = `${svc.name} (${lineName})`;
-                        prev.departureOffset = path.dur + 5;
-                    }
-
-                    const currentLegSteps = [
-                        {
-                            role: path.steps.length === 0 ? "boarding" : "transfer-info",
-                            lineName: `${svc.name} (${lineName})`,
-                            name: path.currSt,
-                            type: path.steps.length === 0 ? "boarding-station" : "info-only",
-                            timeOffset: path.dur
-                        },
-                        ...getMid(data, fromIdx, toIdx, svc.stops).map(s => ({...s, timeOffset: s.timeOffset + path.dur})),
-                    ];
-
-                    const totalDur = path.dur + legDur;
-                    const finalSteps = [...newSteps, ...currentLegSteps];
-
-                    if (targetSt === to) {
-                        possibleRoutes.push({
-                            dur: totalDur,
-                            transfers: path.transfers,
-                            svc: path.steps.length === 0 ? svc : path.firstSvc,
-                            lastSvc: svc,
-                            durFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx) : path.firstDurFromTerm,
-                            durToTerm: calcD(data, 0, toIdx),
-                            steps: [...finalSteps, {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}],
-                            desc: path.transfers === 0 ? `${svc.name} 直通` : `${path.transfers}回乗換`
-                        });
-                        if (possibleRoutes.length > 20) break;
-                    } else if (path.transfers < maxTransfers) {
-                        // To speed up, we only transfer at stations that are on other lines or special hubs
-                        const isTransferPoint = allRoutes.some(r => r.lineName !== lineName && r.svc.stops.includes(targetSt)) || 
-                                              walkPairs.some(w => w[0] === targetSt || w[1] === targetSt);
+                        let queue = [{
+                            currSt: from,
+                            dur: 0,
+                            score: 0, // Composite score: duration + (transfers * penalty)
+                            transfers: 0,
+                            steps: [],
+                            visitedLines: new Set(),
+                            visitedStations: new Set([from])
+                        }];
                         
-                        if (isTransferPoint) {
-                            const nextVisitedLines = new Set(path.visitedLines);
-                            nextVisitedLines.add(lineName);
-                            const nextVisitedStations = new Set(path.visitedStations);
-                            nextVisitedStations.add(targetSt);
-
-                            queue.push({
-                                currSt: targetSt,
-                                dur: totalDur + 5, 
-                                transfers: path.transfers + 1,
-                                firstSvc: path.steps.length === 0 ? svc : path.firstSvc,
-                                firstDurFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx) : path.firstDurFromTerm,
-                                steps: [...finalSteps, {
-                                    role: "transfer",
-                                    name: targetSt,
-                                    type: "via-station",
-                                    sub: "乗換 5分",
-                                    arrivalOffset: totalDur,
-                                    departureOffset: totalDur + 5
-                                }],
-                                visitedLines: nextVisitedLines,
-                                visitedStations: nextVisitedStations
-                            });
-                        }
-                    }
-                }
-            }
-
-            // Handle walking transfers (Osaka Umeda - Minami Umeda)
-            for (const [w1, w2, wDur] of walkPairs) {
-                if (path.currSt === w1 || path.currSt === w2) {
-                    const targetSt = (path.currSt === w1) ? w2 : w1;
-                    if (path.visitedStations.has(targetSt)) continue;
-
-                    const totalDur = path.dur + wDur;
-                    const nextVisitedStations = new Set(path.visitedStations);
-                    nextVisitedStations.add(targetSt);
-
-                    queue.push({
-                        currSt: targetSt,
-                        dur: totalDur,
-                        transfers: path.transfers, 
-                        firstSvc: path.firstSvc,
-                        firstDurFromTerm: path.firstDurFromTerm,
-                        steps: [...path.steps, {
-                            role: "transfer",
-                            name: `${path.currSt}→${targetSt}`,
-                            type: "via-station",
-                            sub: `徒歩 ${wDur}分`,
-                            arrivalOffset: path.dur,
-                            departureOffset: totalDur
-                        }],
-                        visitedLines: new Set(path.visitedLines),
-                        visitedStations: nextVisitedStations
-                    });
-                }
-            }
+                        const possibleRoutes = [];
+                        const maxTransfers = 10;
+                        const targetCount = 3;
+                        const transferPenalty = 20; // 20 minutes penalty per transfer for scoring
             
-            if (queue.length > 1000) queue = queue.slice(0, 1000);
-            queue.sort((a, b) => a.dur - b.dur);
-        }
-
-        let results = possibleRoutes;
-        if (via) { results = results.filter(r => r.steps.some(s => s.name === via)); }
-        results = results.filter((v, i, a) => a.findIndex(t => t.dur === v.dur && JSON.stringify(t.steps) === JSON.stringify(v.steps)) === i);
-        if (results.length === 0) { document.getElementById('transferResults').innerHTML = "<p>経路が見つかりませんでした。</p>"; return; }
-        
-        results.sort((a, b) => a.dur - b.dur);
-        const minDur = results[0].dur, minTransfer = Math.min(...results.map(r => r.transfers));
-        const minCost = Math.min(...results.map(r => Math.floor(100 + (r.dur/3)*50)));
-
-        results = results.slice(0, 5); 
-        const type = document.querySelector('input[name="stype"]:checked').value;
-        const formatT = (m) => { while(m < 0) m += 1440; m %= 1440; return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`; };
-        let base = parseInt(hs.value)*60 + parseInt(ms.value);
-
-        let finalHtml = results.map((res, idx) => {
-            let dm, am;
-            if(type==="始発"){dm=getSnap(270,res.svc,res.durFromTerm,false); am=dm+res.dur;} 
-            else if(type==="終電"){dm=getSnap(60,res.svc,res.durFromTerm,true); am=dm+res.dur;}
-            else if(type==="到着"){
-                let arrival_svc = res.lastSvc || res.tSvc || res.svc;
-                let arrival_time = getSnap(base, arrival_svc, res.durToTerm, true);
-                dm = arrival_time - res.dur;
-                am = arrival_time;
-            } 
-            else {
-                dm = getSnap(base, res.svc, res.durFromTerm, false);
-                am = dm + res.dur;
-            }
+                        const foundResultsDiv = document.getElementById('found-results');
+                        const progressText = document.getElementById('search-progress');
             
-            const cost = Math.floor(100 + (res.dur/3)*50);
-            let tags = "";
-            if(res.dur === minDur) tags += `<span class="spec-tag tag-fast">早</span>`;
-            if(res.transfers === minTransfer) tags += `<span class="spec-tag tag-easy">楽</span>`;
-            if(cost === minCost) tags += `<span class="spec-tag tag-cheap">安</span>`;
+                        function processQueue() {
+                            let batchCount = 0;
+                            while (queue.length > 0 && batchCount < 200) {
+                                batchCount++;
+                                const path = queue.shift();
+                                if (path.transfers > maxTransfers) continue;
+                                if (possibleRoutes.length > 0 && path.score > possibleRoutes[0].score * 2.5) continue;
+            
+                                for (const { lineName, data, svc } of allRoutes) {
+                                    if (path.visitedLines.has(lineName)) continue;
+                                    if (!svc.stops.includes(path.currSt)) continue;
+            
+                                    const fromIdx = data.stations.indexOf(path.currSt);
+                                    for (const targetSt of svc.stops) {
+                                        if (targetSt === path.currSt || path.visitedStations.has(targetSt)) continue;
+            
+                                        const toIdx = data.stations.indexOf(targetSt);
+                                        const legDur = calcD(data, fromIdx, toIdx);
+                                        const totalDur = path.dur + legDur;
+                                        const totalScore = totalDur + (path.transfers * transferPenalty);
+            
+                                        const currentLegSteps = [
+                                            {
+                                                role: path.steps.length === 0 ? "boarding" : "transfer-info",
+                                                lineName: `${svc.name} (${lineName})`,
+                                                name: path.currSt,
+                                                type: path.steps.length === 0 ? "boarding-station" : "info-only",
+                                                timeOffset: path.dur
+                                            },
+                                            ...getMid(data, fromIdx, toIdx, svc.stops).map(s => ({...s, timeOffset: s.timeOffset + path.dur})),
+                                        ];
+            
+                                        const newSteps = [...path.steps];
+                                        if (newSteps.length > 0 && newSteps[newSteps.length - 1].type === "via-station") {
+                                            newSteps[newSteps.length - 1].lineName = `${svc.name} (${lineName})`;
+                                            newSteps[newSteps.length - 1].departureOffset = path.dur + 5;
+                                        }
+                                        const finalSteps = [...newSteps, ...currentLegSteps];
+            
+                                        if (targetSt === to) {
+                                            const routeObj = {
+                                                dur: totalDur,
+                                                score: totalScore,
+                                                transfers: path.transfers,
+                                                svc: path.steps.length === 0 ? svc : path.firstSvc,
+                                                lastSvc: svc,
+                                                durFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx) : path.firstDurFromTerm,
+                                                durToTerm: calcD(data, 0, toIdx),
+                                                steps: [...finalSteps, {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}],
+                                                desc: path.transfers === 0 ? `${svc.name} 直通` : `${path.transfers}回乗換`
+                                            };
+            
+                                            if (!possibleRoutes.some(r => r.dur === routeObj.dur && JSON.stringify(r.steps) === JSON.stringify(routeObj.steps))) {
+                                                possibleRoutes.push(routeObj);
+                                                if (possibleRoutes.length >= targetCount) {
+                                                    finishSearch();
+                                                    return;
+                                                }
+                                            }
+                                        } else if (path.transfers < maxTransfers) {
+                                            const isTransferPoint = allRoutes.some(r => r.lineName !== lineName && r.svc.stops.includes(targetSt)) || 
+                                                                  walkPairs.some(w => w[0] === targetSt || w[1] === targetSt);
+                                            
+                                            if (isTransferPoint) {
+                                                const nextLines = new Set(path.visitedLines); nextLines.add(lineName);
+                                                const nextSts = new Set(path.visitedStations); nextSts.add(targetSt);
+                                                queue.push({
+                                                    currSt: targetSt, dur: totalDur + 5, transfers: path.transfers + 1,
+                                                    score: totalScore + transferPenalty + 5,
+                                                    firstSvc: path.steps.length === 0 ? svc : path.firstSvc,
+                                                    firstDurFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx) : path.firstDurFromTerm,
+                                                    steps: [...finalSteps, {role:"transfer", name:targetSt, type:"via-station", sub:"乗換 5分", arrivalOffset:totalDur, departureOffset:totalDur+5}],
+                                                    visitedLines: nextLines, visitedStations: nextSts
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+            
+                                for (const [w1, w2, wDur] of walkPairs) {
+                                    if (path.currSt === w1 || path.currSt === w2) {
+                                        const targetSt = (path.currSt === w1) ? w2 : w1;
+                                        if (!path.visitedStations.has(targetSt)) {
+                                            const nextSts = new Set(path.visitedStations); nextSts.add(targetSt);
+                                            queue.push({
+                                                currSt: targetSt, dur: path.dur + wDur, transfers: path.transfers,
+                                                score: path.score + wDur + (wDur > 0 ? 5 : 0), // Walking has small penalty
+                                                firstSvc: path.firstSvc, firstDurFromTerm: path.firstDurFromTerm,
+                                                steps: [...path.steps, {role:"transfer", name:`${path.currSt}→${targetSt}`, type:"via-station", sub: wDur===0?"同一駅":`徒歩 ${wDur}分`, arrivalOffset:path.dur, departureOffset:path.dur+wDur}],
+                                                visitedLines: new Set(path.visitedLines), visitedStations: nextSts
+                                            });
+                                        }
+                                    }
+                                }
+                                queue.sort((a, b) => a.score - b.score);
+                                if (queue.length > 1500) queue = queue.slice(0, 1500);
+                            }
 
-            const stepHtml = res.steps.map(s => {
-                let timeText = "";
-                if (s.role === 'transfer') {
-                    timeText = `<div style="display:flex; flex-direction:column; line-height:1.2;">
-                        <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + s.arrivalOffset)} 着</span>
-                        <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + s.departureOffset)} 発</span>
-                    </div>`;
+                if (queue.length > 0) {
+                    progressText.innerText = `候補を収集中... (${possibleRoutes.length}件発見)`;
+                    setTimeout(processQueue, 10);
                 } else {
-                    timeText = `<span class="time-info-text">${formatT(dm + s.timeOffset)}</span>`;
+                    finishSearch();
+                }
+            }
+
+            function finishSearch() {
+                const status = document.getElementById('searching-status');
+                if (status) status.style.display = 'none';
+                
+                if (possibleRoutes.length === 0) {
+                    foundResultsDiv.innerHTML = "<p style='text-align:center; padding:20px;'>経路が見つかりませんでした。</p>";
+                    return;
                 }
 
-                if(s.type === "intermediate") {
-                    return `
-                        <div class="station-item" style="opacity:0.8; margin-bottom:10px;">
-                            <div class="station-info-row">
-                                ${timeText}
-                                <span class="station-name-text" style="font-size:1.1rem; font-weight:normal;">${s.name}</span>
-                            </div>
+                let html = possibleRoutes.map((res, idx) => renderRouteHtml(res, idx + 1)).join('');
+                html += `<div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>`;
+                foundResultsDiv.innerHTML = html;
+            }
+
+            function renderRouteHtml(res, idx) {
+                const type = document.querySelector('input[name="stype"]:checked').value;
+                const formatT = (m) => { 
+                    if (isNaN(m)) return "--:--";
+                    while(m < 0) m += 1440; m %= 1440; 
+                    return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`; 
+                };
+                let base = parseInt(hs.value)*60 + parseInt(ms.value);
+                let dm, am;
+                
+                // Ensure svc is valid
+                const safeSvc = res.svc || { interval: 15, offset: 0 };
+                const safeDur = res.dur || 0;
+                const safeDurFrom = res.durFromTerm || 0;
+                const safeDurTo = res.durToTerm || 0;
+
+                if(type==="始発"){dm=getSnap(270, safeSvc, safeDurFrom, false); am=dm+safeDur;} 
+                else if(type==="終電"){dm=getSnap(60, safeSvc, safeDurFrom, true); am=dm+safeDur;}
+                else if(type==="到着"){
+                    let arrival_svc = res.lastSvc || safeSvc;
+                    let arrival_time = getSnap(base, arrival_svc, safeDurTo, true);
+                    dm = arrival_time - safeDur; am = arrival_time;
+                } else {
+                    dm = getSnap(base, safeSvc, safeDurFrom, false); am = dm + safeDur;
+                }
+                const cost = Math.floor(100 + (safeDur/3)*50);
+                
+                const stepHtml = res.steps.map(s => {
+                    let timeText = "";
+                    if (s.role === 'transfer') {
+                        timeText = `<div style="display:flex; flex-direction:column; line-height:1.2;">
+                            <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + (s.arrivalOffset||0))} 着</span>
+                            <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + (s.departureOffset||0))} 発</span>
                         </div>`;
-                }
-                let lineClass = "";
-                if (s.lineName) {
-                    const match = s.lineName.match(/\(([^)]+)\)/);
-                    lineClass = match ? match[1] : "";
-                }
-                let badge = s.lineName ? `<span class="line-badge ${lineClass}">${s.lineName}</span>` : '';
-                return `
-                    <div class="station-item ${s.type}">
-                        <div class="role-tag">${s.role === 'boarding' ? '【乗車】' : s.role === 'transfer' ? '【乗換】' : s.role}</div>
-                        <div class="station-info-row">${timeText}<span class="station-name-text">${s.name}</span>${badge}</div>
-                        ${s.sub ? `<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>` : ''}
-                    </div>`;
-            }).join('');
+                    } else {
+                        timeText = `<span class="time-info-text">${formatT(dm + (s.timeOffset||0))}</span>`;
+                    }
+                    if(s.type === "intermediate") return `<div class="station-item" style="opacity:0.8; margin-bottom:10px;"><div class="station-info-row">${timeText}<span class="station-name-text" style="font-size:1.1rem; font-weight:normal;">${s.name}</span></div></div>`;
+                    let lineClass = s.lineName ? (s.lineName.match(/\(([^)]+)\)/)||[,""])[1] : "";
+                    let badge = s.lineName ? `<span class="line-badge ${lineClass}">${s.lineName}</span>` : '';
+                    return `<div class="station-item ${s.type}"><div class="role-tag">${s.role==='boarding'?'【乗車】':s.role==='transfer'?'【乗換】':s.role}</div><div class="station-info-row">${timeText}<span class="station-name-text">${s.name}</span>${badge}</div>${s.sub?`<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>`:''}</div>`;
+                }).join('');
 
-            return `
-                <div class="route-result-item">
-                    <div class="route-header">
-                        <span><span class="route-tag-id">経路 ${idx+1}</span><strong>${res.desc}</strong>${tags}</span>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="color:#2980b9; font-weight:bold;">${res.dur}分 / ${cost}円</span>
-                            <button onclick="buyTicket('${from}', '${to}', ${cost})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button>
-                        </div>
-                    </div>
+                return `<div class="route-result-item">
+                    <div class="route-header"><span><span class="route-tag-id">経路 ${idx}</span><strong>${res.desc}</strong></span><div style="display:flex; align-items:center; gap:10px;"><span style="color:#2980b9; font-weight:bold;">${res.dur}分 / ${cost}円</span><button onclick="buyTicket('${from}', '${to}', ${cost})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div>
                     <div class="route-box"><span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span><div class="vertical-station-list">${stepHtml}</div></div>
-                </div>
-            `;
-        }).join('');
+                </div>`;
+            }
 
-        finalHtml += `<div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>`;
-        document.getElementById('transferResults').innerHTML = finalHtml;
+            processQueue();
+        }, 100);
     }
-
     function buyTicket(from, to, price) {
         const modal = document.createElement('div');
         modal.id = 'ticketModal';

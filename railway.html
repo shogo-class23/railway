@@ -102,6 +102,7 @@
         .line-badge.桜通線 { background: #EA3223; }
         .line-badge.神丹線 { background: #0984e3; }
         .line-badge.東平野線 { background: #00b894; }
+        .line-badge.新潟線 { background: #0fbcf9; }
 
         .station-info-row { display: flex; align-items: center; }
         .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
@@ -183,6 +184,11 @@
         <div class="company-card" style="border-color: #0984e3;" onclick="selectCompany('kansai')">
             <h1>関西日本鉄道</h1>
             <p>神丹線・東平野線 総合案内</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #0fbcf9;" onclick="selectCompany('hokuriku')">
+            <h1>北陸日本鉄道</h1>
+            <p>新潟線 総合案内</p>
             <small>クリックして入場</small>
         </div>
     </div>
@@ -474,6 +480,24 @@
                 <!-- 接続イメージ（梅田エリア） -->
                 <rect x="1450" y="130" width="100" height="150" fill="rgba(0,0,0,0.05)" stroke="#ccc" stroke-dasharray="4" />
                 <text x="1400" y="230" font-size="12" fill="#666">梅田エリア乗換</text>
+            </svg>`
+        },
+        hokuriku: {
+            name: "北陸日本鉄道",
+            routes: {
+                "新潟線": {
+                    stations: ["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大", "島見", "内島見", "藤寄", "黒山"],
+                    interval: 10
+                }
+            },
+            status: ["新潟線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 300">
+                <line x1="50" y1="150" x2="950" y2="150" stroke="#0fbcf9" stroke-width="10" />
+                <text x="50" y="120" fill="#0fbcf9" font-size="18" font-weight="bold">新潟線</text>
+                ${["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大", "島見", "内島見", "藤寄", "黒山"].map((st, i) => `
+                    <circle cx="${50 + i * 82}" cy="150" r="7" fill="white" stroke="#333" stroke-width="2.5" />
+                    <text x="${50 + i * 82}" y="${i % 2 === 0 ? 190 : 210}" font-size="11" text-anchor="middle" font-weight="bold" transform="rotate(-20, ${50 + i * 82}, ${i % 2 === 0 ? 190 : 210})">${st}</text>
+                `).join('')}
             </svg>`
         }
     };

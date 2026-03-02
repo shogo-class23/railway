@@ -641,10 +641,18 @@
                         { name: "各駅停車", stops: ["南梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "東松原", "大堀"], offset: 0 },
                         { name: "急行", stops: ["南梅田", "京橋", "森ノ宮新", "今里", "平野北", "平野南", "大堀"], offset: 4 }
                     ]
+                },
+                "播磨線": {
+                    stations: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"],
+                    interval: 15,
+                    services: [
+                        { name: "各駅停車", stops: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"], offset: 0 },
+                        { name: "急行", stops: ["佐用", "夢前", "北条町"], offset: 5 }
+                    ]
                 }
             },
-            status: ["神丹線: 平常", "東平野線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="0 0 1600 900">
+            status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1600 1200">
                 <!-- 神丹線 -->
                 <path d="M50 150 L1500 150" fill="none" stroke="#0984e3" stroke-width="10" />
                 <text x="50" y="120" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
@@ -659,6 +667,14 @@
                 ${["南梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "東松原", "大堀"].map((st, i) => `
                     <circle cx="1500" cy="${250 + i * 40}" r="${st==='南梅田'?12:8}" fill="white" stroke="#333" stroke-width="3" />
                     <text x="1520" y="${255 + i * 40}" font-size="14" font-weight="bold">${st}</text>
+                `).join('')}
+
+                <!-- 播磨線 -->
+                <path d="M50 500 L770 500" fill="none" stroke="#a52a2a" stroke-width="10" />
+                <text x="50" y="460" fill="#a52a2a" font-size="24" font-weight="bold">播磨線</text>
+                ${["佐用", "安富山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
+                    <circle cx="${50 + i * 180}" cy="500" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${50 + i * 180}" y="${i%2===0?545:575}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
                 `).join('')}
                 
                 <!-- 接続イメージ（梅田エリア） -->

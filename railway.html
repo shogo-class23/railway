@@ -703,7 +703,11 @@
             routes: {
                 "新潟線": {
                     stations: ["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大", "島見", "内島見", "藤寄", "黒山"],
-                    interval: 10
+                    interval: 10,
+                    services: [
+                        { name: "各駅停車", stops: ["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大", "島見", "内島見", "藤寄", "黒山"], offset: 0 },
+                        { name: "急行", stops: ["新潟", "万代", "新潟空港", "福祉大", "黒山"], offset: 5 }
+                    ]
                 }
             },
             status: ["新潟線: 平常"],
@@ -865,7 +869,7 @@
         for (const [lineName, data] of Object.entries(curComp.routes)) {
             if (lineName === "他社線") continue;
             html += `<div style="margin-bottom:40px;"><h3>${lineName}</h3>`;
-            if (lineName === "都市線") {
+            if (data.services) {
                 const svcs = data.services;
                 const stations = data.stations;
                 const svcColors = { "各駅停車": "#7f8c8d", "準急": "#2ecc71", "快速": "#3498db", "急行": "#e67e22", "特急": "#e74c3c" };

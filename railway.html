@@ -106,7 +106,7 @@
         .line-badge.京浜日本本線 { background: #c0392b; }
         .line-badge.芋窪線 { background: #27ae60; }
         .line-badge.静岡線 { background: #1e3799; }
-        .line-badge.東海空港線 { background: #4a69bd; }
+        .line-badge.静岡空港線 { background: #4a69bd; }
         .line-badge.愛知線 { background: #e84118; }
         .line-badge.名安線 { background: #f0932b; }
         .line-badge.名四線 { background: #1e3799; }
@@ -506,10 +506,10 @@
                     ]
                 },
                 "静岡線": {
-                    stations: ["掛川", "金谷", "満水", "西方", "北菊川", "富田"],
+                    stations: ["掛川", "満水", "西方", "北菊川", "富田", "金谷"],
                     interval: 10
                 },
-                "東海空港線": {
+                "静岡空港線": {
                     stations: ["富田", "牧之原", "静岡空港"],
                     interval: 15
                 },
@@ -522,8 +522,8 @@
                     interval: 15
                 }
             },
-            status: ["名四線: 平常", "静岡線: 平常", "東海空港線: 平常", "愛知線: 平常", "名安線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="0 0 1400 800">
+            status: ["名四線: 平常", "静岡線: 平常", "静岡空港線: 平常", "愛知線: 平常", "名安線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="-150 0 1550 800">
                 <!-- 名四線 (Meishi Line) -->
                 <path d="M50 700 L875 700" fill="none" stroke="#1e3799" stroke-width="12" />
                 <text x="50" y="660" fill="#1e3799" font-size="24" font-weight="bold">名四線</text>
@@ -531,22 +531,38 @@
                     const x = 50 + i * 206;
                     return `
                         <circle cx="${x}" cy="700" r="10" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x}" y="740" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+                        <text x="${x}" y="740" font-size="20" text-anchor="middle" font-weight="bold">${st}</text>
                     `;
                 }).join('')}
 
-                <!-- 静岡線・空港線 -->
-                <line x1="1000" y1="50" x2="1300" y2="50" stroke="#1e3799" stroke-width="8" />
-                <line x1="1300" y1="50" x2="1300" y2="150" stroke="#4a69bd" stroke-width="6" />
-                ${["掛川", "金谷", "満水", "西方", "北菊川", "富田"].map((st, i) => `<circle cx="${1000 + i * 75}" cy="50" r="8" fill="white" stroke="#1e3799" stroke-width="3" /><text x="${1000 + i * 75}" y="${i%2===0?85:105}" font-size="15" text-anchor="middle" font-weight="bold">${st}</text>`).join('')}
-                ${["牧之原", "静岡空港"].map((st, i) => `<circle cx="1300" cy="${80 + i * 40}" r="8" fill="white" stroke="#4a69bd" stroke-width="3" /><text x="1315" y="${85 + i * 40}" font-size="15" font-weight="bold">${st}</text>`).join('')}
+                <!-- 静岡線 (Shizuoka Line) -->
+                <path d="M1000 150 L1375 150" fill="none" stroke="#1e3799" stroke-width="12" />
+                <text x="1000" y="125" fill="#1e3799" font-size="24" font-weight="bold" text-anchor="start">静岡線</text>
+                ${["掛川", "満水", "西方", "北菊川", "富田", "金谷"].map((st, i) => {
+                    const x = 1000 + i * 75;
+                    return `
+                        <circle cx="${x}" cy="150" r="10" fill="white" stroke="#1e3799" stroke-width="3" />
+                        <text x="${x}" y="185" font-size="20" text-anchor="middle" font-weight="bold">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 静岡空港線 (Shizuoka Airport Line) -->
+                <path d="M1300 150 L1300 50" fill="none" stroke="#4a69bd" stroke-width="8" />
+                <text x="1200" y="65" fill="#4a69bd" font-size="24" font-weight="bold" text-anchor="end">静岡空港線</text>
+                ${["牧之原", "静岡空港"].map((st, i) => {
+                    const y = 100 - i * 50;
+                    return `
+                        <circle cx="1300" cy="${y}" r="8" fill="white" stroke="#4a69bd" stroke-width="3" />
+                        <text x="1285" y="${y + 5}" font-size="20" font-weight="bold" text-anchor="end">${st}</text>
+                    `;
+                }).join('')}
 
                 <!-- 愛知線 -->
                 <path d="M1300 300 L600 300" fill="none" stroke="#e84118" stroke-width="10" />
                 <text x="1300" y="270" fill="#e84118" font-size="22" font-weight="bold" text-anchor="end">愛知線</text>
                 ${["新所原", "東二川", "二川", "山田町", "豊橋", "豊川", "新小坂井", "新小田渕", "国府", "御油", "赤坂", "南長沢", "北蒲郡", "中蒲郡", "蒲郡"].reverse().map((st, i) => `
                     <circle cx="${600 + i * 50}" cy="300" r="9" fill="white" stroke="#333" stroke-width="3" />
-                    <text x="${600 + i * 50}" y="${i % 2 === 0 ? 345 : 380}" font-size="13" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${600 + i * 50}, ${i % 2 === 0 ? 345 : 380})">${st}</text>
+                    <text x="${600 + i * 50}" y="${i % 2 === 0 ? 345 : 380}" font-size="20" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${600 + i * 50}, ${i % 2 === 0 ? 345 : 380})">${st}</text>
                 `).join('')}
 
                 <!-- 名安線 (蒲郡との間を空ける) -->
@@ -556,23 +572,29 @@
                     const x = 50 + i * 61;
                     return `
                         <circle cx="${x}" cy="${300}" r="9" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x}" y="${i % 2 === 0 ? 345 : 380}" font-size="13" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${i % 2 === 0 ? 345 : 380})">${st}</text>
+                        <text x="${x}" y="${i % 2 === 0 ? 345 : 380}" font-size="20" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${i % 2 === 0 ? 345 : 380})">${st}</text>
                     `;
                 }).join('')}
 
                 <!-- 桜通線 (他社線) -->
-                <path d="M50 300 L50 550 L875 550" fill="none" stroke="#EA3223" stroke-width="3" opacity="0.6" />
+                <path d="M50 300 L20 300 L20 550 L875 550" fill="none" stroke="#EA3223" stroke-width="3" opacity="0.6" />
                 <text x="875" y="520" fill="#EA3223" font-size="20" font-weight="bold" text-anchor="end">名古屋市営地下鉄 桜通線</text>
                 ${["徳重", "神沢", "相生山", "鳴子北", "野並", "鶴里", "桜本町", "新瑞橋", "瑞穂運動場西", "瑞穂区役所", "桜山", "御器所", "吹上", "今池", "車道", "高岳", "久屋大通", "丸の内", "国際センター", "名古屋", "太閤通"].map((st, i) => {
-                    let x, y, dx = 15, dy = 5;
-                    if (i === 0) { x = 50; y = 300; } // 徳重
-                    else if (i < 6) { x = 50; y = 300 + i * 40; } // 垂直区間
+                    let x, y, dx = 15, dy = 5, anchor = "start";
+                    if (i === 0) { 
+                        x = 50; y = 300; 
+                        dx = 15; dy = 35; // 徳重は接続点に固定し、ラベルを少し下に
+                    }
+                    else if (i < 6) { 
+                        x = 20; y = 300 + i * 40; 
+                        dx = -15; anchor = "end"; // 垂直区間
+                    }
                     else { 
-                        x = 50 + (i - 5) * 55; y = 550; dx = 0; dy = 45; // 線の下に統一して配置
+                        x = 20 + (i - 5) * 55; y = 550; dx = 0; dy = 55; 
                     }
                     return `
                         <circle cx="${x}" cy="${y}" r="6" fill="white" stroke="#EA3223" stroke-width="2" />
-                        <text x="${x + dx}" y="${y + dy}" font-size="12" font-weight="bold" text-anchor="start" transform="${i >= 6 ? 'rotate(35, '+x+', '+(y+dy)+')' : ''}">${st}</text>
+                        ${i === 0 ? '' : `<text x="${x + dx}" y="${y + dy}" font-size="17" font-weight="bold" text-anchor="${anchor}" transform="${i >= 6 ? 'rotate(35, '+x+', '+(y+dy)+')' : ''}">${st}</text>`}
                     `;
                 }).join('')}
             </svg>`

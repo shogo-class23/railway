@@ -204,9 +204,9 @@
             <p>千葉・取手線 総合案内</p>
             <small>クリックして入場</small>
         </div>
-        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('motegi')">
-            <h1>茂木日本鉄道</h1>
-            <p>茂木線 総合案内</p>
+        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('tochigi')">
+            <h1>栃木日本鉄道</h1>
+            <p>栃木日光線 総合案内</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #1e3799;" onclick="selectCompany('tokai')">
@@ -477,21 +477,34 @@
                 `).join('')}
             </svg>`
         },
-        motegi: {
-            name: "茂木日本鉄道",
+        tochigi: {
+            name: "栃木日本鉄道",
             routes: {
-                "茂木日本線": {
+                "栃木日本線": {
                     stations: ["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"],
                     interval: 4
+                },
+                "日光日本線": {
+                    stations: ["足尾", "栃鉄日光"],
+                    interval: 20
                 }
             },
-            status: ["茂木日本線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="0 0 1000 350">
-                <line x1="100" y1="150" x2="880" y2="150" stroke="#2ecc71" stroke-width="12" />
-                <text x="50" y="100" fill="#27ae60" font-size="24" font-weight="bold">茂木日本線</text>
+            status: ["栃木日本線: 平常", "日光日本線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 450">
+                <!-- 栃木日本線 -->
+                <line x1="100" y1="120" x2="880" y2="120" stroke="#2ecc71" stroke-width="12" />
+                <text x="50" y="80" fill="#27ae60" font-size="24" font-weight="bold">栃木日本線</text>
                 ${["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"].map((st, i) => `
-                    <circle cx="${100 + i * 130}" cy="150" r="10" fill="white" stroke="#333" stroke-width="3" />
-                    <text x="${100 + i * 130}" y="${i % 2 === 0 ? 200 : 230}" font-size="13" text-anchor="middle" font-weight="bold">${st}</text>
+                    <circle cx="${100 + i * 130}" cy="120" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${100 + i * 130}" y="${i % 2 === 0 ? 170 : 200}" font-size="13" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+
+                <!-- 日光日本線 (栃木日本線のすぐ下に配置) -->
+                <line x1="100" y1="320" x2="360" y2="320" stroke="#27ae60" stroke-width="12" />
+                <text x="50" y="280" fill="#27ae60" font-size="24" font-weight="bold">日光日本線</text>
+                ${["足尾", "栃鉄日光"].map((st, i) => `
+                    <circle cx="${100 + i * 260}" cy="320" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${100 + i * 260}" y="370" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
                 `).join('')}
             </svg>`
         },

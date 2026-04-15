@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ねりか区営地下鉄 - 総合案内</title>
+    <title>ねりか区営地下鉄</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -124,10 +124,10 @@
         .line-badge.東海道本線 { background: #f39c12; }
         .line-badge.山陽・九州新幹線 { background: #3498db; }
         .line-badge.姫新線 { background: #f1c40f; }
-        .line-badge.上越新幹線 { background: #2ecc71; }
-        .line-badge.名鉄線 { background: #e84118; }
-        .line-badge.天竜浜名湖鉄道 { background: #27ae60; }
-        .line-badge.大井川鉄道 { background: #d35400; }
+        .line-badge.山陽・九州急幹線 { background: #3498db; }
+        .line-badge.上越急幹線 { background: #2ecc71; }
+        .line-badge.天竜浜名湖鉄道線 { background: #27ae60; }
+        .line-badge.大井川鉄道線 { background: #d35400; }
         .line-badge.総武快速線 { background: #3498db; }
         .line-badge.常総線 { background: #e67e22; }
         .line-badge.真岡線 { background: #EA3223; }
@@ -196,37 +196,37 @@
         </div>
         <div class="company-card" style="border-color: #3498db;" onclick="selectCompany('keihin')">
             <h1>京浜日本鉄道</h1>
-            <p>北部・上野・本線・芋窪線</p>
+            <p>北部線・上野線・京浜日本本線・芋窪線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #e67e22;" onclick="selectCompany('chiba')">
             <h1>千葉日本鉄道</h1>
-            <p>千葉・取手線 総合案内</p>
+            <p>千葉日本線・取手線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('tochigi')">
             <h1>栃木日本鉄道</h1>
-            <p>茂木日本線・日光日本線 総合案内</p>
+            <p>茂木日本線・日光日本線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #1e3799;" onclick="selectCompany('tokai')">
             <h1>東海日本鉄道</h1>
-            <p>名四線・静岡・愛知・名安 総合案内</p>
+            <p>名四線・静岡線・愛知線・名安線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #0984e3;" onclick="selectCompany('kansai')">
             <h1>関西日本鉄道</h1>
-            <p>神丹線・東平野線・播磨線 総合案内</p>
+            <p>神丹線・東平野線・播磨線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #0fbcf9;" onclick="selectCompany('hokuriku')">
             <h1>北陸日本鉄道</h1>
-            <p>新潟線 総合案内</p>
+            <p>新潟線</p>
             <small>クリックして入場</small>
         </div>
         <div class="company-card" style="border-color: #d4af37;" onclick="selectCompany('kyukansen')">
             <h1>日本急幹線</h1>
-            <p>中山道・中部縦貫・西九州急幹線 総合案内</p>
+            <p>中山道急幹線・中部縦貫急幹線・西九州急幹線</p>
             <small>クリックして入場</small>
         </div>
 
@@ -236,12 +236,12 @@
         <div class="company-card muted-card" onclick="selectCompany('private_railways')">
             <h1>私鉄線</h1>
             <p>(参考接続)</p>
-            <small>名鉄・天浜・大井川線</small>
+            <small>名鉄線・天浜線・大井川鉄道線</small>
         </div>
         <div class="company-card muted-card" onclick="selectCompany('jr_lines')">
             <h1>JR線</h1>
             <p>(参考接続)</p>
-            <small>山手・中央・新幹線 各線</small>
+            <small>山手・中央・急幹線 各線</small>
         </div>
         <div class="company-card muted-card" onclick="selectCompany('nerika')">
             <h1>ねりか区営地下鉄</h1>
@@ -468,12 +468,12 @@
                 }
             },
             status: ["千葉日本線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="0 0 400 600">
-                <line x1="200" y1="100" x2="200" y2="500" stroke="#e67e22" stroke-width="12" />
-                <text x="230" y="80" fill="#d35400" font-size="22" font-weight="bold">千葉日本線</text>
-                ${["千葉", "長沼", "新勝田台", "米本", "小室", "取手"].reverse().map((st, i) => `
-                    <circle cx="200" cy="${100 + i * 80}" r="10" fill="white" stroke="#333" stroke-width="3" />
-                    <text x="230" y="${105 + i * 80}" font-size="16" font-weight="bold">${st}</text>
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 350">
+                <line x1="100" y1="120" x2="900" y2="120" stroke="#e67e22" stroke-width="12" />
+                <text x="50" y="80" fill="#d35400" font-size="24" font-weight="bold">千葉日本線</text>
+                ${["千葉", "長沼", "新勝田台", "米本", "小室", "取手"].map((st, i) => `
+                    <circle cx="${100 + i * 160}" cy="120" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${100 + i * 160}" y="${i % 2 === 0 ? 175 : 205}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
                 `).join('')}
             </svg>`
         },
@@ -1365,6 +1365,6 @@
         `;
         document.body.appendChild(modal);
     }
-</script>
-</body>
-</html>
+    </script>
+    </body>
+    </html>

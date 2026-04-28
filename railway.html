@@ -848,8 +848,7 @@
             routes: {
                 "中山道急幹線": {
                     stations: ["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"],
-                    interval: 20,
-                    unit_dur: 30,
+                    intervals: [30, 20, 20, 60, 38, 30, 50, 60, 30, 35, 50, 30, 40, 60],
                     services: [
                         { name: "みの", stops: ["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"], offset: 0 },
                         { name: "きそ", stops: ["新大阪", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "高山", "松本", "秩父", "大宮"], offset: 7, interval: 60 },
@@ -858,16 +857,14 @@
                 },
                 "金沢支線": {
                     stations: ["金沢", "福光", "白川", "高山"],
-                    interval: 20,
-                    unit_dur: 30,
+                    intervals: [25, 25, 40],
                     services: [
                         { name: "かなざわ", stops: ["金沢", "福光", "白川", "高山"], offset: 0 }
                     ]
                 },
                 "中山道急幹線(直通)": {
                     stations: ["金沢", "福光", "白川", "高山", "平湯", "松本", "佐久平", "大宮"],
-                    interval: 60,
-                    unit_dur: 30,
+                    intervals: [25, 25, 40, 30, 35, 50, 130],
                     services: [
                         { name: "さく", stops: ["金沢", "福光", "白川", "高山", "平湯", "松本", "佐久平", "大宮"], offset: 25 },
                         { name: "しらかわ", stops: ["金沢", "高山", "松本", "大宮"], offset: 45 }
@@ -875,80 +872,88 @@
                 },
                 "西九州急幹線": {
                     stations: ["熊本", "島原", "口之津", "天草空港", "長島", "出水"],
-                    interval: 15,
-                    unit_dur: 30,
+                    intervals: [30, 25, 25, 40, 40],
                     services: [
                         { name: "しまばら", stops: ["熊本", "島原", "口之津", "天草空港", "長島", "出水"], offset: 0 },
                         { name: "あまくさ", stops: ["熊本", "天草空港", "出水"], offset: 7 }
+                    ]
+                },
+                "中部縦貫急幹線": {
+                    stations: ["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"],
+                    intervals: [20, 40, 50, 50, 100, 30, 40, 50, 60, 80, 70, 30],
+                    services: [
+                        { name: "各駅停車", stops: ["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"], offset: 0 },
+                        { name: "急行", stops: ["仙台", "山形", "長岡", "長野", "松本", "飯田市", "静岡"], offset: 10 }
                     ]
                 }
             },
             status: ["中山道急幹線: 平常", "中部縦貫急幹線: 平常", "金沢支線: 平常", "西九州急幹線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="0 0 1600 1200">
-                <!-- 中山道急幹線 (水平) -->
+                <!-- ライン描画 (交点を各駅の座標 906, 1120 に合わせる) -->
                 <line x1="50" y1="600" x2="1550" y2="600" stroke="#d4af37" stroke-width="12" opacity="0.8" />
-                <text x="50" y="540" fill="#d4af37" font-size="32" font-weight="bold">中山道急幹線</text>
+                <line x1="906" y1="600" x2="906" y2="360" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <line x1="50" y1="1000" x2="650" y2="1000" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <path d="M1550 150 L1120 150 L1120 1100" fill="none" stroke="#d4af37" stroke-width="12" stroke-linejoin="round" />
+
+                <!-- 路線タイトル (線より後に描画、縁取りを強化) -->
+                <text x="50" y="540" fill="#b8860b" font-size="32" font-weight="bold" stroke="white" stroke-width="8" paint-order="stroke">中山道急幹線</text>
+                <text x="930" y="340" fill="#b8860b" font-size="28" font-weight="bold" stroke="white" stroke-width="8" paint-order="stroke">金沢支線</text>
+                <text x="50" y="940" fill="#b8860b" font-size="32" font-weight="bold" stroke="white" stroke-width="8" paint-order="stroke">西九州急幹線</text>
+                <text x="1550" y="110" fill="#b8860b" font-size="32" font-weight="bold" text-anchor="end" stroke="white" stroke-width="8" paint-order="stroke">中部縦貫急幹線</text>
+                
+                <!-- 中山道急幹線の駅 -->
                 ${["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"].map((st, i) => {
                     const x = 50 + i * 107;
                     const y = 600;
+                    const isMatsu = st === "松本";
                     const isBelow = (i < 11 ? i % 2 === 0 : i % 2 !== 0);
-                    const textY = isBelow ? y + 50 : y - 35;
+                    // 松本(i=10, x=1120)は重要交差点なのでラベルを強調
+                    const textY = isBelow ? y + (isMatsu ? 75 : 50) : y - (isMatsu ? 55 : 35);
                     return `
                         <circle cx="${x}" cy="${y}" r="${(st==='松本'||st==='高山')?16:10}" fill="white" stroke="#333" stroke-width="4" />
-                        <text x="${x}" y="${textY}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${textY})">${st}</text>
+                        <text x="${x}" y="${textY}" font-size="${isMatsu ? 24 : 15}" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${textY})" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
                     `;
                 }).join('')}
 
-                <!-- 金沢支線 (垂直) -->
-                <line x1="1120" y1="600" x2="1120" y2="360" stroke="#d4af37" stroke-width="12" opacity="0.8" />
-                <text x="1142" y="340" fill="#d4af37" font-size="28" font-weight="bold">金沢支線</text>
+                <!-- 金沢支線の駅 -->
                 ${["高山", "白川", "福光", "金沢"].map((st, i) => {
-                    if (st === "高山") return '';
-                    const x = 1120;
+                    if (st === "高山") return ''; // 中山道側で描画済み
+                    const x = 906; // 高山のX座標に合わせる
                     const y = 600 - i * 80;
                     return `
                         <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
-                        <text x="${x + 25}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start">${st}</text>
+                        <text x="${x + 30}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
                     `;
                 }).join('')}
 
-                <!-- 西九州急幹線 (左下水平) -->
-                <line x1="50" y1="1000" x2="650" y2="1000" stroke="#d4af37" stroke-width="12" opacity="0.8" />
-                <text x="50" y="940" fill="#d4af37" font-size="32" font-weight="bold">西九州急幹線</text>
+                <!-- 西九州急幹線の駅 -->
                 ${["熊本", "島原", "口之津", "天草空港", "長島", "出水"].map((st, i) => {
                     const x = 50 + i * 120;
                     const y = 1000;
                     return `
                         <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
-                        <text x="${x}" y="${y + 50}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${y + 50})">${st}</text>
+                        <text x="${x}" y="${y + 50}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${y + 50})" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
                     `;
                 }).join('')}
 
-                <!-- 中部縦貫急幹線 (仙台〜長岡は水平、長岡〜静岡は垂直) -->
-                <path d="M1550 150 L1194 150 L1194 1100" fill="none" stroke="#d4af37" stroke-width="12" stroke-linejoin="round" />
-                <text x="1550" y="110" fill="#d4af37" font-size="32" font-weight="bold" text-anchor="end">中部縦貫急幹線</text>
-                
-                <!-- 仙台〜長岡 (水平区間) -->
+                <!-- 中部縦貫急幹線の駅 -->
                 ${["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡"].reverse().map((st, i) => {
-                    const x = 1194 + i * 71.2; 
+                    const x = 1120 + i * 71.2; // 松本のX座標(1120)を起点にする
                     const y = 150;
                     return `
                         <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
-                        <text x="${x}" y="${y - 25}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+                        <text x="${x}" y="${y - 25}" font-size="16" text-anchor="middle" font-weight="bold" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
                     `;
                 }).join('')}
-
-                <!-- 長岡〜静岡 (垂直区間) -->
                 ${["長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"].map((st, i) => {
-                    if (st === "長岡") return ''; 
-                    const x = 1194;
+                    if (st === "長岡" || st === "松本") return ''; // 重複駅は描画スキップ
+                    const x = 1120; // 松本のX座標に合わせる
                     let y;
                     if (i <= 4) y = 150 + i * 112.5; 
                     else y = 600 + (i - 4) * 166.6; 
-                    if (st === "松本") y = 600; 
                     return `
-                        <circle cx="${x}" cy="${y}" r="${st==='松本'?16:10}" fill="white" stroke="#333" stroke-width="4" />
-                        <text x="${x + 25}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start">${st}</text>
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x + 30}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
                     `;
                 }).join('')}
             </svg>`

@@ -1101,7 +1101,7 @@
     }
 
     function calcD(data, s, e, svcName, svcStops) {
-        if (s === e) return 0;
+        if (s === e) return { time: 0, dist: 0 };
         const n = data.stations.length;
         const isLoop = data.stations[0] === data.stations[n-1];
         
@@ -1112,40 +1112,64 @@
         } else {
             let d = Math.abs(s - e);
             if (isLoop) { d = Math.min(d, (n - 1) - d); }
-            distance = d * (data.interval || 1.5); // デフォルト1.5km
+            distance = d * (data.interval || 1.5);
         }
 
         const speeds = {
-            "特急": 80,
-            "快速急行": 60,
-            "急行": 50,
-            "準急": 40,
-            "各駅停車": 30,
-            "普通": 30,
-            // 特殊種別のマッピング
+            "特急": 80, "快速急行": 60, "急行": 50, "準急": 40, "各駅停車": 30, "普通": 30,
             "スカイ": 80, "みの": 80, "きそ": 60, "やまと": 80, "かなざわ": 60, "さく": 60, "しらかわ": 80, "しまばら": 60, "あまくさ": 80, "はくさん": 60, "たてやま": 80, "アルプス": 30
         };
         
-        const V = speeds[svcName] || 30; // 指定がない場合は30km/h
+        const V = speeds[svcName] || 30;
         let travelTime = (distance / V) * 60;
         
-        // 停車駅数(S)のカウント
         let S = 0;
         if (svcStops) {
             const sName = data.stations[s], eName = data.stations[e];
             const si = svcStops.indexOf(sName), ei = svcStops.indexOf(eName);
-            if (si !== -1 && ei !== -1) {
-                // 出発駅と到着駅を含めた停車駅数をカウント
-                // 区間内の駅数 = |ei - si| + 1
-                S = Math.abs(ei - si) + 1;
-            }
+            if (si !== -1 && ei !== -1) S = Math.abs(ei - si) + 1;
         } else {
-            // svcStopsがない場合は各駅停車として計算
             S = Math.abs(s - e) + 1;
         }
         
-        // 公式: T = (L/V) * 60 + 0.75 * S
-        return travelTime + 0.75 * S;
+        return { time: travelTime + 0.75 * S, dist: distance };
+    }
+
+    function calcFare(dist) {
+        if (dist <= 0) return 0;
+        if (dist <= 5) return 200;
+        if (dist <= 10) return 280;
+        if (dist <= 20) return 360;
+        if (dist <= 30) return 450;
+        if (dist <= 50) return 650;
+        if (dist <= 100) return 900;
+        return 1200;
+    }
+
+    function calcSurcharge(dist, lineName, svcName) {
+        if (dist <= 0) return 0;
+        
+        // 1. 急幹線料金 (新幹線クラスの種別、または急幹線と名のつく路線)
+        const kyukansenSvcs = ["みの", "きそ", "やまと", "かなざわ", "さく", "しらかわ", "しまばら", "あまくさ", "はくさん", "たてやま"];
+        if (lineName.includes("急幹線") || kyukansenSvcs.includes(svcName)) {
+            if (dist <= 200) return 1500;
+            if (dist <= 400) return 2500;
+            if (dist <= 700) return 3500;
+            return 4500;
+        }
+        
+        // 2. 特急料金 (在来線の優等種別)
+        const premiumSvcs = ["特急", "スカイ"];
+        if (premiumSvcs.includes(svcName)) {
+            if (dist <= 10) return 300;
+            if (dist <= 20) return 400;
+            if (dist <= 40) return 600;
+            if (dist <= 80) return 900;
+            return 1100;
+        }
+        
+        // 急行などは 0円
+        return 0;
     }
 
     function getMid(data, sIdx, eIdx, svcStops, svcName) {
@@ -1212,32 +1236,37 @@
             const getSvcs = (d) => d.services || [{ name: "各駅停車", stops: d.stations, offset: 0 }];
             const allRoutes = [];
             for (const [lineName, data] of Object.entries(curComp.routes)) {
+                let companyId = "unknown";
+                for (const [cid, cdata] of Object.entries(companies)) {
+                    if (cdata.routes[lineName]) { companyId = cid; break; }
+                }
                 for (const svc of getSvcs(data)) {
-                    allRoutes.push({ lineName, data, svc });
+                    allRoutes.push({ lineName, data, svc, companyId });
                 }
             }
 
             const walkPairs = [
-                ["大阪梅田", "南梅田", 30], 
                 ["水海道", "下館", 30],
                 ["湊川", "湊川公園", 5],
                 ["三宮", "神戸三宮", 0]
             ];
-
                         let queue = [{
                             currSt: from,
                             dur: 0,
-                            score: 0, // Composite score: duration + (transfers * penalty)
+                            dist: 0, // 合計距離の追加
+                            score: 0,
                             transfers: 0,
                             steps: [],
                             visitedLines: new Set(),
-                            visitedStations: new Set([from])
+                            visitedStations: new Set([from]),
+                            lastLineName: null,
+                            lastCompanyId: null
                         }];
                         
                         const possibleRoutes = [];
                         const maxTransfers = 10;
                         const targetCount = 3;
-                        const transferPenalty = 20; // 20 minutes penalty per transfer for scoring
+                        const transferPenalty = 20;
             
                         const foundResultsDiv = document.getElementById('found-results');
                         const progressText = document.getElementById('search-progress');
@@ -1250,46 +1279,64 @@
                                 if (path.transfers > maxTransfers) continue;
                                 if (possibleRoutes.length > 0 && path.score > possibleRoutes[0].score * 2.5) continue;
             
-                                for (const { lineName, data, svc } of allRoutes) {
+                                for (const { lineName, data, svc, companyId } of allRoutes) {
                                     if (path.visitedLines.has(lineName)) continue;
                                     if (!svc.stops.includes(path.currSt)) continue;
+
+                                    let transferWait = 0;
+                                    let transferStep = null;
+                                    if (path.lastLineName && path.lastLineName !== lineName && path.lastLineName !== "walking") {
+                                        const terminals = ["中央駅", "大宮", "名古屋", "新大阪", "横浜", "東京", "新宿", "品川", "渋谷", "上野", "池袋", "千葉", "神戸三宮", "三宮", "新開地", "金沢", "仙台", "静岡", "新潟", "高山", "松本"];
+                                        transferWait = terminals.includes(path.currSt) ? 10 : 3;
+                                        if (path.lastCompanyId && path.lastCompanyId !== companyId) transferWait += 2;
+                                        
+                                        transferStep = {
+                                            role: "transfer",
+                                            name: path.currSt,
+                                            type: "via-station",
+                                            sub: `乗換 ${transferWait}分`,
+                                            arrivalOffset: path.dur,
+                                            departureOffset: path.dur + transferWait
+                                        };
+                                    }
             
                                     const fromIdx = data.stations.indexOf(path.currSt);
                                     for (const targetSt of svc.stops) {
                                         if (targetSt === path.currSt || path.visitedStations.has(targetSt)) continue;
             
                                         const toIdx = data.stations.indexOf(targetSt);
-                                        const legDur = calcD(data, fromIdx, toIdx, svc.name, svc.stops);
-                                        const totalDur = path.dur + legDur;
+                                        const legData = calcD(data, fromIdx, toIdx, svc.name, svc.stops);
+                                        const totalDur = path.dur + transferWait + legData.time;
+                                        const totalDist = path.dist + legData.dist; // 距離の加算
                                         const totalScore = totalDur + (path.transfers * transferPenalty);
             
-                                        const currentLegSteps = [
-                                            {
-                                                role: path.steps.length === 0 ? "boarding" : "transfer-info",
-                                                lineName: `${svc.name} (${lineName})`,
-                                                name: path.currSt,
-                                                type: path.steps.length === 0 ? "boarding-station" : "info-only",
-                                                timeOffset: path.dur
-                                            },
-                                            ...getMid(data, fromIdx, toIdx, svc.stops, svc.name).map(s => ({...s, timeOffset: s.timeOffset + path.dur})),
-                                        ];
+                                        const currentLegSteps = [];
+                                        if (transferStep) currentLegSteps.push(transferStep);
+                                        currentLegSteps.push({
+                                            role: path.steps.length === 0 ? "boarding" : "transfer-info",
+                                            lineName: `${svc.name} (${lineName})`,
+                                            realLineName: lineName, // 計算用に保持
+                                            realSvcName: svc.name,  // 計算用に保持
+                                            name: path.currSt,
+                                            type: path.steps.length === 0 ? "boarding-station" : "info-only",
+                                            timeOffset: path.dur + transferWait,
+                                            legDist: legData.dist 
+                                        });
+                                        currentLegSteps.push(...getMid(data, fromIdx, toIdx, svc.stops, svc.name).map(s => ({...s, timeOffset: s.timeOffset.time + path.dur + transferWait})));
             
                                         const newSteps = [...path.steps];
-                                        if (newSteps.length > 0 && newSteps[newSteps.length - 1].type === "via-station") {
-                                            newSteps[newSteps.length - 1].lineName = `${svc.name} (${lineName})`;
-                                            newSteps[newSteps.length - 1].departureOffset = path.dur + 5;
-                                        }
                                         const finalSteps = [...newSteps, ...currentLegSteps];
             
                                         if (targetSt === to) {
                                             const routeObj = {
                                                 dur: totalDur,
+                                                dist: totalDist,
                                                 score: totalScore,
                                                 transfers: path.transfers,
                                                 svc: path.steps.length === 0 ? svc : path.firstSvc,
                                                 lastSvc: svc,
-                                                durFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx, svc.name, svc.stops) : path.firstDurFromTerm,
-                                                durToTerm: calcD(data, 0, toIdx, svc.name, svc.stops),
+                                                durFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx, svc.name, svc.stops).time : path.firstDurFromTerm,
+                                                durToTerm: calcD(data, 0, toIdx, svc.name, svc.stops).time,
                                                 steps: [...finalSteps, {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}],
                                                 desc: path.transfers === 0 ? `${svc.name} 直通` : `${path.transfers}回乗換`
                                             };
@@ -1309,11 +1356,13 @@
                                                 const nextLines = new Set(path.visitedLines); nextLines.add(lineName);
                                                 const nextSts = new Set(path.visitedStations); nextSts.add(targetSt);
                                                 queue.push({
-                                                    currSt: targetSt, dur: totalDur + 5, transfers: path.transfers + 1,
-                                                    score: totalScore + transferPenalty + 5,
+                                                    currSt: targetSt, dur: totalDur, dist: totalDist, transfers: path.transfers + 1,
+                                                    score: totalScore + transferPenalty,
                                                     firstSvc: path.steps.length === 0 ? svc : path.firstSvc,
-                                                    firstDurFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx, svc.name, svc.stops) : path.firstDurFromTerm,
-                                                    steps: [...finalSteps, {role:"transfer", name:targetSt, type:"via-station", sub:"乗換 5分", arrivalOffset:totalDur, departureOffset:totalDur+5}],
+                                                    lastCompanyId: companyId,
+                                                    lastLineName: lineName,
+                                                    firstDurFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx, svc.name, svc.stops).time : path.firstDurFromTerm,
+                                                    steps: [...finalSteps],
                                                     visitedLines: nextLines, visitedStations: nextSts
                                                 });
                                             }
@@ -1327,9 +1376,11 @@
                                         if (!path.visitedStations.has(targetSt)) {
                                             const nextSts = new Set(path.visitedStations); nextSts.add(targetSt);
                                             queue.push({
-                                                currSt: targetSt, dur: path.dur + wDur, transfers: path.transfers,
-                                                score: path.score + wDur + (wDur > 0 ? 5 : 0), // Walking has small penalty
+                                                currSt: targetSt, dur: path.dur + wDur, dist: path.dist, transfers: path.transfers,
+                                                score: path.score + wDur + (wDur > 0 ? 5 : 0),
                                                 firstSvc: path.firstSvc, firstDurFromTerm: path.firstDurFromTerm,
+                                                lastLineName: "walking",
+                                                lastCompanyId: "walking",
                                                 steps: [...path.steps, {role:"transfer", name:`${path.currSt}→${targetSt}`, type:"via-station", sub: wDur===0?"同一駅":`徒歩 ${wDur}分`, arrivalOffset:path.dur, departureOffset:path.dur+wDur}],
                                                 visitedLines: new Set(path.visitedLines), visitedStations: nextSts
                                             });
@@ -1357,16 +1408,29 @@
                     return;
                 }
 
-                // Calculate min values for tags
+                // 運賃と特急料金の計算
+                possibleRoutes.forEach(r => {
+                    let totalBaseFare = 0;
+                    let totalSurcharge = 0;
+                    r.steps.forEach(s => {
+                        if (s.legDist) {
+                            totalBaseFare += calcFare(s.legDist);
+                            totalSurcharge += calcSurcharge(s.legDist, s.realLineName || "", s.realSvcName || "");
+                        }
+                    });
+                    r.totalBaseFare = totalBaseFare;
+                    r.totalSurcharge = totalSurcharge;
+                    r.totalFare = totalBaseFare + totalSurcharge;
+                });
+
                 const minDur = Math.min(...possibleRoutes.map(r => r.dur));
                 const minTransfers = Math.min(...possibleRoutes.map(r => r.transfers));
-                const minCost = Math.min(...possibleRoutes.map(r => Math.floor(100 + (r.dur/3)*50)));
+                const minCost = Math.min(...possibleRoutes.map(r => r.totalFare));
 
                 let html = possibleRoutes.map((res, idx) => {
                     const isFast = res.dur === minDur;
                     const isEasy = res.transfers === minTransfers;
-                    const cost = Math.floor(100 + (res.dur/3)*50);
-                    const isCheap = cost === minCost;
+                    const isCheap = res.totalFare === minCost;
                     return renderRouteHtml(res, idx + 1, { isFast, isEasy, isCheap });
                 }).join('');
                 
@@ -1384,7 +1448,6 @@
                 let base = parseInt(hs.value)*60 + parseInt(ms.value);
                 let dm, am;
                 
-                // Ensure svc is valid
                 const safeSvc = res.svc || { interval: 15, offset: 0 };
                 const safeDur = res.dur || 0;
                 const safeDurFrom = res.durFromTerm || 0;
@@ -1399,7 +1462,6 @@
                 } else {
                     dm = getSnap(base, safeSvc, safeDurFrom, false); am = dm + safeDur;
                 }
-                const cost = Math.floor(100 + (safeDur/3)*50);
                 
                 const formatDur = (m) => {
                     if (m < 60) return `${m}分`;
@@ -1426,28 +1488,43 @@
                     if(s.type === "intermediate") return `<div class="station-item" style="opacity:0.8; margin-bottom:10px;"><div class="station-info-row">${timeText}<span class="station-name-text" style="font-size:1.1rem; font-weight:normal;">${s.name}</span></div></div>`;
                     let lineClass = s.lineName ? (s.lineName.match(/\(([^)]+)\)/)||[,""])[1] : "";
                     let badge = s.lineName ? `<span class="line-badge ${lineClass}">${s.lineName}</span>` : '';
-                    return `<div class="station-item ${s.type}"><div class="role-tag">${s.role==='boarding'?'【乗車】':s.role==='transfer'?'【乗換】':s.role}</div><div class="station-info-row">${timeText}<span class="station-name-text">${s.name}</span>${badge}</div>${s.sub?`<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>`:''}</div>`;
+                    
+                    let fareInfo = "";
+                    if (s.legDist) {
+                        const b = calcFare(s.legDist);
+                        const sur = calcSurcharge(s.legDist, s.realLineName || "", s.realSvcName || "");
+                        fareInfo = `<div style="font-size:0.75rem; color:#7f8c8d; margin-left:65px;">${s.legDist.toFixed(1)}km / 運賃 ${b}円${sur > 0 ? ` + 特急料 ${sur}円` : ""}</div>`;
+                    }
+
+                    return `<div class="station-item ${s.type}"><div class="role-tag">${s.role==='boarding'?'【乗車】':s.role==='transfer'?'【乗換】':s.role}</div><div class="station-info-row">${timeText}<span class="station-name-text">${s.name}</span>${badge}</div>${fareInfo}${s.sub?`<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>`:''}</div>`;
                 }).join('');
 
+                const costStr = res.totalSurcharge > 0 ? `${res.totalFare}円 (運賃${res.totalBaseFare}+特急料${res.totalSurcharge})` : `${res.totalFare}円`;
+
                 return `<div class="route-result-item">
-                    <div class="route-header"><span><span class="route-tag-id">経路 ${idx}</span><strong>${res.desc}</strong>${tagHtml}</span><div style="display:flex; align-items:center; gap:10px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(safeDur)} / ${cost}円</span><button onclick="buyTicket('${document.getElementById('fromSt').value}', '${document.getElementById('toSt').value}', ${cost})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div>
-                    <div class="route-box"><span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span><div class="vertical-station-list">${stepHtml}</div></div>
+                    <div class="route-header"><span><span class="route-tag-id">経路 ${idx}</span><strong>${res.desc}</strong>${tagHtml}</span><div style="display:flex; align-items:center; gap:10px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(safeDur)} / ${res.totalFare}円</span><button onclick="buyTicket('${document.getElementById('fromSt').value}', '${document.getElementById('toSt').value}', ${res.totalBaseFare}, ${res.totalSurcharge})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div>
+                    <div class="route-box"><span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span><div style="font-size:0.9rem; color:#666; margin-bottom:10px;">${costStr}</div><div class="vertical-station-list">${stepHtml}</div></div>
                 </div>`;
             }
 
             processQueue();
         }, 100);
     }
-    function buyTicket(from, to, price) {
+    function buyTicket(from, to, base, sur) {
         const modal = document.createElement('div');
         modal.id = 'ticketModal';
+        const total = base + sur;
         modal.innerHTML = `
             <div class="ticket">
                 <div class="ticket-header">日本鉄道 旅客鉄道株式会社</div>
                 <div class="ticket-main">
                     <div class="ticket-st">${from} から</div>
                     <div class="ticket-price">${to} まで</div>
-                    <div style="font-size: 2rem; margin: 10px 0;">${price}円</div>
+                    <div style="text-align: left; margin: 15px 0; font-size: 0.9rem; border-top: 1px dashed #5d4037; padding-top: 10px;">
+                        <div>乗車券：${base}円</div>
+                        ${sur > 0 ? `<div>特急券：${sur}円</div>` : ""}
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;">合計 ${total}円</div>
+                    </div>
                 </div>
                 <div class="ticket-footer">${new Date().toLocaleDateString()} 発行</div>
                 <button class="btn-close-ticket" onclick="document.body.removeChild(this.parentElement.parentElement)">閉じる</button>

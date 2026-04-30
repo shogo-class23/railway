@@ -750,24 +750,45 @@
                 }
             },
             status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常", "神戸高速線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="-250 0 1850 1000">
+            svg: `<svg class="route-map-svg" viewBox="-250 0 1850 1200">
                 <!-- 神戸高速線 -->
-                <path d="M-160 150 L50 150" fill="none" stroke="#00cec9" stroke-width="10" />
-                <text x="-160" y="120" fill="#00cec9" font-size="24" font-weight="bold">神戸高速線</text>
+                <path d="M-160 300 L50 300" fill="none" stroke="#00cec9" stroke-width="10" />
+                <text x="-160" y="270" fill="#00cec9" font-size="24" font-weight="bold">神戸高速線</text>
                 ${["新開地", "神戸", "栄元町"].map((st, i) => `
-                    <circle cx="${-160 + i * 70}" cy="150" r="8" fill="white" stroke="#333" stroke-width="3" />
-                    <text x="${-160 + i * 70}" y="${i % 2 === 0 ? 195 : 225}" font-size="13" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${-160 + i * 70}, ${i % 2 === 0 ? 195 : 225})">${st}</text>
+                    <circle cx="${-160 + i * 70}" cy="300" r="8" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${-160 + i * 70}" y="${i % 2 === 0 ? 345 : 375}" font-size="13" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${-160 + i * 70}, ${i % 2 === 0 ? 345 : 375})">${st}</text>
                 `).join('')}
 
-                <!-- 神丹線 (延伸分含む) -->
-                <path d="M50 200 L900 200 L900 380" fill="none" stroke="#0984e3" stroke-width="10" />
-                <text x="50" y="170" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
+                <!-- 東平野線 (水平部は y=280 に配置して神丹線と分離) -->
+                <path d="M730 280 L1200 280 L1200 900" fill="none" stroke="#00b894" stroke-width="10" />
+                <text x="1220" y="270" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
+                ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
+                    let x, y, cy;
+                    if (i === 0) { x = 730; y = 280; cy = 300; } // 大阪梅田 (接続点)
+                    else if (i === 1) { x = 800; y = 280; cy = 300; } // 南森町 (接続点)
+                    else if (i === 2) { x = 1200; y = 280; cy = 300; } // 京橋 (曲がり角)
+                    else { x = 1200; y = 300 + (i - 2) * 60; cy = y; }
+                    
+                    let labelHtml = `<text x="${x + 20}" y="${cy + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>`;
+                    if (st === "大阪梅田" || st === "南森町") labelHtml = ""; // 神丹線側で描画
+
+                    return `
+                        ${(i <= 2) ? `<line x1="${x}" y1="280" x2="${x}" y2="300" stroke="#00b894" stroke-width="5" />` : ''}
+                        <circle cx="${x}" cy="${cy}" r="${st==='大池橋'||st==='大阪梅田'||st==='南森町'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
+                        ${labelHtml}
+                    `;
+                }).join('')}
+
+                <!-- 神丹線 (水平部は y=300 に配置) -->
+                <path d="M50 300 L800 300 L800 600" fill="none" stroke="#0984e3" stroke-width="10" />
+                <text x="50" y="270" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
                 ${["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"].map((st, i) => {
                     let x, y;
-                    if (i <= 21) { x = 50 + i * 40.5; y = 200; }
-                    else { x = 900; y = 200 + (i - 21) * 60; }
+                    if (i <= 21) { x = 50 + i * 35.7; y = 300; }
+                    else { x = 800; y = 300 + (i - 21) * 100; }
+                    
                     let anchor = "middle", dx = 0, dy = 0, rotate = -30;
-                    if (i > 21) { anchor = "start"; dx = 20; dy = 5; rotate = 0; }
+                    if (i > 21) { anchor = "end"; dx = -20; dy = 5; rotate = 0; }
                     else if (st === "大阪梅田") { anchor = "end"; dx = -15; dy = -25; rotate = 0; }
                     else if (st === "南森町") { anchor = "start"; dx = 10; dy = -25; rotate = 0; }
                     else { dy = i % 2 === 0 ? 45 : 75; }
@@ -778,40 +799,27 @@
                     `;
                 }).join('')}
 
-                <!-- 東平野線 (梅田・南森町・京橋を経由) -->
-                <path d="M860 180 L1300 180 L1300 800" fill="none" stroke="#00b894" stroke-width="10" />
-                <text x="1320" y="170" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
-                ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
-                    let x, y;
-                    if (i === 0) { x = 860; y = 180; }
-                    else if (i === 1) { x = 900; y = 180; }
-                    else if (i === 2) { x = 1300; y = 180; }
-                    else { x = 1300; y = 180 + (i - 2) * 45; }
-                    if (st === "大阪梅田" || st === "南森町") return ''; 
-                    let cy = (i === 2) ? 200 : y;
-                    return `
-                        ${i === 2 ? `<line x1="${x}" y1="180" x2="${x}" y2="200" stroke="#00b894" stroke-width="5" />` : ''}
-                        <circle cx="${x}" cy="${cy}" r="${st==='大池橋'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
-                        <text x="${x + 20}" y="${cy + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>
-                    `;
-                }).join('')}
-
-                <!-- 難波線 (大阪難波〜大池橋) -->
-                <path d="M900 380 L900 420 L1300 450" fill="none" stroke="#9b59b6" stroke-width="10" />
-                <text x="910" y="370" fill="#9b59b6" font-size="20" font-weight="bold">難波線</text>
+                <!-- 難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
+                <path d="M800 600 L1200 600" fill="none" stroke="#9b59b6" stroke-width="10" />
+                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">難波線</text>
                 ${["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"].map((st, i) => {
-                    let x, y;
-                    if (i === 0) { x = 900; y = 380; }
-                    else if (i === 1) { x = 900; y = 420; }
-                    else if (i === 2) { x = 1050; y = 430; }
-                    else if (i === 3) { x = 1200; y = 440; }
-                    else { x = 1300; y = 450; }
+                    let x = 800 + i * 100;
+                    let y = 600;
                     if (st === "大阪難波" || st === "大池橋") return ''; 
                     return `
                         <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x}" y="${y + 15}" font-size="12" font-weight="bold" text-anchor="start" style="writing-mode: vertical-rl; text-orientation: upright;">${st}</text>
+                        <text x="${x}" y="${y + 20}" font-size="12" font-weight="bold" text-anchor="start" style="writing-mode: vertical-rl; text-orientation: upright;">${st}</text>
                     `;
                 }).join('')}
+
+                <!-- 播磨線 -->
+                <path d="M50 750 L770 750" fill="none" stroke="#a52a2a" stroke-width="10" />
+                <text x="50" y="710" fill="#a52a2a" font-size="24" font-weight="bold">播磨線</text>
+                ${["佐用", "安富山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
+                    <circle cx="${50 + i * 180}" cy="750" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${50 + i * 180}" y="${i%2===0?795:825}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+            </svg>`
 
                 <!-- 播磨線 -->
                 <path d="M50 500 L770 500" fill="none" stroke="#a52a2a" stroke-width="10" />

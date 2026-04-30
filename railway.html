@@ -760,12 +760,12 @@
                 `).join('')}
 
                 <!-- 神丹線 (延伸分含む) -->
-                <path d="M50 120 L1150 120 L1150 270" fill="none" stroke="#0984e3" stroke-width="10" />
-                <text x="50" y="90" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
+                <path d="M50 200 L1050 200 L1050 380" fill="none" stroke="#0984e3" stroke-width="10" />
+                <text x="50" y="170" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
                 ${["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"].map((st, i) => {
                     let x, y;
-                    if (i <= 21) { x = 50 + i * 52.3; y = 120; }
-                    else { x = 1150; y = 120 + (i - 21) * 50; }
+                    if (i <= 21) { x = 50 + i * 47.6; y = 200; }
+                    else { x = 1050; y = 200 + (i - 21) * 60; }
                     let anchor = "middle", dx = 0, dy = 0, rotate = -30;
                     if (i > 21) { anchor = "start"; dx = 20; dy = 5; rotate = 0; }
                     else if (st === "大阪梅田") { anchor = "end"; dx = -15; dy = -25; rotate = 0; }
@@ -779,33 +779,33 @@
                 }).join('')}
 
                 <!-- 東平野線 (梅田・南森町・京橋を経由) -->
-                <path d="M1098 100 L1300 100 L1300 660" fill="none" stroke="#00b894" stroke-width="10" />
-                <text x="1320" y="90" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
+                <path d="M1000 180 L1200 180 L1200 800" fill="none" stroke="#00b894" stroke-width="10" />
+                <text x="1220" y="170" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
                 ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
                     let x, y;
-                    if (i === 0) { x = 1098; y = 100; }
-                    else if (i === 1) { x = 1150; y = 100; }
-                    else if (i === 2) { x = 1300; y = 100; }
-                    else { x = 1300; y = 100 + (i - 2) * 40; }
+                    if (i === 0) { x = 1000; y = 180; }
+                    else if (i === 1) { x = 1050; y = 180; }
+                    else if (i === 2) { x = 1200; y = 180; }
+                    else { x = 1200; y = 180 + (i - 2) * 60; }
                     if (st === "大阪梅田" || st === "南森町") return ''; 
-                    let cy = (i === 2) ? 120 : y;
+                    let cy = (i === 2) ? 200 : y;
                     return `
-                        ${i === 2 ? `<line x1="${x}" y1="100" x2="${x}" y2="120" stroke="#00b894" stroke-width="5" />` : ''}
+                        ${i === 2 ? `<line x1="${x}" y1="180" x2="${x}" y2="200" stroke="#00b894" stroke-width="5" />` : ''}
                         <circle cx="${x}" cy="${cy}" r="${st==='大池橋'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
                         <text x="${x + 20}" y="${cy + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>
                     `;
                 }).join('')}
 
-                <!-- 難波線 (新設: 大阪難波〜大池橋) -->
-                <path d="M1150 270 L1150 280 L1300 300" fill="none" stroke="#9b59b6" stroke-width="10" />
-                <text x="1160" y="260" fill="#9b59b6" font-size="20" font-weight="bold">難波線</text>
+                <!-- 難波線 (大阪難波〜大池橋) -->
+                <path d="M1050 380 L1050 400 L1200 480" fill="none" stroke="#9b59b6" stroke-width="10" />
+                <text x="1060" y="370" fill="#9b59b6" font-size="20" font-weight="bold">難波線</text>
                 ${["大阪難波", "日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"].map((st, i) => {
                     let x, y;
-                    if (i === 0) { x = 1150; y = 270; }
-                    else if (i === 1) { x = 1150; y = 280; }
-                    else if (i === 2) { x = 1200; y = 285; }
-                    else if (i === 3) { x = 1250; y = 295; }
-                    else { x = 1300; y = 300; }
+                    if (i === 0) { x = 1050; y = 380; }
+                    else if (i === 1) { x = 1050; y = 400; }
+                    else if (i === 2) { x = 1100; y = 430; }
+                    else if (i === 3) { x = 1150; y = 460; }
+                    else { x = 1200; y = 480; }
                     if (st === "大阪難波" || st === "大池橋") return ''; 
                     return `
                         <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />

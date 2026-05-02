@@ -115,7 +115,7 @@
         .line-badge.茂木日本線 { background: #2ecc71; }
         .line-badge.日光日本線 { background: #27ae60; }
         .line-badge.神丹線 { background: #0984e3; }
-        .line-badge.難波線 { background: #9b59b6; }
+        .line-badge.関西難波線 { background: #9b59b6; }
         .line-badge.東平野線 { background: #00b894; }
         .line-badge.神戸高速線 { background: #00cec9; }
         .line-badge.播磨線 { background: #a52a2a; }
@@ -274,7 +274,73 @@
             <div id="mapContainer" style="overflow-x:auto; background: white; padding: 10px; border-radius: 12px; border: 1px solid #eee;"></div>
             <div id="mapLegend" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
         </section>
-        <section id="stopMap" class="page"><h2>停車駅路線図</h2><div id="stopMapContainer"></div></section>
+        <section id="stopMap" class="page"><h2>停車駅路線図</h2><div id="stopMapContainer">
+    <h2>停車駅情報 (各駅停車)</h2>
+
+    <!-- 京浜日本鉄道 -->
+    <h3>京浜日本鉄道</h3>
+    <h4>芋窪線</h4>
+    <p><strong>各駅停車:</strong> 西武球場前, 芋窪, 上北台</p>
+
+    <h4>北部線</h4>
+    <p><strong>各駅停車:</strong> 光が丘, 田柄, 平和台, 新練馬, 中央公園, 新ときわ台, 板橋本町, 東十条, 新神谷, 新田, 鹿浜, 江北北, 大師, 西新井, 足立, 加平, 北綾瀬, 大谷田, 亀有, 金町</p>
+    <h4>上野線</h4>
+    <p><strong>各駅停車:</strong> 池袋, 上池袋, 西巣鴨, 王子, 堀船, 江北, 大師, 西新井, 足立, 梅田, 北千住, 千住大橋, 南千住, 浅草, 北上野, 上野</p>
+    <h4>京浜日本本線</h4>
+    <p><strong>各駅停車:</strong> 大宮, 西与野, 与野公園, 町谷, 西浦和, 美女木, 西戸田, 西高島平, 徳丸, 新赤塚, 平和台, 練馬春日町, 谷原, 練馬高野台, 南田中, 井荻, 桃井, 荻窪, 宮前, 高井戸, 八幡山, 希望丘, 船橋桜, 砧, 新用賀, 上野毛, 下野毛, 宮内, 南等々力, 武蔵小杉, 沼部, 御嶽山, 東久が原, 西馬込, 南久が原, 徳持, 幸, 川崎口, 三ッ池公園, 新大倉山, 新横浜, 三ツ沢公園, 横浜西口, 横浜</p>
+
+    <!-- 千葉日本鉄道 -->
+    <h3>千葉日本鉄道</h3>
+    <h4>千葉日本線</h4>
+    <p><strong>各駅停車:</strong> 千葉, 長沼, 新勝田台, 米本, 小室, 取手</p>
+
+    <!-- 栃木日本鉄道 -->
+    <h3>栃木日本鉄道</h3>
+    <h4>茂木日本線</h4>
+    <p><strong>各駅停車:</strong> 芳賀町工業団地管理センター前, 下高根沢, 祖母井, 上根, 市貝, 新天矢場, 茂木</p>
+    <h4>日光日本線</h4>
+    <p><strong>各駅停車:</strong> 足尾, 栃鉄日光</p>
+
+    <!-- 東海日本鉄道 -->
+    <h3>東海日本鉄道</h3>
+    <h4>静岡線</h4>
+    <p><strong>各駅停車:</strong> 掛川, 満水, 西方, 北菊川, 富田, 金谷</p>
+    <h4>静岡空港線</h4>
+    <p><strong>各駅停車:</strong> 富田, 牧之原, 静岡空港</p>
+    <h4>愛知線</h4>
+    <p><strong>各駅停車:</strong> 新所原, 東二川, 二川, 山田町, 豊橋, 豊川, 新小坂井, 新小田渕, 国府, 御油, 赤坂, 南長沢, 北蒲郡, 中蒲郡, 蒲郡</p>
+    <h4>名安線</h4>
+    <p><strong>各駅停車:</strong> 新安城, 新牛田, 知立北, 一里山, 北刈谷, 井ケ谷, 沓掛, 東鳴海, 徳重</p>
+    <h4>名四線</h4>
+    <p><strong>各駅停車:</strong> 急幹四日市, 急幹長島, 急幹弥富, 金城ふ頭, 名古屋</p>
+
+    <!-- 関西日本鉄道 -->
+    <h3>関西日本鉄道</h3>
+    <h4>神丹線</h4>
+    <p><strong>各駅停車:</strong> 神戸三宮, 新神戸, 摩耶, 六甲, 渦森, 柏堂, 甲陽園北, 上ヶ原, 甲東園口, 北武庫, 伊丹市, 北伊丹, 大阪空港, 西豊中, 新服部, 江坂, 新大阪, 南方, 豊崎, 東梅田, 大阪梅田, 南森町, 高麗橋, 松屋町, 大阪難波</p>
+    <h4>関西難波線</h4>
+    <p><strong>各駅停車:</strong> 大阪難波, 新日本橋, 四天王寺前夕陽ヶ丘, 勝山, 大池橋</p>
+    <h4>東平野線</h4>
+    <p><strong>各駅停車:</strong> 大阪梅田, 南森町, 京橋, 森ノ宮新, 東森ノ宮, 玉造, 今里, 大池橋, 北巽, 南巽, 平野北, 平野南, 西瓜破, 北松原, 大堀</p>
+    <h4>播磨線</h4>
+    <p><strong>各駅停車:</strong> 佐用, 安富山崎, 夢前, 新福崎, 北条町</p>
+    <h4>神戸高速線</h4>
+    <p><strong>各駅停車:</strong> 新開地, 神戸, 栄元町, 神戸三宮</p>
+
+    <!-- 北陸日本鉄道 -->
+    <h3>北陸日本鉄道</h3>
+    <h4>新潟線(福祉大〜黒山)</h4>
+    <p><strong>各駅停車:</strong> 福祉大, 島見, 内島見, 藤寄, 黒山</p>
+    <h4>新潟線(新潟〜福祉大)</h4>
+    <p><strong>各駅停車:</strong> 新潟, 万代, 沼垂, 新潟港, 物見山, 新潟空港, 松浜, 福祉大</p>
+
+    <!-- 日本急幹線 -->
+    <h3>日本急幹線</h3>
+    <h4>中山道急幹線</h4>
+    <p><strong>みの (各駅停車):</strong> 新大阪, 松井山手, 宇治田原, 伊賀甲賀, 急幹四日市, 名古屋, 急幹岐阜, 郡上八幡, 高山, 平湯, 松本, 佐久平, 下仁田, 秩父, 大宮</p>
+    <h4>中部縦貫急幹線</h4>
+    <p><strong>各駅停車:</strong> 仙台, 秋保温泉, 山形, 西米沢, 喜多方, 長岡, 柏崎, 上越妙高, 長野, 松本, 飯田市, 千頭, 静岡</p>
+</section>
         <section id="transfer" class="page">
             <h2>乗換案内</h2>
             <div class="search-form">
@@ -415,7 +481,10 @@
                 },
                 "芋窪線": {
                     stations: ["西武球場前", "芋窪", "上北台"],
-                    intervals: [2, 1]
+                    intervals: [2, 1],
+                    services: [
+                    { name: "各駅停車   ", stops: ["西武球場前", "芋窪", "上北台"] }
+                    ]
                 }
             },
             status: ["北部線: 平常", "上野線: 平常", "京浜日本本線: 平常", "芋窪線: 平常"],
@@ -500,7 +569,10 @@
                 "千葉日本線": {
                     stations: ["千葉", "長沼", "新勝田台", "米本", "小室", "取手"],
                     interval: 15,
-                    intervals: [8, 5, 3, 11, 15]
+                    intervals: [8, 5, 3, 11, 15],
+                    services: [
+                    { name: "各駅停車", stops: ["千葉", "長沼", "新勝田台", "米本", "小室", "取手"] }
+                    ]
                 }
             },
             status: ["千葉日本線: 平常"],
@@ -519,12 +591,18 @@
                 "茂木日本線": {
                     stations: ["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"],
                     interval: 4,
-                    intervals: [3, 2.5, 2, 2, 5.5, 3]
+                    intervals: [3, 2.5, 2, 2, 5.5, 3],
+                    services: [
+                    { name: "各駅停車", stops: ["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"] }
+                    ]
                 },
                 "日光日本線": {
                     stations: ["足尾", "栃鉄日光"],
                     interval: 20,
-                    intervals: [20]
+                    intervals: [20],
+                    services: [
+                    { name: "各駅停車", stops: ["足尾", "栃鉄日光"] }
+                    ]
                 }
             },
             status: ["茂木日本線: 平常", "日光日本線: 平常"],
@@ -558,19 +636,31 @@
                 },
                 "静岡線": {
                     stations: ["掛川", "満水", "西方", "北菊川", "富田", "金谷"],
-                    intervals: [2, 3, 3, 2, 6.5]
+                    intervals: [2, 3, 3, 2, 6.5],
+                    services: [
+                    { name: "各駅停車", stops: ["掛川", "満水", "西方", "北菊川", "富田", "金谷"] }
+                    ]
                 },
                 "静岡空港線": {
                     stations: ["富田", "牧之原", "静岡空港"],
-                    intervals: [3, 4.5]
+                    intervals: [3, 4.5],
+                    services: [
+                    { name: "各駅停車", stops: ["富田", "牧之原", "静岡空港"] }
+                    ]
                 },
                 "愛知線": {
-                    stations: ["新所原", "東二川", "二川", "山田町", "豊橋", "豊川", "新小坂井", "新小田渕", "国府", "御油", "赤坂", "南長沢", "北蒲郡", "中蒲郡", "蒲郡"],
-                    intervals: [2, 2, 5, 3, 2, 3, 3, 3, 1, 1, 2, 7, 1, 2]
+                    stations: ["蒲郡", "中蒲郡", "北蒲郡", "長沢赤坂", "国府", "新小坂井", "豊川", "豊橋", "西幸", "山田町", "二川", "東二川", "新所原"],
+                    intervals: [1.6,1.6,6.5,4.5,6.5,3,1,2.5,2.5,2,2.1,2.2],
+                    services: [
+                    { name: "各駅停車", stops: ["蒲郡", "中蒲郡", "北蒲郡", "長沢赤坂", "国府", "新小坂井", "豊川", "豊橋", "西幸", "山田町", "二川", "東二川", "新所原"] }
+                    ]
                 },
                 "名安線": {
                     stations: ["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"],
-                    intervals: [3, 1.5, 2, 3, 3, 3, 1.5, 1.5]
+                    intervals: [3, 1.5, 2, 3, 3, 3, 1.5, 1.5],
+                    services: [
+                    { name: "各駅停車", stops: ["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"] }
+                    ]
                 }
             },
             status: ["名四線: 平常", "静岡線: 平常", "静岡空港線: 平常", "愛知線: 平常", "名安線: 平常"],
@@ -653,9 +743,460 @@
         private_railways: {
             name: "私鉄線",
             routes: {
-                "名鉄線": {
-                    stations: ["新安城", "蒲郡"],
-                    intervals: [67]
+                "名鉄名古屋本線": {
+                    stations: ["名古屋","豊橋","国府","新安城"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "名鉄豊川線": {
+                    stations: ["国府"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "名鉄蒲郡線": {
+                    stations: ["蒲郡"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "名鉄西尾線": {
+                    stations: ["新安城"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "近鉄名古屋線": {
+                    stations: ["名古屋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "豊橋鉄道渥美線": {
+                    stations: ["豊橋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "豊橋鉄道市内線": {
+                    stations: ["豊橋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "阪神本線": {
+                    stations: ["神戸三宮","東梅田","大阪梅田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "阪急神戸線": {
+                    stations: ["神戸三宮","東梅田","大阪梅田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "阪急神戸高速線": {
+                    stations: ["神戸三宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "神戸新交通ポートアイランド線": {
+                    stations: ["神戸三宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "神戸市営地下鉄西神・山手線": {
+                    stations: ["神戸三宮","新神戸"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "神戸市営地下鉄海岸線": {
+                    stations: ["神戸三宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "神戸市営地下鉄北神線": {
+                    stations: ["新神戸"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪モノレール": {
+                    stations: ["大阪空港"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "北大阪急行": {
+                    stations: ["江坂"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ御堂筋線": {
+                    stations: ["江坂","新大阪","南方","大阪難波"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "阪急京都線": {
+                    stations: ["南方","東梅田","大阪梅田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "阪急宝塚線": {
+                    stations: ["東梅田","大阪梅田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ谷町線": {
+                    stations: ["東梅田","大阪梅田","四天王寺前夕陽ヶ丘","南森町","平野南"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ四つ橋線": {
+                    stations: ["東梅田","大阪梅田","大阪難波"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "近鉄奈良線": {
+                    stations: ["日本橋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ千日前線": {
+                    stations: ["日本橋","大阪難波","今里","北巽","南巽"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ堺筋線": {
+                    stations: ["日本橋","南森町"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "近鉄難波線": {
+                    stations: ["大阪難波"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "阪神なんば線": {
+                    stations: ["大阪難波"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "南海高野線": {
+                    stations: ["大阪難波"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "南海本線": {
+                    stations: ["大阪難波"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京阪本線": {
+                    stations: ["京橋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ長堀鶴見緑地線": {
+                    stations: ["京橋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "大阪メトロ今里筋線": {
+                    stations: ["今里"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "智頭急行線": {
+                    stations: ["佐用"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "長良川鉄道越美南線": {
+                    stations: ["郡上八幡"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "アルピコ交通上高地線": {
+                    stations: ["松本"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "上信線": {
+                    stations: ["下仁田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "熊本市電Aライン": {
+                    stations: ["熊本"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "島原鉄道線": {
+                    stations: ["島原"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "しなの鉄道北しなの線": {
+                    stations: ["長野"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "長野電鉄長野線": {
+                    stations: ["長野"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "トキ鉄妙高はねうまライン": {
+                    stations: ["上越妙高"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "仙台市営地下鉄南北線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "仙台市営地下鉄東西線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "仙台空港アクセス線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "都営大江戸線": {
+                    stations: ["光が丘","練馬春日町"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ副都心線": {
+                    stations: ["平和台","池袋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ有楽町線": {
+                    stations: ["平和台","池袋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "都営三田線": {
+                    stations: ["板橋本町","西巣鴨","西高島平"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ南北線": {
+                    stations: ["王子"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "都電荒川線": {
+                    stations: ["王子"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "日暮里・舎人ライナー": {
+                    stations: ["江北"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東武スカイツリーライン": {
+                    stations: ["西新井","北千住"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東武大師線": {
+                    stations: ["大師","西新井"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ千代田線": {
+                    stations: ["北綾瀬","北千住"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ日比谷線": {
+                    stations: ["北千住","南千住","銀座"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ銀座線": {
+                    stations: ["上野"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "つくばエクスプレス": {
+                    stations: ["北千住","南千住"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東武アーバンパークライン": {
+                    stations: ["大宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "ニューシャトル": {
+                    stations: ["大宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京成本線": {
+                    stations: ["千住大橋","上野"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京成金町線": {
+                    stations: ["金町"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東武東上線": {
+                    stations: ["池袋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "西武池袋線": {
+                    stations: ["池袋","練馬高野台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "西武新宿線": {
+                    stations: ["井荻"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京王井の頭線": {
+                    stations: ["高井戸"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京王線": {
+                    stations: ["八幡山"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東急大井町線": {
+                    stations: ["上野毛"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東急目黒線": {
+                    stations: ["武蔵小杉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東急東横線": {
+                    stations: ["武蔵小杉","横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東急多摩川線": {
+                    stations: ["沼部"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東急池上線": {
+                    stations: ["御嶽山"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "都営浅草線": {
+                    stations: ["西馬込"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東急新横浜線": {
+                    stations: ["新横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "相鉄新横浜線": {
+                    stations: ["新横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "横浜市営地下鉄ブルーライン": {
+                    stations: ["新横浜","横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "横浜高速鉄道みなとみらい線": {
+                    stations: ["横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京急本線": {
+                    stations: ["横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "相鉄本線": {
+                    stations: ["横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京メトロ丸ノ内線": {
+                    stations: ["池袋","荻窪"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "西武狭山線": {
+                    stations: ["西武球場前"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "西武山口線": {
+                    stations: ["西武球場前"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東京モノレール": {
+                    stations: ["上北台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "北総線": {
+                    stations: ["小室"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "千葉都市モノレール": {
+                    stations: ["千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "京成千葉線": {
+                    stations: ["千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "宇都宮ライトライン": {
+                    stations: ["芳賀町工業団地管理センター前"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "東武日光線": {
+                    stations: ["栃鉄日光"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "わたらせ渓谷鉄道": {
+                    stations: ["足尾"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "あおなみ線": {
+                    stations: ["金城ふ頭","名古屋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "名古屋市営地下鉄東山線": {
+                    stations: ["名古屋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "名古屋市営地下鉄桜通線": {
+                    stations: ["名古屋","徳重"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "肥薩オレンジ鉄道線": {
+                    stations: ["出水"],
+                    interval: 60,
+                    intervals: [36]
                 },
                 "天竜浜名湖鉄道": {
                     stations: ["新所原", "掛川"],
@@ -715,7 +1256,7 @@
                         { name: "特急", stops: ["神戸三宮", "上ヶ原", "大阪空港", "新大阪", "大阪梅田", "大阪難波"], offset: 6 }
                     ]
                 },
-                "難波線": {
+                "関西難波線": {
                     stations: ["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"],
                     intervals: [1.3, 1.3, 1.3, 1.3],
                     services: [
@@ -750,9 +1291,9 @@
             },
             status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常", "神戸高速線: 平常"],
             svg: `<svg class="route-map-svg" viewBox="-250 0 1850 1200">
-                <!-- 難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
+                <!-- 関西難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
                 <path d="M800 600 L1200 600" fill="none" stroke="#9b59b6" stroke-width="10" />
-                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">難波線</text>
+                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">関西難波線</text>
                 ${["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"].map((st, i) => {
                     let x = 800 + i * 100;
                     let y = 600;
@@ -811,9 +1352,9 @@
                     `;
                 }).join('')}
 
-                <!-- 難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
+                <!-- 関西難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
                 <path d="M800 600 L1200 600" fill="none" stroke="#9b59b6" stroke-width="10" />
-                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">難波線</text>
+                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">関西難波線</text>
                 ${["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"].map((st, i) => {
                     let x = 800 + i * 100;
                     let y = 600;
@@ -836,16 +1377,16 @@
         jr_lines: {
             name: "JR線",
             routes: {
-                "山手線": {
+                "JR山手線": {
                     stations: ["上野", "日暮里", "田端", "池袋", "新宿", "渋谷", "品川", "東京", "秋葉原", "上野"],
                     intervals: [4, 4, 11, 9, 7, 12, 11, 4, 2]
                 },
-                "中央線": {
-                    stations: ["東京", "神田", "御茶ノ水", "四ツ谷", "新宿", "中野", "荻窪", "吉祥寺", "三鷹", "国分寺", "立川", "八王子"],
+                "JR中央線": {
+                    stations: ["東京", "神田", "御茶ノ水", "四ツ谷", "新宿", "中野", "荻窪", "吉祥寺", "三鷹", "国分寺", "立川", "八王子","千葉","名古屋"],
                     intervals: [2, 2, 4, 5, 4, 4, 4, 2, 6, 6, 10]
                 },
-                "東海道本線": {
-                    stations: ["東京", "品川", "川崎", "横浜", "大船", "藤沢", "茅ヶ崎", "平塚", "小田原", "熱海"],
+                "JR東海道線": {
+                    stations: ["東京", "品川", "川崎", "横浜", "大船", "藤沢", "茅ヶ崎", "平塚", "小田原", "熱海","静岡","金谷","掛川","新所原","二川","豊橋","蒲郡","名古屋"],
                     intervals: [9, 9, 8, 15, 4, 7, 5, 20, 23]
                 },
                 "山陽・九州新幹線": {
@@ -853,22 +1394,286 @@
                     interval: 30,
                     intervals: [15, 118, 50, 32]
                 },
-                "姫新線": {
+                "JR白新線": {
+                    stations: ["黒山","新潟"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR信越本線": {
+                    stations: ["新潟","柏崎","長岡"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR越後線": {
+                    stations: ["新潟","柏崎"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR上越線": {
+                    stations: ["長岡"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR磐越西線": {
+                    stations: ["喜多方"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR米坂線": {
+                    stations: ["西米沢"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR仙石線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR東北新幹線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR東北本線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR仙山線": {
+                    stations: ["仙台"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR京浜東北線": {
+                    stations: ["王子","横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR宇都宮線": {
+                    stations: ["上野","大宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR高崎線": {
+                    stations: ["上野","大宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR川越線": {
+                    stations: ["大宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR埼京線": {
+                    stations: ["池袋","武蔵小杉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR武蔵野線": {
+                    stations: ["西浦和"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR根岸線": {
+                    stations: ["横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR南武線": {
+                    stations: ["武蔵小杉","尻手"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR横須賀線": {
+                    stations: ["武蔵小杉","横浜","千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR横浜線": {
+                    stations: ["新横浜","横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR飯田線": {
+                    stations: ["豊橋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR湘南新宿ライン": {
+                    stations: ["池袋","大宮","武蔵小杉","横浜"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR上野東京ライン": {
+                    stations: ["上野"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR京都線": {
+                    stations: ["大阪梅田","新大阪"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JRゆめ咲線": {
+                    stations: ["大阪梅田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR阪和線": {
+                    stations: ["大阪梅田"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR東西線": {
+                    stations: ["大阪梅田","南森町"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JRおおさか東線": {
+                    stations: ["大阪梅田","新大阪"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR神戸線": {
+                    stations: ["大阪梅田","神戸","神戸三宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR宝塚線": {
+                    stations: ["大阪梅田","北伊丹"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR大和路線": {
+                    stations: ["大阪難波","大阪梅田","平野北"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR関西線": {
+                    stations: ["大阪難波","名古屋"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR高山本線": {
+                    stations: ["高山"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR大糸線": {
+                    stations: ["松本"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR篠ノ井線": {
+                    stations: ["松本","長野"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR小海線": {
+                    stations: ["佐久平"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR城端線": {
+                    stations: ["福光"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR埼京線": {
+                    stations: ["池袋","大宮"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR京浜東北線": {
+                    stations: ["東十条","上野","大宮"],
+                },
+                "JR成田線": {
+                    stations: ["千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR外房線": {
+                    stations: ["千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR内房線": {
+                    stations: ["千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR日光線": {
+                    stations: ["栃鉄日光"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR総武本線": {
+                    stations: ["千葉"],
+                    interval: 60,
+                    intervals: [36]
+                },
+                "JR姫新線": {
                     stations: ["姫路", "佐用"],
                     interval: 60,
                     intervals: [36]
                 },
                 "上越新幹線": {
-                    stations: ["長岡", "新潟"],
+                    stations: ["長岡", "新潟","上野","大宮"],
                     interval: 40,
                     intervals: [22]
                 },
-                "総武快速線": {
+                "北陸新幹線": {
+                    stations: ["上野","大宮","佐久平","金沢","長野","上越妙高"],
+                    interval: 40,
+                    intervals: [22]
+                },
+                "北海道新幹線": {
+                    stations: ["上野","大宮"],
+                    interval: 40,
+                    intervals: [22]
+                },
+                "山形新幹線": {
+                    stations: ["上野","大宮"],
+                    interval: 40,
+                    intervals: [22]
+                },
+                "秋田新幹線": {
+                    stations: ["上野","大宮"],
+                    interval: 40,
+                    intervals: [22]
+                },
+                "東海道新幹線": {
+                    stations: ["新横浜","静岡","掛川","豊橋","名古屋","新大阪"],
+                    interval: 40,
+                    intervals: [22]
+                },
+                "東北新幹線": {
+                    stations: ["大宮","上野"],
+                    interval: 40,
+                    intervals: [22]
+                },
+                "JR総武快速線": {
                     stations: ["東京", "千葉"],
                     intervals: [38]
                 },
-                "常磐線": {
-                    stations: ["上野", "取手"],
+                "JR学研都市線": {
+                    stations: ["松井山手"],
+                    intervals: [38]
+                },
+                "JR三角線": {
+                    stations: ["熊本"],
+                    intervals: [38]
+                },
+                "JR豊肥本線": {
+                    stations: ["熊本"],
+                    intervals: [38]
+                },
+                "JR鹿児島本線": {
+                    stations: ["熊本"],
+                    intervals: [38]
+                },
+                "JR常磐線": {
+                    stations: ["上野", "取手","亀有", "金町","北千住","南千住","仙台"],
                     intervals: [30]
                 }
             },
@@ -899,7 +1704,10 @@
                 },
                 "新潟線(福祉大〜黒山)": {
                     stations: ["福祉大", "島見", "内島見", "藤寄", "黒山"],
-                    intervals: [2, 3, 2, 2]
+                    intervals: [2, 3, 2, 2],
+                    services: [
+                { name: "各駅停車", stops: ["福祉大", "島見", "内島見", "藤寄", "黒山"] }
+            ]
                 }
             },
             status: ["新潟線: 平常"],
@@ -1095,20 +1903,165 @@
                     "スカイ": "#3498db"
                 };
                 
+                // --- 1. 全体の高さを計算（ここから上書き） ---
+                const maxTransfers = Math.max(...stations.map(st => {
+                    let count = 0;
+                    for (const [cKey, cVal] of Object.entries(companies)) {
+                        for (const [rName, rVal] of Object.entries(cVal.routes)) {
+                            if (rName !== lineName && rVal.stations && rVal.stations.includes(st)) {
+                                count++;
+                            }
+                        }
+                    }
+                    return count;
+                }), 0);
+
                 const width = stations.length * 100 + 150;
-                const height = svcs.length * 40 + 60;
+                const transferAreaHeight = maxTransfers * 14; 
+                const height = svcs.length * 40 + 100 + transferAreaHeight;
+
                 let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
-                
-                // Station Vertical Lines and Names
+
+                // --- 2. 各駅の描画 ---
                 stations.forEach((st, i) => {
                     const x = i * 100 + 100;
-                    svg += `<line x1="${x}" y1="35" x2="${x}" y2="${height - 20}" stroke="#eee" stroke-width="2" />`;
-                    svg += `<text x="${x}" y="20" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>`;
+                    
+                // --- 追加：駅ナンバリング（○と記号・番号） ---
+                    // --- ここから：路線ごとに記号と色を変える処理 ---
+                    let lineSymbol = "??"; 
+                    let lineColor = "#333"; 
+                    let numValue = i + 1; // 基本は 1, 2, 3...
+
+                    if (lineName === "中山道急幹線(直通)") {
+                        lineColor = "#E60012"; // 路線カラー
+                        
+                        if (i < 3) {
+                            // 最初の3駅（インデックス0, 1, 2）は NA 記号
+                            lineSymbol = "NA";
+                            numValue = i + 1; // 01, 02, 03
+                        } else {
+                            // 4駅目（インデックス3 / 高山駅）以降は NK 記号
+                            lineSymbol = "NK";
+                            numValue = i + 6;
+                            // 高山を NK05 にしたい場合、i(3) に 2 を足して 5 にする
+
+                        }
+                    } else if(lineName === "京浜日本本線") {
+                        lineSymbol = "KM";
+                        lineColor = "#0074BE"; 
+                    } else if (lineName === "関西日本鉄道") {
+                        lineSymbol = "KN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "北部線") {
+                        lineSymbol = "KN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "上野線") {
+                        lineSymbol = "KU";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "芋窪線") {
+                        lineSymbol = "KI";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "千葉日本線") {
+                        lineSymbol = "CJ";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "茂木日本線") {
+                        lineSymbol = "TM";
+                        lineColor = "#E60012"; 
+                    }
+                    else if (lineName === "日光日本線") {
+                        lineSymbol = "TN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "新潟線(新潟〜福祉大)") {
+                        lineSymbol = "HN";
+                        lineColor = "#E60012"; 
+                    } else if (lineName === "新潟線(福祉大〜黒山)") {
+                    lineSymbol = "HN";
+                    lineColor = "#E60012"; 
+                    
+                    // 福祉大がこの路線の「0番目(i=0)」なので、8にするために +8 する
+                    numValue = i + 8; 
+                }else if (lineName === "静岡線") {
+                        lineSymbol = "TS";
+                        lineColor = "#E60012"; 
+                    }
+                    else if (lineName === "静岡空港線") {
+                        lineSymbol = "TK";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "愛知線") {
+                        lineSymbol = "TA";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "名安線") {
+                        lineSymbol = "TM";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "名四線") {
+                        lineSymbol = "TY";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "播磨線") {
+                        lineSymbol = "KH";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "東平野線") {
+                        lineSymbol = "KP";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "神戸高速線") {
+                        lineSymbol = "KK";
+                        lineColor = "#E60012"; 
+                    }
+                    else if (lineName === "神丹線") {
+                        lineSymbol = "KS";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "関西難波線") {
+                        lineSymbol = "KN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "梅難線") {
+                        lineSymbol = "KU";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "中山道急幹線") {
+                        lineSymbol = "NK";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "金沢支線") {
+                        lineSymbol = "NA";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "中部縦貫急幹線") {
+                        lineSymbol = "CK";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "西九州急幹線") {
+                        lineSymbol = "WK";
+                        lineColor = "#E60012"; 
+                    }
+                    // ※他の路線もここに else if で追加できるので随時追加する。！
+                    const stationNumber = String(numValue).padStart(2, '0'); // 01, 02...
+                    const numberingY = 15; // ナンバリングの中心高さ
+
+                    // 外枠の円（○）
+                    svg += `<circle cx="${x}" cy="${numberingY}" r="12" fill="white" stroke="#333" stroke-width="2" />`;
+                    // 路線記号と番号
+                    svg += `<text x="${x}" y="${numberingY + 4}" font-size="9" text-anchor="middle" font-weight="bold" fill="#333">${lineSymbol}${stationNumber}</text>`;
+
+                    // 縦線と駅名
+                    svg += `<line x1="${x}" y1="35" x2="${x}" y2="${svcs.length * 40 + 40}" stroke="#eee" stroke-width="2" />`;
+                    svg += `<text x="${x}" y="50" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>`;
+    
+                    // 縦線（開始位置を駅名の下 y=75 に調整）
+                    svg += `<line x1="${x}" y1="65" x2="${x}" y2="${svcs.length * 40 + 80}" stroke="#eee" stroke-width="2" />`;
+
+                    // 各駅ごとの乗換路線の表示
+                    let transferOffset = 0;
+                    const baseTransferY = svcs.length * 40 + 100;
+
+                    for (const [cKey, cVal] of Object.entries(companies)) {
+                        for (const [rName, rVal] of Object.entries(cVal.routes)) {
+                            if (rName !== lineName && rVal.stations && rVal.stations.includes(st)) {
+                                svg += `<text x="${x}" y="${baseTransferY + transferOffset}" font-size="10" text-anchor="middle" fill="#888">● ${rName}</text>`;
+                                transferOffset += 14;
+                            }
+                        }
+                    }
                 });
+                // --- ここまで上書き ---
 
                 // Service Lines and Stop Circles
                 svcs.forEach((svc, si) => {
-                    const y = si * 40 + 45;
+                    const y = si * 40 + 80;
                     const color = svcColors[svc.name] || "#333";
                     svg += `<text x="5" y="${y + 5}" font-size="12" font-weight="bold" fill="${color}">${svc.name}</text>`;
                     
@@ -1361,11 +2314,11 @@
                                         };
                                     }
             
-                                    const fromIdx = data.stations.indexOf(path.currSt);
+                                    const fromIdx = svc.stops.indexOf(path.currSt);
                                     for (const targetSt of svc.stops) {
                                         if (targetSt === path.currSt || path.visitedStations.has(targetSt)) continue;
             
-                                        const toIdx = data.stations.indexOf(targetSt);
+                                        const toIdx = svc.stops.indexOf(targetSt);
                                         const legData = calcD(data, fromIdx, toIdx, svc.name, svc.stops);
                                         const totalDur = path.dur + transferWait + legData.time;
                                         const totalDist = path.dist + legData.dist; // 距離の加算
@@ -1488,6 +2441,8 @@
                 const minTransfers = Math.min(...possibleRoutes.map(r => r.transfers));
                 const minCost = Math.min(...possibleRoutes.map(r => r.totalFare));
 
+                possibleRoutes.sort((a, b) => a.dur - b.dur);
+
                 let html = possibleRoutes.map((res, idx) => {
                     const isFast = res.dur === minDur;
                     const isEasy = res.transfers === minTransfers;
@@ -1504,7 +2459,7 @@
                 const formatT = (m) => { 
                     if (isNaN(m)) return "--:--";
                     while(m < 0) m += 1440; m %= 1440; 
-                    return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`; 
+                    return `${Math.floor(m/60).toString().padStart(2,'0')}:${Math.floor(m%60).toString().padStart(2,'0')}`; 
                 };
                 let base = parseInt(hs.value)*60 + parseInt(ms.value);
                 let dm, am;
@@ -1525,9 +2480,10 @@
                 }
                 
                 const formatDur = (m) => {
-                    if (m < 60) return `${m}分`;
-                    const h = Math.floor(m / 60);
-                    const rm = m % 60;
+                    const totalM = Math.ceil(m);
+                    if (totalM < 60) return `${totalM}分`;
+                    const h = Math.floor(totalM / 60);
+                    const rm = totalM % 60;
                     return rm > 0 ? `${h}時間${rm}分` : `${h}時間`;
                 };
 

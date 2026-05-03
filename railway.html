@@ -2352,7 +2352,7 @@
                                                 durFromTerm: path.steps.length === 0 ? calcD(data, 0, fromIdx, svc.name, svc.stops).time : path.firstDurFromTerm,
                                                 durToTerm: calcD(data, 0, toIdx, svc.name, svc.stops).time,
                                                 steps: [...finalSteps, {role:"【降りる場所】", name:to, type:"alighting-station", timeOffset: totalDur}],
-                                                desc: path.transfers === 0 ? `${svc.name} 直通` : `${path.transfers}回乗換`
+                                                desc:  `${path.transfers}回乗換`
                                             };
             
                                             if (!possibleRoutes.some(r => r.dur === routeObj.dur && JSON.stringify(r.steps) === JSON.stringify(routeObj.steps))) {

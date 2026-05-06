@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ねりか区営地下鉄</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #1abc9c;
+            --danger: #e74c3c;
+            --bg: #f4f7f6;
+        }
+
+        body { font-family: sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: #333; }
+        
+        #portalScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+        .company-card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .company-card:hover { background: var(--secondary); transform: translateY(-5px); border-color: white; }
+
+        .muted-card {
+            opacity: 0.5 !important;
+            transform: scale(0.85) !important;
+            border-color: #7f8c8d !important;
+            background: rgba(255,255,255,0.05) !important;
+        }
+        .muted-card h1 { color: #95a5a6 !important; font-size: 1.2rem !important; }
+        .muted-card p { color: #7f8c8d !important; font-size: 0.8rem !important; }
+        .muted-card:hover { opacity: 1 !important; transform: scale(0.9) translateY(-5px) !important; }
+
+        #mainApp { display: none; }
+        header { background: var(--primary); color: white; text-align: center; padding: 15px; position: relative; }
+        .back-btn { position: absolute; left: 15px; top: 15px; background: none; border: 1px solid white; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; }
+
+        nav { background: #34495e; text-align: center; position: sticky; top: 0; z-index: 1000; }
+        nav button { background: none; border: none; color: white; padding: 15px 20px; cursor: pointer; font-size: 0.9rem; }
+        nav button.active { background: var(--secondary); }
+
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        .page { display: none; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .page.active { display: block; }
+
+        h2 { border-bottom: 3px solid var(--secondary); padding-bottom: 5px; color: var(--primary); }
+
+        .search-form { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .input-row { margin-bottom: 15px; }
+        .input-row label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .radio-group label { display: flex !important; align-items: center; gap: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .radio-group input { width: auto !important; margin: 0; }
+        input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-search { background: var(--secondary); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+
+        .route-result-item { margin-bottom: 40px; border-bottom: 2px dashed #eee; padding-bottom: 20px; }
+        .route-result-item:last-child { border-bottom: none; }
+        .route-header { background: #ecf0f1; padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .route-tag-id { background: var(--primary); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 10px; }
+        
+        .spec-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; color: white; margin-left: 5px; }
+        .tag-fast { background: #e74c3c; }
+        .tag-cheap { background: #f39c12; }
+        .tag-easy { background: #3498db; }
+
+        .route-box { border: 2px solid #eee; border-radius: 12px; padding: 20px; background: #fff; }
+        .res-time-main { font-size: 1.4rem; font-weight: bold; color: var(--primary); margin-bottom: 5px; display: block; }
+        
+        .vertical-station-list { padding-left: 35px; border-left: 3px solid #eee; margin-left: 15px; margin-top: 15px; }
+        .station-item { display: block; position: relative; margin-bottom: 25px; }
+        .station-item::before { content: ''; position: absolute; left: -42.5px; top: 8px; width: 14px; height: 14px; background: white; border: 3px solid #ccc; border-radius: 50%; z-index: 10; }
+        
+        .line-badge { 
+            background-color: #808080 !important;
+            display: inline-block; 
+            color: white; 
+            padding: 2px 10px; 
+            border-radius: 4px; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            margin-left: 15px;
+            vertical-align: middle;
+        }
+        .line-badge.東西線 { background: #2ecc71; }
+        .line-badge.南北線 { background: #3498db; }
+        .line-badge.空港線 { background: #f39c12; }
+        .line-badge.都市線 { background: #9b59b6; }
+        .line-badge.新線 { background: #e84393; }
+        .line-badge.他社線 { background: #95a5a6; }
+        .line-badge.海岸線 { background: #00cec9; }
+        .line-badge.北部線 { background: #3498db; }
+        .line-badge.上野線 { background: #e67e22; }
+        .line-badge.京浜日本本線 { background: #c0392b; }
+        .line-badge.芋窪線 { background: #27ae60; }
+        .line-badge.静岡線 { background: #1e3799; }
+        .line-badge.静岡空港線 { background: #4a69bd; }
+        .line-badge.愛知線 { background: #e84118; }
+        .line-badge.名安線 { background: #f0932b; }
+        .line-badge.名四線 { background: #1e3799; }
+        .line-badge.桜通線 { background: #EA3223; }
+        .line-badge.千葉日本線 { background: #e67e22; }
+        .line-badge.茂木日本線 { background: #2ecc71; }
+        .line-badge.日光日本線 { background: #27ae60; }
+        .line-badge.神丹線 { background: #0984e3; }
+        .line-badge.関西難波線 { background: #9b59b6; }
+        .line-badge.東平野線 { background: #00b894; }
+        .line-badge.神戸高速線 { background: #00cec9; }
+        .line-badge.播磨線 { background: #a52a2a; }
+        .line-badge.新潟線 { background: #0fbcf9; }
+        .line-badge.中山道急幹線 { background: #d4af37; }
+        .line-badge.中部縦貫急幹線 { background: #d4af37; }
+        .line-badge.金沢支線 { background: #d4af37; }
+        .line-badge.西九州急幹線 { background: #d4af37; }
+        .line-badge.山手線 { background: #2ecc71; }
+        .line-badge.中央線 { background: #e67e22; }
+        .line-badge.東海道本線 { background: #f39c12; }
+        .line-badge.山陽・九州新幹線 { background: #3498db; }
+        .line-badge.姫新線 { background: #f1c40f; }
+        .line-badge.山陽・九州急幹線 { background: #3498db; }
+        .line-badge.上越急幹線 { background: #2ecc71; }
+        .line-badge.天竜浜名湖鉄道線 { background: #27ae60; }
+        .line-badge.大井川鉄道線 { background: #d35400; }
+        .line-badge.総武快速線 { background: #3498db; }
+        .line-badge.常総線 { background: #e67e22; }
+        .line-badge.真岡線 { background: #EA3223; }
+        .line-badge.常磐線 { background: #27ae60; }
+        .line-badge.北条線 { background: #2ecc71; }
+        .line-badge.神戸電鉄 { background: #e84118; }
+        .line-badge.地下鉄西神山手線 { background: #2ecc71; }
+        .line-badge.阪急神戸線 { background: #9b59b6; }
+
+        .station-info-row { display: flex; align-items: center; }
+        .station-name-text { display: block; font-size: 1.3rem; font-weight: bold; color: #000; }
+        .role-tag { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; color: #7f8c8d; }
+
+        .boarding-station::before { border-color: #2ecc71; background: #2ecc71; }
+        .via-station::before { border-color: #f1c40f; background: #f1c40f; }
+        .alighting-station::before { border-color: #e74c3c; background: #e74c3c; }
+
+        .time-info-text { font-size: 1rem; color: #333; font-weight: bold; min-width: 60px; display: inline-block; }
+        
+        /* 1本前・1本後ボタン */
+        .time-shift-buttons { display: flex; gap: 10px; margin-top: 20px; padding: 0 10px; }
+        .btn-shift { flex: 1; background: #ecf0f1; border: 1px solid #bdc3c7; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #2c3e50; }
+        .btn-shift:hover { background: #bdc3c7; }
+
+        .route-map-svg { width: 100%; height: auto; min-width: 650px; }
+
+        /* 切符モーダルのスタイル */
+        #ticketModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .ticket {
+            background: #f1e4bc; color: #5d4037; padding: 30px; border-radius: 4px;
+            width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            font-family: sans-serif;
+            position: relative; border: 2px solid #d7ccc8;
+            background-image: radial-gradient(circle at 0 50%, transparent 10px, #f1e4bc 11px), radial-gradient(circle at 100% 50%, transparent 10px, #f1e4bc 11px);
+        }
+        .ticket::after {
+            content: ''; position: absolute; left: 10px; right: 10px; top: 50%;
+            border-bottom: 2px dashed #d7ccc8;
+        }
+        .ticket-header { font-size: 0.8rem; border-bottom: 1px solid #5d4037; padding-bottom: 5px; margin-bottom: 10px; }
+        .ticket-main { text-align: center; margin: 20px 0; }
+        .ticket-st { font-size: 1.4rem; font-weight: bold; }
+        .ticket-price { font-size: 1.2rem; margin-top: 5px; }
+        .ticket-footer { font-size: 0.7rem; margin-top: 30px; text-align: right; }
+        .btn-close-ticket {
+            display: block; width: 100%; margin-top: 20px; padding: 10px;
+            background: #5d4037; color: white; border: none; border-radius: 4px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="disclaimer" style="background: #fff3cd; color: #856404; text-align: center; padding: 5px; font-size: 0.8rem; border-bottom: 1px solid #ffeeba; position: relative; z-index: 3000;">
+    ※このサイトに登場する鉄道、駅名、運行情報はすべて架空のものです。実在の人物・団体等とは一切関係ありません。
+</div>
+
+<div id="portalScreen">
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; padding: 20px;">
+        <div class="company-card" style="border-color: #2c3e50; background: #fff; color: #2c3e50;" onclick="selectCompany('all')">
+            <h1 style="color: #2c3e50;">全路線 総合案内</h1>
+            <p>日本全国 ネットワーク検索</p>
+            <small>(サンプル路線を除く全社)</small>
+        </div>
+        <div class="company-card" style="border-color: #3498db;" onclick="selectCompany('keihin')">
+            <h1>京浜日本鉄道</h1>
+            <p>北部線・上野線・京浜日本本線・芋窪線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #e67e22;" onclick="selectCompany('chiba')">
+            <h1>千葉日本鉄道</h1>
+            <p>千葉日本線・取手線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #2ecc71;" onclick="selectCompany('tochigi')">
+            <h1>栃木日本鉄道</h1>
+            <p>茂木日本線・日光日本線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #1e3799;" onclick="selectCompany('tokai')">
+            <h1>東海日本鉄道</h1>
+            <p>名四線・静岡線・愛知線・名安線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #0984e3;" onclick="selectCompany('kansai')">
+            <h1>関西日本鉄道</h1>
+            <p>神丹線・東平野線・播磨線・神戸高速線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #0fbcf9;" onclick="selectCompany('hokuriku')">
+            <h1>北陸日本鉄道</h1>
+            <p>新潟線</p>
+            <small>クリックして入場</small>
+        </div>
+        <div class="company-card" style="border-color: #d4af37;" onclick="selectCompany('kyukansen')">
+            <h1>日本急幹線</h1>
+            <p>中山道急幹線・中部縦貫急幹線・西九州急幹線</p>
+            <small>クリックして入場</small>
+        </div>
+
+        <div style="width: 100%; height: 0; margin: 10px 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
+
+        <!-- 外部・サンプル路線 -->
+        <div class="company-card muted-card" onclick="selectCompany('private_railways')">
+            <h1>私鉄線</h1>
+            <p>(参考接続)</p>
+            <small>名鉄線・天浜線・大井川鉄道線</small>
+        </div>
+        <div class="company-card muted-card" onclick="selectCompany('jr_lines')">
+            <h1>JR線</h1>
+            <p>(参考接続)</p>
+            <small>山手・中央・急幹線 各線</small>
+        </div>
+        <div class="company-card muted-card" onclick="selectCompany('nerika')">
+            <h1>ねりか区営地下鉄</h1>
+            <p>(開発用サンプル)</p>
+            <small>東西・南北・空港・都市 各線</small>
+        </div>
+    </div>
+</div>
+
+<div id="mainApp">
+    <header>
+        <button class="back-btn" onclick="location.reload()">◀ 会社選択へ</button>
+        <h1 id="appTitle">案内システム</h1>
+    </header>
+    <nav id="topNav">
+        <button id="btn-status" onclick="showPage('status')" class="active">運行情報</button>
+        <button id="btn-routeMap" onclick="showPage('routeMap')">路線図</button>
+        <button id="btn-stopMap" onclick="showPage('stopMap')">停車駅</button>
+        <button id="btn-transfer" onclick="showPage('transfer')">乗換案内</button>
+    </nav>
+    <div class="container">
+        <section id="status" class="page active"><h2>運行情報</h2><div id="statusList"></div></section>
+        <section id="routeMap" class="page">
+            <h2>路線図</h2>
+            <div id="mapContainer" style="overflow-x:auto; background: white; padding: 10px; border-radius: 12px; border: 1px solid #eee;"></div>
+            <div id="mapLegend" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;"></div>
+        </section>
+        <section id="stopMap" class="page"><h2>停車駅路線図</h2><div id="stopMapContainer">
+    <h2>停車駅情報 (各駅停車)</h2>
+
+    <!-- 京浜日本鉄道 -->
+    <h3>京浜日本鉄道</h3>
+    <h4>芋窪線</h4>
+    <p><strong>各駅停車:</strong> 西武球場前, 芋窪, 上北台</p>
+
+    <h4>北部線</h4>
+    <p><strong>各駅停車:</strong> 光が丘, 田柄, 平和台, 新練馬, 中央公園, 新ときわ台, 板橋本町, 東十条, 新神谷, 新田, 鹿浜, 江北北, 大師, 西新井, 足立, 加平, 北綾瀬, 大谷田, 亀有, 金町</p>
+    <h4>上野線</h4>
+    <p><strong>各駅停車:</strong> 池袋, 上池袋, 西巣鴨, 王子, 堀船, 江北, 大師, 西新井, 足立, 梅田, 北千住, 千住大橋, 南千住, 浅草, 北上野, 上野</p>
+    <h4>京浜日本本線</h4>
+    <p><strong>各駅停車:</strong> 大宮, 西与野, 与野公園, 町谷, 西浦和, 美女木, 西戸田, 西高島平, 徳丸, 新赤塚, 平和台, 練馬春日町, 谷原, 練馬高野台, 南田中, 井荻, 桃井, 荻窪, 宮前, 高井戸, 八幡山, 希望丘, 船橋桜, 砧, 新用賀, 上野毛, 下野毛, 宮内, 南等々力, 武蔵小杉, 沼部, 御嶽山, 東久が原, 西馬込, 南久が原, 徳持, 幸, 川崎口, 三ッ池公園, 新大倉山, 新横浜, 三ツ沢公園, 横浜西口, 横浜</p>
+
+    <!-- 千葉日本鉄道 -->
+    <h3>千葉日本鉄道</h3>
+    <h4>千葉日本線</h4>
+    <p><strong>各駅停車:</strong> 千葉, 長沼, 新勝田台, 米本, 小室, 取手</p>
+
+    <!-- 栃木日本鉄道 -->
+    <h3>栃木日本鉄道</h3>
+    <h4>茂木日本線</h4>
+    <p><strong>各駅停車:</strong> 芳賀町工業団地管理センター前, 下高根沢, 祖母井, 上根, 市貝, 新天矢場, 茂木</p>
+    <h4>日光日本線</h4>
+    <p><strong>各駅停車:</strong> 足尾, 栃鉄日光</p>
+
+    <!-- 東海日本鉄道 -->
+    <h3>東海日本鉄道</h3>
+    <h4>静岡線</h4>
+    <p><strong>各駅停車:</strong> 掛川, 満水, 西方, 北菊川, 富田, 金谷</p>
+    <h4>静岡空港線</h4>
+    <p><strong>各駅停車:</strong> 富田, 牧之原, 静岡空港</p>
+    <h4>愛知線</h4>
+    <p><strong>各駅停車:</strong> 新所原, 東二川, 二川, 山田町, 豊橋, 豊川, 新小坂井, 新小田渕, 国府, 御油, 赤坂, 南長沢, 北蒲郡, 中蒲郡, 蒲郡</p>
+    <h4>名安線</h4>
+    <p><strong>各駅停車:</strong> 新安城, 新牛田, 知立北, 一里山, 北刈谷, 井ケ谷, 沓掛, 東鳴海, 徳重</p>
+    <h4>名四線</h4>
+    <p><strong>各駅停車:</strong> 急幹四日市, 急幹長島, 急幹弥富, 金城ふ頭, 名古屋</p>
+
+    <!-- 関西日本鉄道 -->
+    <h3>関西日本鉄道</h3>
+    <h4>神丹線</h4>
+    <p><strong>各駅停車:</strong> 神戸三宮, 新神戸, 摩耶, 六甲, 渦森, 柏堂, 甲陽園北, 上ヶ原, 甲東園口, 北武庫, 伊丹市, 北伊丹, 大阪空港, 西豊中, 新服部, 江坂, 新大阪, 南方, 豊崎, 東梅田, 大阪梅田, 南森町, 高麗橋, 松屋町, 大阪難波</p>
+    <h4>関西難波線</h4>
+    <p><strong>各駅停車:</strong> 大阪難波, 新日本橋, 四天王寺前夕陽ヶ丘, 勝山, 大池橋</p>
+    <h4>東平野線</h4>
+    <p><strong>各駅停車:</strong> 大阪梅田, 南森町, 京橋, 森ノ宮新, 東森ノ宮, 玉造, 今里, 大池橋, 北巽, 南巽, 平野北, 平野南, 西瓜破, 北松原, 大堀</p>
+    <h4>播磨線</h4>
+    <p><strong>各駅停車:</strong> 佐用, 安富山崎, 夢前, 新福崎, 北条町</p>
+    <h4>神戸高速線</h4>
+    <p><strong>各駅停車:</strong> 新開地, 神戸, 栄元町, 神戸三宮</p>
+
+    <!-- 北陸日本鉄道 -->
+    <h3>北陸日本鉄道</h3>
+    <h4>新潟線(福祉大〜黒山)</h4>
+    <p><strong>各駅停車:</strong> 福祉大, 島見, 内島見, 藤寄, 黒山</p>
+    <h4>新潟線(新潟〜福祉大)</h4>
+    <p><strong>各駅停車:</strong> 新潟, 万代, 沼垂, 新潟港, 物見山, 新潟空港, 松浜, 福祉大</p>
+
+    <!-- 日本急幹線 -->
+    <h3>日本急幹線</h3>
+    <h4>中山道急幹線</h4>
+    <p><strong>みの (各駅停車):</strong> 新大阪, 松井山手, 宇治田原, 伊賀甲賀, 急幹四日市, 名古屋, 急幹岐阜, 郡上八幡, 高山, 平湯, 松本, 佐久平, 下仁田, 秩父, 大宮</p>
+    <h4>中部縦貫急幹線</h4>
+    <p><strong>各駅停車:</strong> 仙台, 秋保温泉, 山形, 西米沢, 喜多方, 長岡, 柏崎, 上越妙高, 長野, 松本, 飯田市, 千頭, 静岡</p>
+</section>
+        <section id="transfer" class="page">
+            <h2>乗換案内</h2>
+            <div class="search-form">
+                <div class="input-row"><label>出発駅</label><input type="text" id="fromSt" placeholder="例: 奥駅" list="stationList"></div>
+                <div class="input-row"><label>経由駅</label><input type="text" id="viaSt" placeholder="任意" list="stationList"></div>
+                <div class="input-row"><label>降りる駅</label><input type="text" id="toSt" placeholder="例: 發駅" list="stationList"></div>
+                <datalist id="stationList"></datalist>
+                <div class="input-row" style="display:flex; gap:10px; align-items:center;">
+                    <select id="hSel" style="width:70px;"></select>時 <select id="mSel" style="width:70px;"></select>分
+                </div>
+                <div class="radio-group">
+                    <label><input type="radio" name="stype" value="出発" checked>出発</label>
+                    <label><input type="radio" name="stype" value="到着">到着</label>
+                    <label><input type="radio" name="stype" value="始発">始発</label>
+                    <label><input type="radio" name="stype" value="終電">終電</label>
+                </div>
+                <button class="btn-search" onclick="search()">ルートを検索</button>
+                <div class="time-shift-buttons" style="margin-top: 10px;">
+                    <button class="btn-shift" onclick="shiftTime(-15)">1本前</button>
+                    <button class="btn-shift" onclick="shiftTime(15)">1本後</button>
+                </div>
+            </div>
+            <div id="transferResults"></div>
+        </section>
+    </div>
+</div>
+
+<script>
+    const companies = {
+        nerika: {
+            name: "ねりか区営地下鉄",
+            routes: {
+                "東西線": { stations: ["奥駅", "西駅", "本駅", "中央駅", "東駅"], interval: 1.5 },
+                "南北線": { stations: ["北駅", "新駅", "中央駅", "市駅", "南駅"], interval: 1.5 },
+                "空港線": { stations: ["空港駅", "丸台駅", "上駅", "中央駅", "公園前駅", "下駅", "大学前駅", "口駅"], interval: 1.5 },
+                "都市線": { 
+                    stations: ["空港駅", "車庫駅", "北駅", "丸ヶ丘駅", "白駅", "中央駅", "市駅", "發駅"], 
+                    intervals: [2, 2, 1.5, 1.5, 1.5, 1.5, 1.5],
+                    services: [
+                        { name: "各駅停車", stops: ["空港駅", "車庫駅", "北駅", "丸ヶ丘駅", "白駅", "中央駅", "市駅", "發駅"], offset: 0 },
+                        { name: "準急", stops: ["空港駅", "車庫駅", "北駅", "白駅", "中央駅", "市駅", "發駅"], offset: 3 },
+                        { name: "快速", stops: ["空港駅", "北駅", "丸ヶ丘駅", "中央駅", "發駅"], offset: 7 },
+                        { name: "急行", stops: ["空港駅", "北駅", "中央駅", "發駅"], offset: 12 },
+                        { name: "特急", stops: ["空港駅", "中央駅", "發駅"], specific: [14, 44] }
+                    ]
+                },
+                "新線": { stations: ["發駅", "南駅", "南西駅", "下駅", "西前駅", "本駅", "白駅", "新駅", "上駅", "東駅", "東南駅", "区役所前駅", "發駅"], interval: 1.5 },
+                "他社線": { stations: ["中央駅", "白駅", "北東駅", "ドーム前駅"], interval: 1.5 },
+                "海岸線": { stations: ["ドーム前駅", "隣町駅", "川駅", "海岸駅"], interval: 1.5 }
+            },
+            status: ["東西線: 平常", "南北線: 平常", "空港線: 平常", "都市線: 平常", "新線: 平常", "海岸線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 800 550">
+                <circle cx="450" cy="300" r="200" fill="none" stroke="#e84393" stroke-width="8" opacity="0.4" />
+                <text x="650" y="520" fill="#e84393" font-size="20" font-weight="bold" text-anchor="middle">新線</text>
+                <line x1="50" y1="200" x2="623" y2="200" stroke="#2ecc71" stroke-width="10" />
+                <text x="50" y="170" fill="#27ae60" font-size="18" font-weight="bold">東西線</text>
+                <line x1="446" y1="50" x2="446" y2="500" stroke="#3498db" stroke-width="8" />
+                <text x="465" y="75" fill="#2980b9" font-size="18" font-weight="bold">南北線</text>
+                <path d="M750 50 L570 140 L450 200 L350 250 L250 300 L100 375" fill="none" stroke="#f39c12" stroke-width="8" opacity="0.8" />
+                <text x="100" y="340" fill="#d35400" font-size="18" font-weight="bold">空港線</text>
+                <path d="M750 50 L454 50 L350 127 L454 200 L454 400 L550 473" fill="none" stroke="#9b59b6" stroke-width="8" opacity="0.7" />
+                <text x="650" y="30" fill="#8e44ad" font-size="18" font-weight="bold" text-anchor="end">都市線</text>
+                <path d="M455 205 L355 132 L310 105 L270 85" fill="none" stroke="#95a5a6" stroke-width="3" opacity="0.8" />
+                <text x="310" y="60" fill="#7f8c8d" font-size="15" font-weight="bold" transform="rotate(-35, 310, 60)">他社線</text>
+                <path d="M270 85 L210 85 L150 85 L90 85" fill="none" stroke="#00cec9" stroke-width="8" opacity="0.8" />
+                <text x="120" y="110" fill="#00b894" font-size="15" font-weight="bold">海岸線</text>
+                <circle cx="446" cy="100" r="8" fill="white" stroke="#3498db" stroke-width="2.5" /><text x="458" y="95" font-size="14" font-weight="bold">新駅</text>
+                <circle cx="570" cy="140" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="585" y="145" font-size="15" font-weight="bold">上駅</text>
+                <circle cx="623" cy="200" r="8" fill="white" stroke="#2ecc71" stroke-width="2.5" /><text x="635" y="195" font-size="14" font-weight="bold">東駅</text>
+                <circle cx="650" cy="300" r="8" fill="white" stroke="#e84393" stroke-width="2.5" /><text x="665" y="305" font-size="14" font-weight="bold">東南駅</text>
+                <circle cx="623" cy="400" r="8" fill="white" stroke="#e84393" stroke-width="2.5" /><text x="635" y="415" font-size="14" font-weight="bold">区役所前駅</text>
+                <circle cx="550" cy="473" r="8" fill="white" stroke="#e84393" stroke-width="2.5" /><text x="560" y="500" font-size="14" font-weight="bold">發駅</text>
+                <circle cx="446" cy="500" r="8" fill="white" stroke="#3498db" stroke-width="2.5" /><text x="458" y="530" font-size="14" font-weight="bold">南駅</text>
+                <circle cx="350" cy="473" r="8" fill="white" stroke="#e84393" stroke-width="2.5" /><text x="280" y="500" font-size="14" font-weight="bold" text-anchor="end">南西駅</text>
+                <circle cx="250" cy="300" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="235" y="325" font-size="15" font-weight="bold" text-anchor="end">下駅</text>
+                <circle cx="259" cy="240" r="8" fill="white" stroke="#e84393" stroke-width="2.5" /><text x="245" y="240" font-size="14" font-weight="bold" text-anchor="end">西前駅</text>
+                <circle cx="277" cy="200" r="8" fill="white" stroke="#2ecc71" stroke-width="2.5" /><text x="277" y="180" font-size="14" font-weight="bold" text-anchor="middle">本駅</text>
+                <circle cx="350" cy="127" r="8" fill="white" stroke="#9b59b6" stroke-width="2.5" /><text x="340" y="115" font-size="14" font-weight="bold" text-anchor="end">白駅</text>
+                <circle cx="450" cy="200" r="12" fill="white" stroke="#333" stroke-width="4" /><text x="465" y="225" font-size="18" font-weight="bold">中央駅</text>
+                <circle cx="450" cy="400" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="465" y="415" font-size="15" font-weight="bold">市駅</text>
+                <circle cx="450" cy="50" r="8" fill="white" stroke="#3498db" stroke-width="2.5" /><text x="450" y="35" font-size="14" font-weight="bold" text-anchor="middle">北駅</text>
+                <circle cx="400" cy="88" r="6" fill="white" stroke="#9b59b6" stroke-width="1.5" /><text x="390" y="80" font-size="12" font-weight="bold" text-anchor="end">丸ヶ丘駅</text>
+                <circle cx="50" cy="200" r="8" fill="white" stroke="#2ecc71" stroke-width="2.5" /><text x="50" y="235" font-size="14" font-weight="bold" text-anchor="middle">奥駅</text>
+                <circle cx="120" cy="200" r="8" fill="white" stroke="#2ecc71" stroke-width="2.5" /><text x="120" y="235" font-size="14" font-weight="bold" text-anchor="middle">西駅</text>
+                <circle cx="750" cy="50" r="8" fill="white" stroke="#f39c12" stroke-width="2.5" /><text x="750" y="35" font-size="14" font-weight="bold" text-anchor="middle">空港駅</text>
+                <circle cx="350" cy="250" r="8" fill="white" stroke="#f39c12" stroke-width="2.5" /><text x="365" y="255" font-size="14" font-weight="bold">公園前駅</text>
+                <circle cx="100" cy="375" r="8" fill="white" stroke="#f39c12" stroke-width="2.5" /><text x="100" y="405" font-size="14" font-weight="bold" text-anchor="middle">口駅</text>
+                <circle cx="650" cy="100" r="6" fill="white" stroke="#f39c12" stroke-width="1.5" /><text x="660" y="100" font-size="12" font-weight="bold">丸台駅</text>
+                <circle cx="175" cy="337.5" r="10" fill="white" stroke="#f39c12" stroke-width="3" /><text x="185" y="365" font-size="15" font-weight="bold">大学前駅</text>
+                <circle cx="600" cy="50" r="6" fill="white" stroke="#9b59b6" stroke-width="1.5" /><text x="600" y="35" font-size="12" font-weight="bold" text-anchor="middle">車庫駅</text>
+                <circle cx="310" cy="105" r="8" fill="white" stroke="#95a5a6" stroke-width="2.5" /><text x="310" y="90" font-size="12" font-weight="bold" text-anchor="middle">北東駅</text>
+                <circle cx="270" cy="85" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="270" y="65" font-size="14" font-weight="bold" text-anchor="middle">ドーム前駅</text>
+                <circle cx="210" cy="85" r="8" fill="white" stroke="#00cec9" stroke-width="2.5" /><text x="210" y="65" font-size="12" font-weight="bold" text-anchor="middle">隣町駅</text>
+                <circle cx="150" cy="85" r="8" fill="white" stroke="#00cec9" stroke-width="2.5" /><text x="150" y="65" font-size="12" font-weight="bold" text-anchor="middle">川駅</text>
+                <circle cx="90" cy="85" r="8" fill="white" stroke="#00cec9" stroke-width="2.5" /><text x="90" y="65" font-size="12" font-weight="bold" text-anchor="middle">海岸駅</text>
+                </svg>`
+        },
+        keihin: {
+            name: "京浜日本鉄道",
+            routes: {
+                "北部線": { 
+                    stations: ["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "新田", "鹿浜", "江北北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"],
+                    intervals: [1.4, 0.8, 1.2, 1, 1.5, 1.5, 2, 1, 1, 1.5, 1.5, 1, 1, 1, 2, 1, 1, 1, 2],
+                    services: [
+                        { name: "各駅停車", stops: ["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "新田", "鹿浜", "江北北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"], offset: 0 },
+                        { name: "急行", stops: ["光が丘", "平和台", "板橋本町", "西新井", "亀有", "金町"], offset: 2 }
+                    ]
+                },
+                "上野線": {
+                    stations: ["池袋", "上池袋", "西巣鴨", "王子", "堀船", "江北", "大師", "西新井", "足立", "梅田", "北千住", "千住大橋", "南千住", "浅草", "北上野", "上野"],
+                    intervals: [1, 1, 1.5, 1, 3, 1, 1, 1, 1.5, 2, 1, 1, 2, 2, 1],
+                    services: [
+                        { name: "各駅停車", stops: ["池袋", "上池袋", "西巣鴨", "王子", "堀船", "江北", "大師", "西新井", "足立", "梅田", "北千住", "千住大橋", "南千住", "浅草", "北上野", "上野"], offset: 0 },
+                        { name: "急行", stops: ["池袋", "王子", "西新井", "北千住", "浅草", "上野"], offset: 1 }
+                    ]
+                },
+                "京浜日本本線": {
+                    stations: ["大宮", "西与野", "与野公園", "町谷", "西浦和", "美女木", "西戸田", "西高島平", "徳丸", "新赤塚", "平和台", "練馬春日町", "谷原", "練馬高野台", "南田中", "井荻", "桃井", "荻窪", "宮前", "高井戸", "八幡山", "希望丘", "船橋桜", "砧", "新用賀", "上野毛", "下野毛", "宮内", "南等々力", "武蔵小杉", "沼部", "御嶽山", "東久が原", "西馬込", "南久が原", "徳持", "幸", "川崎口", "三ッ池公園", "新大倉山", "新横浜", "三ツ沢公園", "横浜西口", "横浜"],
+                    interval: 2,
+                    intervals: [
+                        2.5, 1, 2.5, 2, 3,
+                        1, 3, 1, 1, 2,
+                        1, 2, 1, 1, 1,
+                        1, 1, 2, 1, 2,
+                        1.5, 1.5, 1.5, 1.5, 1,
+                        2, 2, 1, 2, 1.5,
+                        0.5, 1.5, 2, 1, 1,
+                        3, 1.5, 3, 2.5, 2,
+                        5.5, 1, 2
+                    ],
+                    services: [
+                        { name: "各駅停車", stops: ["大宮", "西与野", "与野公園", "町谷", "西浦和", "美女木", "西戸田", "西高島平", "徳丸", "新赤塚", "平和台", "練馬春日町", "谷原", "練馬高野台", "南田中", "井荻", "桃井", "荻窪", "宮前", "高井戸", "八幡山", "希望丘", "船橋桜", "砧", "新用賀", "上野毛", "下野毛", "宮内", "南等々力", "武蔵小杉", "沼部", "御嶽山", "東久が原", "西馬込", "南久が原", "徳持", "幸", "川崎口", "三ッ池公園", "新大倉山", "新横浜", "三ツ沢公園", "横浜西口", "横浜"], offset: 0 },
+                        { name: "準急", stops: ["大宮", "西与野", "与野公園", "町谷", "西浦和", "美女木", "西戸田", "西高島平", "平和台", "練馬春日町", "荻窪", "希望丘", "砧", "南等々力", "武蔵小杉", "沼部", "御嶽山", "西馬込", "川崎口", "三ッ池公園", "新横浜", "三ツ沢公園", "横浜西口", "横浜"], offset: 3 },
+                        { name: "急行", stops: ["大宮", "西浦和", "平和台", "練馬高野台", "荻窪", "高井戸", "船橋桜", "上野毛", "武蔵小杉", "西馬込", "川崎口", "新横浜", "横浜"], offset: 6 },
+                        { name: "快速急行", stops: ["大宮", "西高島平", "平和台", "井荻", "荻窪", "八幡山", "船橋桜", "武蔵小杉", "西馬込", "川崎口", "新横浜", "横浜"], offset: 9 },
+                        { name: "特急", stops: ["大宮", "平和台", "荻窪", "武蔵小杉", "川崎口", "新横浜", "横浜"], offset: 12 }
+                    ]
+                },
+                "芋窪線": {
+                    stations: ["西武球場前", "芋窪", "上北台"],
+                    intervals: [2, 1],
+                    services: [
+                    { name: "各駅停車   ", stops: ["西武球場前", "芋窪", "上北台"] }
+                    ]
+                }
+            },
+            status: ["北部線: 平常", "上野線: 平常", "京浜日本本線: 平常", "芋窪線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1500 1800">
+                <!-- 京浜日本本線 (Red) -->
+                <line x1="500" y1="160" x2="500" y2="1622" stroke="#c0392b" stroke-width="12" opacity="0.8" />
+                <text x="600" y="70" fill="#c0392b" font-size="24" font-weight="bold">京浜日本本線</text>
+
+                <!-- 北部線 (Blue) -->
+                <line x1="390" y1="500" x2="1435" y2="500" stroke="#3498db" stroke-width="12" />
+                <text x="380" y="460" fill="#2980b9" font-size="20" font-weight="bold" text-anchor="end">北部線</text>
+
+                <!-- 芋窪線 (Green) -->
+                <line x1="100" y1="650" x2="100" y2="850" stroke="#27ae60" stroke-width="8" opacity="0.8" />
+                <text x="80" y="630" fill="#27ae60" font-size="18" font-weight="bold">芋窪線</text>
+
+                <!-- 本線の駅 (平和台(index 10)周辺) -->
+                ${["大宮", "西与野", "与野公園", "町谷", "西浦和", "美女木", "西戸田", "西高島平", "徳丸", "新赤塚", "平和台", "練馬春日町", "谷原", "練馬高野台", "南田中", "井荻", "桃井", "荻窪", "宮前", "高井戸", "八幡山", "希望丘", "船橋桜", "砧", "新用賀", "上野毛", "下野毛", "宮内", "南等々力", "武蔵小杉", "沼部", "御嶽山", "東久が原", "西馬込", "南久が原", "徳持", "幸", "川崎口", "三ッ池公園", "新大倉山", "新横浜", "三ツ沢公園", "横浜西口", "横浜"].map((st, i) => {
+                    const y = 500 + (i - 10) * 34;
+                    const isHeiwadai = st === "平和台";
+                    const anchor = i % 2 === 0 ? 'start' : 'end';
+                    const labelX = i % 2 === 0 ? 515 : 485;
+                    const labelY = isHeiwadai ? y - 12 : y + 5;
+                    
+                    return `
+                        <circle cx="500" cy="${y}" r="8" fill="white" stroke="${isHeiwadai ? '#333' : '#c0392b'}" stroke-width="${isHeiwadai ? 3.5 : 2.5}" />
+                        <text x="${labelX}" y="${labelY}" font-size="12" font-weight="bold" text-anchor="${anchor}" stroke="white" stroke-width="4" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 北部線の駅 -->
+                ${["光が丘", "田柄", "平和台", "新練馬", "中央公園", "新ときわ台", "板橋本町", "東十条", "新神谷", "新田", "鹿浜", "江北北", "大師", "西新井", "足立", "加平", "北綾瀬", "大谷田", "亀有", "金町"].map((st, i) => {
+                    const x = 500 + (i - 2) * 55;
+                    const y = 500;
+                    if (st === "平和台") return ''; 
+                    return `
+                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${y - 20}" font-size="12" font-weight="bold" text-anchor="start" transform="rotate(-45, ${x}, ${y - 20})" stroke="white" stroke-width="4" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 上野線 (Orange - 本線の右側に配置, 上野で終端) -->
+                <path d="M700 800 L700 650 L800 550 L910 512 L1105 512 L1220 620 L1220 860" fill="none" stroke="#e67e22" stroke-width="10" opacity="0.8" />
+                <text x="1240" y="860" fill="#d35400" font-size="20" font-weight="bold">上野線</text>
+
+                <!-- 芋窪線の駅 -->
+                ${[
+                    {name: "西武球場前", x: 100, y: 650}, {name: "芋窪", x: 100, y: 750}, {name: "上北台", x: 100, y: 850}
+                ].map(st => `
+                    <circle cx="${st.x}" cy="${st.y}" r="8" fill="white" stroke="#27ae60" stroke-width="3" />
+                    <text x="${st.x + 20}" y="${st.y + 8}" font-size="14" font-weight="bold">${st.name}</text>
+                `).join('')}
+
+                <!-- 上野線の駅 (堀船・江北の位置を離して配置、他重複駅はラベル非表示) -->
+                ${[
+                    {name: "池袋", x: 700, y: 800}, {name: "上池袋", x: 700, y: 760}, {name: "西巣鴨", x: 700, y: 720}, {name: "王子", x: 800, y: 550}, {name: "堀船", x: 860, y: 534},
+                    {name: "江北", x: 910, y: 512}, {name: "大師", x: 995, y: 512}, {name: "西新井", x: 1050, y: 512}, {name: "足立", x: 1105, y: 512},
+                    {name: "梅田", x: 1220, y: 620}, {name: "北千住", x: 1220, y: 660}, {name: "千住大橋", x: 1220, y: 700}, {name: "南千住", x: 1220, y: 740}, {name: "浅草", x: 1220, y: 780}, {name: "北上野", x: 1220, y: 820}, {name: "上野", x: 1220, y: 860}
+                ].map(st => {
+                    const isDup = ["大師", "西新井", "足立"].includes(st.name);
+                    const isHorifune = st.name === "堀船";
+                    const isKohoku = st.name === "江北";
+                    
+                    // 堀船と江北はラベルを線の下側にする
+                    let labelY = st.y + 5;
+                    let labelX = st.x + 15;
+                    let anchor = 'start';
+                    
+                    if (isHorifune) { labelY = st.y + 25; labelX = st.x; anchor = 'middle'; }
+                    if (isKohoku) { labelY = st.y + 25; labelX = st.x; anchor = 'middle'; }
+
+                    return `
+                        <circle cx="${st.x}" cy="${st.y}" r="7" fill="white" stroke="#e67e22" stroke-width="2.5" />
+                        ${isDup ? '' : `<text x="${labelX}" y="${labelY}" font-size="12" font-weight="bold" text-anchor="${anchor}" stroke="white" stroke-width="4" paint-order="stroke">${st.name}</text>`}
+                    `;
+                }).join('')}
+            </svg>`
+        },
+        chiba: {
+            name: "千葉日本鉄道",
+            routes: {
+                "千葉日本線": {
+                    stations: ["千葉", "長沼", "新勝田台", "米本", "小室", "取手"],
+                    interval: 15,
+                    intervals: [8, 5, 3, 11, 15],
+                    services: [
+                    { name: "各駅停車", stops: ["千葉", "長沼", "新勝田台", "米本", "小室", "取手"] }
+                    ]
+                }
+            },
+            status: ["千葉日本線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 350">
+                <line x1="100" y1="120" x2="900" y2="120" stroke="#e67e22" stroke-width="12" />
+                <text x="50" y="80" fill="#d35400" font-size="24" font-weight="bold">千葉日本線</text>
+                ${["千葉", "長沼", "新勝田台", "米本", "小室", "取手"].map((st, i) => `
+                    <circle cx="${100 + i * 160}" cy="120" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${100 + i * 160}" y="${i % 2 === 0 ? 175 : 205}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+            </svg>`
+        },
+        tochigi: {
+            name: "栃木日本鉄道",
+            routes: {
+                "茂木日本線": {
+                    stations: ["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"],
+                    interval: 4,
+                    intervals: [3, 2.5, 2, 2, 5.5, 3],
+                    services: [
+                    { name: "各駅停車", stops: ["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"] }
+                    ]
+                },
+                "日光日本線": {
+                    stations: ["足尾", "栃鉄日光"],
+                    interval: 20,
+                    intervals: [20],
+                    services: [
+                    { name: "各駅停車", stops: ["足尾", "栃鉄日光"] }
+                    ]
+                }
+            },
+            status: ["茂木日本線: 平常", "日光日本線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1250 350">
+                <!-- 日光日本線 -->
+                <line x1="100" y1="120" x2="230" y2="120" stroke="#27ae60" stroke-width="12" />
+                <text x="50" y="80" fill="#27ae60" font-size="24" font-weight="bold">日光日本線</text>
+                ${["足尾", "栃鉄日光"].map((st, i) => `
+                    <circle cx="${100 + i * 130}" cy="120" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${100 + i * 130}" y="170" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+
+                <!-- 茂木日本線 -->
+                <line x1="380" y1="120" x2="1160" y2="120" stroke="#2ecc71" stroke-width="12" />
+                <text x="330" y="80" fill="#27ae60" font-size="24" font-weight="bold">茂木日本線</text>
+                ${["芳賀町工業団地管理センター前", "下高根沢", "祖母井", "上根", "市貝", "新天矢場", "茂木"].map((st, i) => `
+                    <circle cx="${380 + i * 130}" cy="120" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${380 + i * 130}" y="${i % 2 === 0 ? 170 : 200}" font-size="13" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+            </svg>`
+        },
+        tokai: {
+            name: "東海日本鉄道",
+            routes: {
+                "名四線": {
+                    stations: ["急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋"],
+                    intervals: [13, 4, 7, 14],
+                    services: [
+                        { name: "各駅停車", stops: ["急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋"], offset: 0 }
+                    ]
+                },
+                "静岡線": {
+                    stations: ["掛川", "満水", "西方", "北菊川", "富田", "金谷"],
+                    intervals: [2, 3, 3, 2, 6.5],
+                    services: [
+                    { name: "各駅停車", stops: ["掛川", "満水", "西方", "北菊川", "富田", "金谷"] }
+                    ]
+                },
+                "静岡空港線": {
+                    stations: ["富田", "牧之原", "静岡空港"],
+                    intervals: [3, 4.5],
+                    services: [
+                    { name: "各駅停車", stops: ["富田", "牧之原", "静岡空港"] }
+                    ]
+                },
+                "愛知線": {
+                    stations: ["蒲郡", "中蒲郡", "北蒲郡", "長沢赤坂", "国府", "新小坂井", "豊川", "豊橋", "西幸", "山田町", "二川", "東二川", "新所原"],
+                    intervals: [1.6,1.6,6.5,4.5,6.5,3,1,2.5,2.5,2,2.1,2.2],
+                    services: [
+                    { name: "各駅停車", stops: ["蒲郡", "中蒲郡", "北蒲郡", "長沢赤坂", "国府", "新小坂井", "豊川", "豊橋", "西幸", "山田町", "二川", "東二川", "新所原"] }
+                    ]
+                },
+                "名安線": {
+                    stations: ["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"],
+                    intervals: [3, 1.5, 2, 3, 3, 3, 1.5, 1.5],
+                    services: [
+                    { name: "各駅停車", stops: ["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"] }
+                    ]
+                }
+            },
+            status: ["名四線: 平常", "静岡線: 平常", "静岡空港線: 平常", "愛知線: 平常", "名安線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="-150 0 1700 800">
+                <!-- 名四線 (Meishi Line) -->
+                <path d="M50 700 L875 700" fill="none" stroke="#1e3799" stroke-width="12" />
+                <text x="50" y="660" fill="#1e3799" font-size="24" font-weight="bold">名四線</text>
+                ${["急幹四日市", "急幹長島", "急幹弥富", "金城ふ頭", "名古屋"].map((st, i) => {
+                    const x = 50 + i * 206;
+                    return `
+                        <circle cx="${x}" cy="700" r="10" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="740" font-size="20" text-anchor="middle" font-weight="bold">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 静岡線 (Shizuoka Line) -->
+                <path d="M1000 150 L1375 150" fill="none" stroke="#1e3799" stroke-width="12" />
+                <text x="1000" y="125" fill="#1e3799" font-size="24" font-weight="bold" text-anchor="start">静岡線</text>
+                ${["掛川", "満水", "西方", "北菊川", "富田", "金谷"].map((st, i) => {
+                    const x = 1000 + i * 75;
+                    return `
+                        <circle cx="${x}" cy="150" r="10" fill="white" stroke="#1e3799" stroke-width="3" />
+                        <text x="${x}" y="185" font-size="20" text-anchor="middle" font-weight="bold">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 静岡空港線 (Shizuoka Airport Line) -->
+                <path d="M1300 150 L1300 50" fill="none" stroke="#4a69bd" stroke-width="8" />
+                <text x="1200" y="65" fill="#4a69bd" font-size="24" font-weight="bold" text-anchor="end">静岡空港線</text>
+                ${["牧之原", "静岡空港"].map((st, i) => {
+                    const y = 100 - i * 50;
+                    return `
+                        <circle cx="1300" cy="${y}" r="8" fill="white" stroke="#4a69bd" stroke-width="3" />
+                        <text x="1285" y="${y + 5}" font-size="20" font-weight="bold" text-anchor="end">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 愛知線 -->
+                <path d="M1200 300 L600 300" fill="none" stroke="#e84118" stroke-width="10" />
+                <text x="1200" y="270" fill="#e84118" font-size="22" font-weight="bold" text-anchor="end">愛知線</text>
+                ${["蒲郡", "中蒲郡", "北蒲郡", "長沢赤坂", "国府", "新小坂井", "豊川", "豊橋", "西幸", "山田町", "二川", "東二川", "新所原"].map((st, i) => `
+                    <circle cx="${600 + i * 50}" cy="300" r="9" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${600 + i * 50}" y="${i % 2 === 0 ? 345 : 380}" font-size="20" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${600 + i * 50}, ${i % 2 === 0 ? 345 : 380})">${st}</text>
+                `).join('')}
+
+                <!-- 名安線 (蒲郡との間を空ける) -->
+                <path d="M538 300 L50 300" fill="none" stroke="#f0932b" stroke-width="10" />
+                <text x="50" y="270" fill="#f0932b" font-size="22" font-weight="bold">名安線</text>
+                ${["新安城", "新牛田", "知立北", "一里山", "北刈谷", "井ケ谷", "沓掛", "東鳴海", "徳重"].reverse().map((st, i) => {
+                    const x = 50 + i * 61;
+                    return `
+                        <circle cx="${x}" cy="${300}" r="9" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${i % 2 === 0 ? 345 : 380}" font-size="20" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${i % 2 === 0 ? 345 : 380})">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 桜通線 (他社線) -->
+                <path d="M50 300 L20 300 L20 550 L875 550" fill="none" stroke="#EA3223" stroke-width="3" opacity="0.6" />
+                <text x="875" y="520" fill="#EA3223" font-size="20" font-weight="bold" text-anchor="end">名古屋市営地下鉄 桜通線</text>
+                ${["徳重", "神沢", "相生山", "鳴子北", "野並", "鶴里", "桜本町", "新瑞橋", "瑞穂運動場西", "瑞穂区役所", "桜山", "御器所", "吹上", "今池", "車道", "高岳", "久屋大通", "丸の内", "国際センター", "名古屋", "太閤通"].map((st, i) => {
+                    let x, y, dx = 15, dy = 5, anchor = "start";
+                    if (i === 0) { 
+                        x = 50; y = 300; 
+                        dx = 15; dy = 35; // 徳重は接続点に固定し、ラベルを少し下に
+                    }
+                    else if (i < 6) { 
+                        x = 20; y = 300 + i * 40; 
+                        dx = -15; anchor = "end"; // 垂直区間
+                    }
+                    else { 
+                        x = 20 + (i - 5) * 55; y = 550; dx = 0; dy = 55; 
+                    }
+                    return `
+                        <circle cx="${x}" cy="${y}" r="6" fill="white" stroke="#EA3223" stroke-width="2" />
+                        ${i === 0 ? '' : `<text x="${x + dx}" y="${y + dy}" font-size="17" font-weight="bold" text-anchor="${anchor}" transform="${i >= 6 ? 'rotate(35, '+x+', '+(y+dy)+')' : ''}">${st}</text>`}
+                    `;
+                }).join('')}
+            </svg>`
+        },
+        private_railways: {
+            name: "私鉄線",
+            routes: {
+                "桜通線": {
+                    // 全21駅（現在の駅名に基づいたリストだぴょん）
+                    stations: [
+                        "太閤通", "名古屋", "国際センター", "丸の内", "久屋大通", "高岳", "車道", "今池", 
+                        "吹上", "御器所", "桜山", "瑞穂区役所", "瑞穂運動場西", "新瑞橋", "桜本町", 
+                        "鶴里", "野並", "鳴子北", "相生山", "神沢", "徳重"
+                    ],
+                    interval: 10, // 日中は約10分間隔だぴょん
+                    // 駅間時間（20個）：中心部は短く、郊外は少し長めに設定
+                    intervals: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "太閤通", "名古屋", "国際センター", "丸の内", "久屋大通", "高岳", "車道", "今池", 
+                                "吹上", "御器所", "桜山", "瑞穂区役所", "瑞穂運動場西", "新瑞橋", "桜本町", 
+                                "鶴里", "野並", "鳴子北", "相生山", "神沢", "徳重"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+                "天竜浜名湖鉄道": {
+                    // 全39駅
+                    stations: [
+                        "掛川", "掛川市役所前", "西掛川", "桜木", "いこいの広場", "細谷", "原谷", "原田", 
+                        "戸綿", "遠州森", "森町病院前", "円田", "遠江一宮", "敷地", "豊岡", "上野部", 
+                        "天竜二俣", "二俣本町", "西鹿島", "岩水寺", "宮口", "フルーツパーク", "都田", 
+                        "常葉大学前", "金指", "岡地", "気賀", "西気賀", "寸座", "浜名湖佐久米", 
+                        "東都筑", "都筑", "三ヶ日", "奥浜名湖", "尾奈", "知波田", "大森", "アスレヴィレッジ浜名湖", "新所原"
+                    ],
+                    interval: 60, // 基本は1時間に1本ペース
+                    // 駅間時間（38個）：駅間が非常に短い区間と長い区間が混在
+                    intervals: [2, 2, 3, 2, 2, 3, 3, 4, 3, 2, 2, 4, 4, 3, 3, 4, 2, 3, 3, 3, 3, 3, 2, 4, 2, 3, 4, 3, 3, 3, 2, 4, 2, 4, 4, 2, 2, 3],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "掛川", "掛川市役所前", "西掛川", "桜木", "いこいの広場", "細谷", "原谷", "原田", 
+                                "戸綿", "遠州森", "森町病院前", "円田", "遠江一宮", "敷地", "豊岡", "上野部", 
+                                "天竜二俣", "二俣本町", "西鹿島", "岩水寺", "宮口", "フルーツパーク", "都田", 
+                                "常葉大学前", "金指", "岡地", "気賀", "西気賀", "寸座", "浜名湖佐久米", 
+                                "東都筑", "都筑", "三ヶ日", "奥浜名湖", "尾奈", "知波田", "大森", "アスレヴィレッジ浜名湖", "新所原"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+                "大井川鉄道": {
+                    // 全20駅
+                    stations: [
+                        "金谷", "新金谷", "代官町", "日切", "五和", "神尾", "福用", "大和田", 
+                        "家山", "抜里", "川根温泉笹間渡", "地名", "塩郷", "下泉", "田野口", 
+                        "駿河徳山", "青部", "崎平", "千頭"
+                    ],
+                    interval: 60, // 運行本数が少なめなので60分間隔に設定
+                    // 駅間時間（18個）：山間部に入ると駅間が長くなる実態に合わせて調整
+                    intervals: [4, 3, 2, 3, 10, 5, 4, 6, 4, 5, 4, 3, 5, 4, 5, 4, 4, 4],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "金谷", "新金谷", "代官町", "日切", "五和", "神尾", "福用", "大和田", 
+                                "家山", "抜里", "川根温泉笹間渡", "地名", "塩郷", "下泉", "田野口", 
+                                "駿河徳山", "青部", "崎平", "千頭"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+                "常総線": {
+                    stations: [
+                        "取手", "西取手", "寺原", "新取手", "ゆめみ野", "稲戸井", "戸頭", "南守谷", 
+                        "守谷", "新守谷", "小絹", "水海道", "北水海道", "中妻", "三妻", "南石下", 
+                        "石下", "玉村", "宗道", "下妻", "大宝", "騰波ノ江", "黒子", "大田郷", "下館"
+                    ],
+                    interval: 30,
+                    // 駅間時間（24個）：取手〜守谷は短め、水海道以北は少し長めに設定
+                    intervals: [2, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 3, 3, 3, 3, 3, 3, 3, 5, 3, 3, 4, 4, 3],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "取手", "西取手", "寺原", "新取手", "ゆめみ野", "稲戸井", "戸頭", "南守谷", 
+                                "守谷", "新守谷", "小絹", "水海道", "北水海道", "中妻", "三妻", "南石下", 
+                                "石下", "玉村", "宗道", "下妻", "大宝", "騰波ノ江", "黒子", "大田郷", "下館"
+                            ], 
+                            offset: 0 }]
+                        },
+                "真岡線": {
+                    stations: ["下館", "下館二高前", "折本", "ひぐち", "久下田", "寺内", "真岡", "北真岡", 
+        "西田井", "北山", "市塙", "笹原田", "天矢場", "茂木"],
+                    interval: 60,
+                    intervals: [2, 4, 3, 5, 5, 5, 3, 4, 3, 7, 2, 3, 4],
+                services: [
+                    { name: "各駅停車", stops: ["下館", "下館二高前", "折本", "ひぐち", "久下田", "寺内", "真岡", "北真岡", 
+        "西田井", "北山", "市塙", "笹原田", "天矢場", "茂木"], offset: 0 }]
+                },
+                "北条線": {
+                    // 全8駅
+                    stations: [
+                        "粟生", "網引", "田原", "法華口", "播磨下里", "長", "播磨横田", "北条町"
+                    ],
+                    interval: 60, // 日中は概ね1時間に1本だぴょん
+                    // 駅間時間（7個）：のどかな風景の中を走る時間を設定
+                    intervals: [4, 3, 4, 3, 4, 3, 3],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "粟生", "網引", "田原", "法華口", "播磨下里", "長", "播磨横田", "北条町"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+                "神戸電鉄 粟生線": {
+                    // 全20駅
+                    stations: [
+                        "鈴蘭台", "鈴蘭台西口", "西鈴蘭台", "藍那", "木津", "木幡", "栄", "押部谷", 
+                        "緑が丘", "広野ゴルフ場前", "志染", "恵比須", "三木上の丸", "三木", "大村", 
+                        "樫山", "市場", "小野", "葉多", "粟生"
+                    ],
+                    interval: 15, // 昼間は15分〜30分間隔
+                    // 駅間時間（19個）：山越え区間やニュータウン区間で調整
+                    intervals: [2, 2, 3, 4, 3, 2, 3, 2, 2, 3, 2, 2, 2, 3, 3, 3, 3, 2, 3],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "鈴蘭台", "鈴蘭台西口", "西鈴蘭台", "藍那", "木津", "木幡", "栄", "押部谷", 
+                                "緑が丘", "広野ゴルフ場前", "志染", "恵比須", "三木上の丸", "三木", "大村", 
+                                "樫山", "市場", "小野", "葉多", "粟生"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+                "宇都宮ライトライン": {
+                    stations: ["宇都宮駅東口", "東宿郷", "駅東公園前", "峰", "陽東３丁目", "宇都宮大学陽東キャンパス", "平石", "平石中央小学校前", "飛山城跡", "清陵高校前", "清原地区市民センター前", "グリーンスタジアム前", "ゆいの杜西", "ゆいの杜中央", "ゆいの杜東", "芳賀台", "芳賀町工業団地管理センター前", "かしの森公園前", "芳賀・高根沢工業団地"],
+                    intervals: [0.4, 0.4, 0.7, 0.7, 0.5, 1.0, 0.5, 1.7, 1.2, 0.6, 0.8, 1.8, 0.5, 0.5, 0.8, 0.5, 0.9, 0.5],
+                    services: [
+                        { name: "各駅停車", stops: ["宇都宮駅東口", "東宿郷", "駅東公園前", "峰", "陽東３丁目", "宇都宮大学陽東キャンパス", "平石", "平石中央小学校前", "飛山城跡", "清陵高校前", "清原地区市民センター前", "グリーンスタジアム前", "ゆいの杜西", "ゆいの杜中央", "ゆいの杜東", "芳賀台", "芳賀町工業団地管理センター前", "かしの森公園前", "芳賀・高根沢工業団地"], offset: 0 }
+                    ]
+                },
+                "京成金町線": {
+                    stations: ["京成金町", "柴又", "京成高砂"],
+                    intervals: [1.5, 1.0],
+                    services: [
+                        { name: "各駅停車", stops: ["京成金町", "柴又", "京成高砂"], offset: 0 }
+                    ]
+                },
+                "京成千葉線・千原線": {
+                    stations: ["京成津田沼", "京成幕張本郷", "京成幕張", "検見川", "京成稲毛", "みどり台", "西登戸", "新千葉", "京成千葉", "千葉中央", "千葉寺", "大森台", "学園前", "おゆみ野", "ちはら台"],
+                    intervals: [2.1, 1.4, 1.3, 1.3, 1.2, 0.6, 0.9, 0.5, 0.7, 2.5, 1.7, 1.1, 2.0, 2.1],
+                    services: [
+                        { name: "各駅停車", stops: ["京成津田沼", "京成幕張本郷", "京成幕張", "検見川", "京成稲毛", "みどり台", "西登戸", "新千葉", "京成千葉", "千葉中央", "千葉寺", "大森台", "学園前", "おゆみ野", "ちはら台"], offset: 0 }
+                    ]
+                },
+                "京成本線": {
+                    stations: ["京成上野", "日暮里", "新三河島", "町屋", "千住大橋", "京成関屋", "堀切菖蒲園", "お花茶屋", "青砥", "京成高砂", "京成小岩", "江戸川", "国府台", "市川真間", "菅野", "京成八幡", "鬼越", "京成中山", "東中山", "京成西船", "海神", "京成船橋", "大神宮下", "船橋競馬場", "谷津", "京成津田沼", "京成大久保", "実籾", "八千代台", "京成大和田", "勝田台", "志津", "ユーカリが丘", "京成臼井", "京成佐倉", "大佐倉", "京成酒々井", "宗吾参道", "公津の杜", "京成成田", "空港第２ビル", "成田空港"],
+                    intervals: [2.1, 1.3, 0.9, 1.4, 0.9, 1.1, 1.1, 1.1, 1.2, 1.8, 1.2, 1.1, 1.1, 0.9, 0.8, 0.8, 0.9, 1.0, 0.8, 0.8, 1.2, 0.8, 1.1, 0.8, 1.4, 1.9, 1.4, 2.5, 1.7, 1.6, 1.7, 1.2, 2.4, 3.4, 2.1, 1.7, 2.3, 1.7, 3.0, 6.7, 1.0],
+                    services: [
+                        { name: "各駅停車", stops: ["京成上野", "日暮里", "新三河島", "町屋", "千住大橋", "京成関屋", "堀切菖蒲園", "お花茶屋", "青砥", "京成高砂", "京成小岩", "江戸川", "国府台", "市川真間", "菅野", "京成八幡", "鬼越", "京成中山", "東中山", "京成西船", "海神", "京成船橋", "大神宮下", "船橋競馬場", "谷津", "京成津田沼", "京成大久保", "実籾", "八千代台", "京成大和田", "勝田台", "志津", "ユーカリが丘", "京成臼井", "京成佐倉", "大佐倉", "京成酒々井", "宗吾参道", "公津の杜", "京成成田", "空港第２ビル", "成田空港"], offset: 0 }
+                    ]
+                },
+                "京成成田スカイアクセス線": {
+                    stations: ["京成高砂", "東松戸", "新鎌ヶ谷", "千葉ニュータウン中央", "印西牧の原", "印旛日本医大", "成田湯川", "空港第２ビル", "成田空港"],
+                    intervals: [7.6, 5.1, 11.1, 4.7, 3.8, 6.4, 1.0],
+                    services: [
+                        { name: "各駅停車", stops: ["京成高砂", "東松戸", "新鎌ヶ谷", "千葉ニュータウン中央", "印西牧の原", "印旛日本医大", "成田湯川", "空港第２ビル", "成田空港"], offset: 0 }
+                    ]
+                },
+                "神戸電鉄 有馬線": {
+                    // 全16駅（湊川〜有馬温泉）
+                    stations: [
+                        "湊川", "長田", "丸山", "鵯越", "鈴蘭台", "北鈴蘭台", "山の街", "箕谷", 
+                        "谷上", "花山", "大池", "神鉄六番", "唐櫃台", "有馬口", "五社", "有馬温泉"
+                    ],
+                    interval: 15, // 15分間隔が基本だぴょん
+                    // 駅間時間（15個）：鈴蘭台前後の急勾配などを考慮
+                    intervals: [2, 3, 2, 4, 3, 2, 3, 3, 3, 2, 2, 2, 3, 4, 4],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "湊川", "長田", "丸山", "鵯越", "鈴蘭台", "北鈴蘭台", "山の街", "箕谷", 
+                                "谷上", "花山", "大池", "神鉄六番", "唐櫃台", "有馬口", "五社", "有馬温泉"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+            },
+            status: ["名鉄線: 平常", "天竜浜名湖鉄道: 平常", "大井川鉄道: 平常", "常総線: 平常", "真岡線: 平常", "北条線: 平常", "神戸電鉄 粟生線: 平常", "神戸電鉄 有馬線: 平常", "地下鉄西神山手線: 平常", "神戸高速線: 平常", "阪急神戸線: 平常"],
+            svg: `<p style="text-align:center; padding:20px;">私鉄路線の図面は準備中です。</p>`
+        },
+        kansai: {
+            name: "関西日本鉄道",
+            routes: {
+                "神丹線": {
+                    stations: ["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"],
+                    intervals: [1.5, 2.5, 2.5, 1.5, 7, 2, 1, 1, 2, 2, 2, 3, 3, 1, 2, 3, 1, 1, 1, 1, 1.0, 1.0, 1.5, 1.5],
+                    services: [
+                        { name: "各駅停車", stops: ["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 0 },
+                        { name: "準急", stops: ["神戸三宮", "新神戸", "六甲", "柏堂", "上ヶ原", "伊丹市", "北伊丹", "大阪空港", "西豊中", "江坂", "新大阪", "南方", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 2 },
+                        { name: "急行", stops: ["神戸三宮", "新神戸", "上ヶ原", "伊丹市", "大阪空港", "江坂", "新大阪", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 4 },
+                        { name: "特急", stops: ["神戸三宮", "上ヶ原", "大阪空港", "新大阪", "大阪梅田", "大阪難波"], offset: 6 }
+                    ]
+                },
+                "関西難波線": {
+                    stations: ["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"],
+                    intervals: [1.3, 1.3, 1.3, 1.3],
+                    services: [
+                        { name: "各駅停車", stops: ["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"], offset: 0 }
+                    ]
+                },
+                "東平野線": {
+                    stations: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"],
+                    intervals: [1, 2, 1.5, 0.5, 1, 1, 2, 1, 2, 1.5, 1, 1, 2, 3],
+                    services: [
+                        { name: "各駅停車", stops: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"], offset: 0 },
+                        { name: "準急", stops: ["大阪梅田", "京橋", "森ノ宮新", "今里", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"], offset: 2 },
+                        { name: "急行", stops: ["大阪梅田", "南森町", "京橋", "今里", "大池橋", "北巽", "南巽", "大堀"], offset: 4 },
+                        { name: "特急", stops: ["大阪梅田", "京橋", "今里", "大堀"], offset: 6 }
+                    ]
+                },
+                "播磨線": {
+                    stations: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"],
+                    intervals: [20, 13, 7, 9],
+                    services: [
+                        { name: "各駅停車", stops: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"], offset: 0 },
+                        { name: "急行", stops: ["佐用", "夢前", "北条町"], offset: 5 }
+                    ]
+                },
+                "神戸高速線": {
+                    stations: ["新開地", "神戸", "栄元町", "神戸三宮"],
+                    intervals: [2, 2, 2],
+                    services: [
+                        { name: "各駅停車", stops: ["新開地", "神戸", "栄元町", "神戸三宮"], offset: 0 }
+                    ]
+                }
+            },
+            status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常", "神戸高速線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="-250 0 1850 1200">
+                <!-- 関西難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
+                <path d="M800 600 L1200 600" fill="none" stroke="#9b59b6" stroke-width="10" />
+                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">関西難波線</text>
+                ${["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"].map((st, i) => {
+                    let x = 800 + i * 100;
+                    let y = 600;
+                    if (st === "大阪難波" || st === "大池橋") return ''; 
+                    return `
+                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${y + 20}" font-size="12" font-weight="bold" text-anchor="start" style="writing-mode: vertical-rl; text-orientation: upright;">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 神戸高速線 -->
+                <path d="M-160 300 L50 300" fill="none" stroke="#00cec9" stroke-width="10" />
+                <text x="-160" y="270" fill="#00cec9" font-size="24" font-weight="bold">神戸高速線</text>
+                ${["新開地", "神戸", "栄元町"].map((st, i) => `
+                    <circle cx="${-160 + i * 70}" cy="300" r="8" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${-160 + i * 70}" y="${i % 2 === 0 ? 345 : 375}" font-size="13" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${-160 + i * 70}, ${i % 2 === 0 ? 345 : 375})">${st}</text>
+                `).join('')}
+
+                <!-- 東平野線 (水平部は y=310 に配置して神丹線と分離) -->
+                <path d="M764 310 L1200 310 L1200 900" fill="none" stroke="#00b894" stroke-width="10" />
+                <text x="1220" y="300" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
+                ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
+                    let x, cy;
+                    if (i === 0) { x = 764; cy = 300; } // 大阪梅田 (接続点)
+                    else if (i === 1) { x = 800; cy = 300; } // 南森町 (接続点)
+                    else if (i === 2) { x = 1200; cy = 320; } // 京橋 (少し下にずらす)
+                    else { x = 1200; cy = 300 + (i - 2) * 60; }
+                    
+                    let labelHtml = `<text x="${x + 20}" y="${cy + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>`;
+                    if (st === "大阪梅田" || st === "南森町") labelHtml = ""; // 神丹線側で描画
+
+                    return `
+                        ${(i <= 2) ? `<line x1="${x}" y1="310" x2="${x}" y2="${cy}" stroke="#00b894" stroke-width="5" />` : ''}
+                        <circle cx="${x}" cy="${cy}" r="${st==='大池橋'||st==='大阪梅田'||st==='南森町'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
+                        ${labelHtml}
+                    `;
+                }).join('')}
+
+                <!-- 神丹線 (水平部は y=300 に配置) -->
+                <path d="M50 300 L800 300 L800 600" fill="none" stroke="#0984e3" stroke-width="10" />
+                <text x="50" y="270" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
+                ${["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"].map((st, i) => {
+                    let x, y;
+                    if (i <= 21) { x = 50 + i * 35.7; y = 300; }
+                    else { x = 800; y = 300 + (i - 21) * 100; }
+                    
+                    let anchor = "middle", dx = 0, dy = 0, rotate = -30;
+                    if (i > 21) { anchor = "end"; dx = -20; dy = 5; rotate = 0; }
+                    else if (st === "大阪梅田") { anchor = "end"; dx = -15; dy = -25; rotate = 0; }
+                    else if (st === "南森町") { anchor = "start"; dx = 10; dy = -25; rotate = 0; }
+                    else { dy = i % 2 === 0 ? 45 : 75; }
+
+                    return `
+                        <circle cx="${x}" cy="${y}" r="${st==='大阪梅田'||st==='神戸三宮'||st==='大阪難波'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大阪梅田'||st==='大阪難波'?5:3}" />
+                        <text x="${x + dx}" y="${y + dy}" font-size="13" text-anchor="${anchor}" font-weight="bold" ${rotate !== 0 ? `transform="rotate(${rotate}, ${x}, ${y + dy})"` : ''}>${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 関西難波線 (大阪難波 800,600 〜 大池橋 1200,600 を水平に結ぶ) -->
+                <path d="M800 600 L1200 600" fill="none" stroke="#9b59b6" stroke-width="10" />
+                <text x="810" y="580" fill="#9b59b6" font-size="20" font-weight="bold">関西難波線</text>
+                ${["大阪難波", "新日本橋", "四天王寺前夕陽ヶ丘", "勝山", "大池橋"].map((st, i) => {
+                    let x = 800 + i * 100;
+                    let y = 600;
+                    if (st === "大阪難波" || st === "大池橋") return ''; 
+                    return `
+                        <circle cx="${x}" cy="${y}" r="8" fill="white" stroke="#333" stroke-width="3" />
+                        <text x="${x}" y="${y + 20}" font-size="12" font-weight="bold" text-anchor="start" style="writing-mode: vertical-rl; text-orientation: upright;">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 播磨線 -->
+                <path d="M50 750 L770 750" fill="none" stroke="#a52a2a" stroke-width="10" />
+                <text x="50" y="710" fill="#a52a2a" font-size="24" font-weight="bold">播磨線</text>
+                ${["佐用", "安富山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
+                    <circle cx="${50 + i * 180}" cy="750" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${50 + i * 180}" y="${i % 2 === 0 ? 795 : 825}" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+                `).join('')}
+            </svg>`
+        },
+        jr_lines: {
+            name: "JR線",
+            routes: {
+                "JR日光線": {
+                    stations: ["宇都宮", "鶴田", "鹿沼", "文挟", "下野大沢", "今市", "日光"],
+                    intervals: [4.8, 9.5, 6.2, 6.8, 6.2, 7.1],
+                    services: [
+                        { name: "各駅停車", stops: ["宇都宮", "鶴田", "鹿沼", "文挟", "下野大沢", "今市", "日光"], offset: 0 }
+                    ]
+                },
+                "JR常磐線": {
+                    stations: ["金町", "松戸", "北松戸", "馬橋", "新松戸", "北小金", "南柏", "柏", "北柏", "我孫子", "天王台", "取手"],
+                    intervals: [3.9, 2.1, 1.6, 1.6, 2.5, 2.5, 2.4, 2.2, 4.4, 2.7, 3.4],
+                    services: [
+                        { name: "各駅停車", stops: ["金町", "松戸", "北松戸", "馬橋", "新松戸", "北小金", "南柏", "柏", "北柏", "我孫子", "天王台", "取手"], offset: 0 }
+                    ]
+                },
+                "上越新幹線": {
+                    stations: ["長岡", "燕三条", "新潟"],
+                    intervals: [23.4, 33.3],
+                    services: [
+                        { name: "各駅停車", stops: ["長岡", "燕三条", "新潟"], offset: 0 }
+                    ]
+                },
+                "山陽・九州新幹線": {
+                    // 全35駅
+                    stations: [
+                        "新大阪", "新神戸", "西明石", "姫路", "相生", "岡山", "新倉敷", "福山", 
+                        "新尾道", "三原", "東広島", "広島", "新岩国", "徳山", "新山口", "厚狭", 
+                        "新下関", "小倉", "博多", "新鳥栖", "久留米", "筑後船小屋", "新大牟田", 
+                        "新玉名", "熊本", "新八代", "水俣", "出水", "川内", "鹿児島中央"
+                    ],
+                    interval: 30, // 運行本数が多いので30分間隔に設定
+                    // 駅間時間（29個）：駅間の距離に応じて所要時間を調整
+                    intervals: [13, 10, 15, 10, 15, 10, 15, 8, 8, 12, 10, 15, 15, 15, 10, 10, 15, 15, 12, 5, 8, 8, 8, 10, 12, 12, 8, 12, 12],
+                    services: [
+                        { 
+                            name: "各駅停車", 
+                            stops: [
+                                "新大阪", "新神戸", "西明石", "姫路", "相生", "岡山", "新倉敷", "福山", 
+                                "新尾道", "三原", "東広島", "広島", "新岩国", "徳山", "新山口", "厚狭", 
+                                "新下関", "小倉", "博多", "新鳥栖", "久留米", "筑後船小屋", "新大牟田", 
+                                "新玉名", "熊本", "新八代", "水俣", "出水", "川内", "鹿児島中央"
+                            ], 
+                            offset: 0 
+                        }
+                    ]
+                },
+
+            },
+            status: ["山手線: 平常", "中央線: 平常", "東海道本線: 平常", "山陽・九州新幹線: 平常", "姫新線: 平常", "上越新幹線: 平常", "総武快速線: 平常", "常磐線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 600 600">
+                <circle cx="300" cy="300" r="200" fill="none" stroke="#2ecc71" stroke-width="10" />      
+                <text x="300" y="80" fill="#27ae60" font-size="24" font-weight="bold" text-anchor="middle">山手線</text>
+                <line x1="300" y1="300" x2="100" y2="300" stroke="#e67e22" stroke-width="10" />
+                <text x="120" y="280" fill="#d35400" font-size="20" font-weight="bold">中央線</text>
+                <line x1="300" y1="500" x2="300" y2="580" stroke="#f39c12" stroke-width="10" />
+                <text x="320" y="560" fill="#d35400" font-size="20" font-weight="bold">東海道本線</text>
+                ${[
+                    {name:"東京", x:473, y:400}, {name:"品川", x:300, y:500}, {name:"新宿", x:100, y:300}, {name:"池袋", x:127, y:200}, {name:"上野", x:300, y:100}
+                ].map(st => `<circle cx="${st.x}" cy="${st.y}" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="${st.x+15}" y="${st.y+5}" font-size="14" font-weight="bold">${st.name}</text>`).join('')}
+            </svg>`
+        },
+        hokuriku: {
+            name: "北陸日本鉄道",
+            routes: {
+                "新潟線(新潟〜福祉大)": {
+                    stations: ["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大"],
+                    intervals: [1, 1, 1.5, 1.75, 1.75, 4, 3],
+                    services: [
+                        { name: "各駅停車", stops: ["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大"], offset: 0 },
+                        { name: "急行", stops: ["新潟", "万代", "新潟港", "新潟空港", "松浜", "福祉大"], offset: 4 },
+                        { name: "スカイ", stops: ["新潟", "万代", "新潟空港"], offset: 8 }
+                    ]
+                },
+                "新潟線(福祉大〜黒山)": {
+                    stations: ["福祉大", "島見", "内島見", "藤寄", "黒山"],
+                    intervals: [2, 3, 2, 2],
+                    services: [
+                { name: "各駅停車", stops: ["福祉大", "島見", "内島見", "藤寄", "黒山"] }
+            ]
+                }
+            },
+            status: ["新潟線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1000 300">
+                <line x1="50" y1="150" x2="624" y2="150" stroke="#0fbcf9" stroke-width="10" />
+                <line x1="624" y1="150" x2="950" y2="150" stroke="#0fbcf9" stroke-width="3" />
+                <text x="50" y="110" fill="#0fbcf9" font-size="24" font-weight="bold">新潟線</text>
+                ${["新潟", "万代", "沼垂", "新潟港", "物見山", "新潟空港", "松浜", "福祉大", "島見", "内島見", "藤寄", "黒山"].map((st, i) => `
+                    <circle cx="${50 + i * 82}" cy="150" r="10" fill="white" stroke="#333" stroke-width="3" />
+                    <text x="${50 + i * 82}" y="${i % 2 === 0 ? 200 : 230}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-20, ${50 + i * 82}, ${i % 2 === 0 ? 200 : 230})">${st}</text>
+                `).join('')}
+            </svg>`
+        },
+        kyukansen: {
+            name: "日本急幹線",
+            routes: {
+                "中山道急幹線": {
+                    stations: ["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"],
+                    intervals: [30, 20, 20, 60, 38, 30, 50, 60, 30, 35, 50, 30, 40, 60],
+                    services: [
+                        { name: "みの", stops: ["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"], offset: 0 },
+                        { name: "きそ", stops: ["新大阪", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "高山", "松本", "秩父", "大宮"], offset: 7, interval: 60 },
+                        { name: "やまと", stops: ["新大阪", "名古屋", "松本", "大宮"], offset: 15, interval: 60 }
+                    ]
+                },
+                "金沢支線": {
+                    stations: ["金沢", "福光", "白川", "高山"],
+                    intervals: [25, 25, 40],
+                    services: [
+                        { name: "かなざわ", stops: ["金沢", "福光", "白川", "高山"], offset: 0 }
+                    ]
+                },
+                "中山道急幹線(直通)": {
+                    stations: ["金沢", "福光", "白川", "高山", "平湯", "松本", "佐久平", "大宮"],
+                    intervals: [25, 25, 40, 30, 35, 50, 130],
+                    services: [
+                        { name: "さく", stops: ["金沢", "福光", "白川", "高山", "平湯", "松本", "佐久平", "大宮"], offset: 25 },
+                        { name: "しらかわ", stops: ["金沢", "高山", "松本", "大宮"], offset: 45 }
+                    ]
+                },
+                "西九州急幹線": {
+                    stations: ["熊本", "島原", "口之津", "天草空港", "長島", "出水"],
+                    intervals: [30, 25, 25, 40, 40],
+                    services: [
+                        { name: "しまばら", stops: ["熊本", "島原", "口之津", "天草空港", "長島", "出水"], offset: 0 },
+                        { name: "あまくさ", stops: ["熊本", "天草空港", "出水"], offset: 7 }
+                    ]
+                },
+                "中部縦貫急幹線": {
+                    stations: ["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"],
+                    intervals: [20, 40, 50, 50, 100, 30, 40, 50, 60, 80, 70, 30],
+                    services: [
+                        { name: "各駅停車", stops: ["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"], offset: 0 },
+                        { name: "急行", stops: ["仙台", "山形", "長岡", "長野", "松本", "飯田市", "静岡"], offset: 10 }
+                    ]
+                }
+            },
+            status: ["中山道急幹線: 平常", "中部縦貫急幹線: 平常", "金沢支線: 平常", "西九州急幹線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 1600 1200">
+                <!-- ライン描画 (交点を各駅の座標 906, 1120 に合わせる) -->
+                <line x1="50" y1="600" x2="1550" y2="600" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <line x1="906" y1="600" x2="906" y2="360" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <line x1="50" y1="1000" x2="650" y2="1000" stroke="#d4af37" stroke-width="12" opacity="0.8" />
+                <path d="M1550 150 L1120 150 L1120 1100" fill="none" stroke="#d4af37" stroke-width="12" stroke-linejoin="round" />
+
+                <!-- 路線タイトル (線より後に描画、縁取りを強化) -->
+                <text x="50" y="540" fill="#b8860b" font-size="32" font-weight="bold" stroke="white" stroke-width="8" paint-order="stroke">中山道急幹線</text>
+                <text x="930" y="340" fill="#b8860b" font-size="28" font-weight="bold" stroke="white" stroke-width="8" paint-order="stroke">金沢支線</text>
+                <text x="50" y="940" fill="#b8860b" font-size="32" font-weight="bold" stroke="white" stroke-width="8" paint-order="stroke">西九州急幹線</text>
+                <text x="1550" y="110" fill="#b8860b" font-size="32" font-weight="bold" text-anchor="end" stroke="white" stroke-width="8" paint-order="stroke">中部縦貫急幹線</text>
+                
+                <!-- 中山道急幹線の駅 -->
+                ${["新大阪", "松井山手", "宇治田原", "伊賀甲賀", "急幹四日市", "名古屋", "急幹岐阜", "郡上八幡", "高山", "平湯", "松本", "佐久平", "下仁田", "秩父", "大宮"].map((st, i) => {
+                    const x = 50 + i * 107;
+                    const y = 600;
+                    const isMatsu = st === "松本";
+                    const isBelow = (i < 11 ? i % 2 === 0 : i % 2 !== 0);
+                    // 松本(i=10, x=1120)は重要交差点なのでラベルを強調
+                    const textY = isBelow ? y + (isMatsu ? 75 : 50) : y - (isMatsu ? 55 : 35);
+                    return `
+                        <circle cx="${x}" cy="${y}" r="${(st==='松本'||st==='高山')?16:10}" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x}" y="${textY}" font-size="${isMatsu ? 24 : 15}" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${textY})" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 金沢支線の駅 -->
+                ${["高山", "白川", "福光", "金沢"].map((st, i) => {
+                    if (st === "高山") return ''; // 中山道側で描画済み
+                    const x = 906; // 高山のX座標に合わせる
+                    const y = 600 - i * 80;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x + 30}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 西九州急幹線の駅 -->
+                ${["熊本", "島原", "口之津", "天草空港", "長島", "出水"].map((st, i) => {
+                    const x = 50 + i * 120;
+                    const y = 1000;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x}" y="${y + 50}" font-size="15" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, ${y + 50})" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+
+                <!-- 中部縦貫急幹線の駅 -->
+                ${["仙台", "秋保温泉", "山形", "西米沢", "喜多方", "長岡"].reverse().map((st, i) => {
+                    const x = 1120 + i * 71.2; // 松本のX座標(1120)を起点にする
+                    const y = 150;
+                    return `
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x}" y="${y - 25}" font-size="16" text-anchor="middle" font-weight="bold" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+                ${["長岡", "柏崎", "上越妙高", "長野", "松本", "飯田市", "千頭", "静岡"].map((st, i) => {
+                    if (st === "長岡" || st === "松本") return ''; // 重複駅は描画スキップ
+                    const x = 1120; // 松本のX座標に合わせる
+                    let y;
+                    if (i <= 4) y = 150 + i * 112.5; 
+                    else y = 600 + (i - 4) * 166.6; 
+                    return `
+                        <circle cx="${x}" cy="${y}" r="10" fill="white" stroke="#333" stroke-width="4" />
+                        <text x="${x + 30}" y="${y + 8}" font-size="16" font-weight="bold" text-anchor="start" stroke="white" stroke-width="5" paint-order="stroke">${st}</text>
+                    `;
+                }).join('')}
+            </svg>`
+        }
+    };
+
+    const transferOnlyLines = {
+        private_railways: {
+            	name: "私鉄線",
+            	routes: {
+                		"名鉄名古屋本線": {
+                    stations: ["名古屋","豊橋","国府","新安城"],
+                },
+                "名鉄豊川線": {
+                    stations: ["国府"],
+                },
+                "名鉄蒲郡線": {
+                    stations: ["蒲郡"],
+                },
+                "名鉄西尾線": {
+                    stations: ["新安城"],
+                },
+                "近鉄名古屋線": {
+                    stations: ["名古屋"],
+                },
+                "豊橋鉄道渥美線": {
+                    stations: ["豊橋"],
+                },
+                "豊橋鉄道市内線": {
+                    stations: ["豊橋"],
+                },
+                "阪神本線": {
+                    stations: ["神戸三宮","東梅田","大阪梅田"],
+                },
+                "阪急神戸線": {
+                    stations: ["神戸三宮","東梅田","大阪梅田"],
+                },
+                "阪急神戸高速線": {
+                    stations: ["神戸三宮"],
+                },
+                "神戸新交通ポートアイランド線": {
+                    stations: ["神戸三宮"],
+                },
+                "神戸市営地下鉄西神・山手線": {
+                    stations: ["神戸三宮","新神戸"],
+                },
+                "神戸市営地下鉄海岸線": {
+                    stations: ["神戸三宮"],
+                },
+                "神戸市営地下鉄北神線": {
+                    stations: ["新神戸"],
+                },
+                "大阪モノレール": {
+                    stations: ["大阪空港"],
+                },
+                "北大阪急行": {
+                    stations: ["江坂"],
+                },
+                "大阪メトロ御堂筋線": {
+                    stations: ["江坂","新大阪","南方","大阪難波"],
+                },
+                "阪急京都線": {
+                    stations: ["南方","東梅田","大阪梅田"],
+                },
+                "阪急宝塚線": {
+                    stations: ["東梅田","大阪梅田"],
+                },
+                "大阪メトロ谷町線": {
+                    stations: ["東梅田","大阪梅田","四天王寺前夕陽ヶ丘","南森町","平野南"],
+                },
+                "大阪メトロ四つ橋線": {
+                    stations: ["東梅田","大阪梅田","大阪難波"],
+                },
+                "近鉄奈良線": {
+                    stations: ["日本橋"],
+                },
+                "大阪メトロ千日前線": {
+                    stations: ["日本橋","大阪難波","今里","北巽","南巽"],
+                },
+                "大阪メトロ堺筋線": {
+                    stations: ["日本橋","南森町"],
+                },
+                "近鉄難波線": {
+                    stations: ["大阪難波"],
+                },
+                "阪神なんば線": {
+                    stations: ["大阪難波"],
+                },
+                "南海高野線": {
+                    stations: ["大阪難波"],
+                },
+                "南海本線": {
+                    stations: ["大阪難波"],
+                },
+                "京阪本線": {
+                    stations: ["京橋"],
+                },
+                "大阪メトロ長堀鶴見緑地線": {
+                    stations: ["京橋"],
+    
+                },
+                "大阪メトロ今里筋線": {
+                    stations: ["今里"],
+                },
+                "智頭急行線": {
+                    stations: ["佐用"],
+                },
+                "長良川鉄道越美南線": {
+                    stations: ["郡上八幡"],
+                },
+                "アルピコ交通上高地線": {
+                    stations: ["松本"],
+                },
+                "上信線": {
+                    stations: ["下仁田"],
+                },
+                "熊本市電Aライン": {
+                    stations: ["熊本"],
+                },
+                "島原鉄道線": {
+                    stations: ["島原"],
+                },
+                "しなの鉄道北しなの線": {
+                    stations: ["長野"],
+                },
+                "長野電鉄長野線": {
+                    stations: ["長野"],
+                },
+                "越後トキメキ鉄道妙高はねうまライン": {
+                    stations: ["上越妙高"],
+                },
+                "仙台市営地下鉄南北線": {
+                    stations: ["仙台"],
+                },
+                "仙台市営地下鉄東西線": {
+                    stations: ["仙台"],
+                },
+                "仙台空港アクセス線": {
+                    stations: ["仙台"],
+                },
+                "都営大江戸線": {
+                    stations: ["光が丘","練馬春日町"],
+                },
+                "東京メトロ副都心線": {
+                    stations: ["平和台","池袋"],
+                },
+                "東京メトロ有楽町線": {
+                    stations: ["平和台","池袋"],
+                },
+                "都営三田線": {
+                    stations: ["板橋本町","西巣鴨","西高島平"],
+                },
+                "東京メトロ南北線": {
+                    stations: ["王子"],
+                },
+                "都電荒川線": {
+                    stations: ["王子"],
+                },
+                "日暮里・舎人ライナー": {
+                    stations: ["江北"],
+                },
+                "東武スカイツリーライン": {
+                    stations: ["西新井","北千住"],
+                },
+                "東武大師線": {
+                    stations: ["大師","西新井"],
+                },
+                "東京メトロ千代田線": {
+                    stations: ["北綾瀬","北千住"],
+                },
+                "東京メトロ日比谷線": {
+                    stations: ["北千住","南千住","銀座"],
+                },
+                "東京メトロ銀座線": {
+                    stations: ["上野"],
+                },
+                "つくばエクスプレス": {
+                    stations: ["北千住","南千住"],
+                },
+                "東武アーバンパークライン": {
+                    stations: ["大宮"],
+                },
+                "ニューシャトル": {
+                    stations: ["大宮"],
+                },
+                "京成本線": {
+                    stations: ["千住大橋","上野"],
+                },
+                "京成金町線": {
+                    stations: ["金町"],
+                },
+                "東武東上線": {
+                    stations: ["池袋"],
+                },
+                "西武池袋線": {
+                    stations: ["池袋","練馬高野台"],
+                },
+                "西武新宿線": {
+                    stations: ["井荻"],
+                },
+                "京王井の頭線": {
+                    stations: ["高井戸"],
+                },
+                "京王線": {
+                    stations: ["八幡山"],
+                },
+                "東急大井町線": {
+                    stations: ["上野毛"],
+                },
+                "東急目黒線": {
+                    stations: ["武蔵小杉"],
+                },
+                "東急東横線": {
+                    stations: ["武蔵小杉","横浜"],
+                },
+                "東急多摩川線": {
+                    stations: ["沼部"],
+                },
+                "東急池上線": {
+                    stations: ["御嶽山"],
+                },
+                "都営浅草線": {
+                    stations: ["西馬込"],
+                },
+                "東急新横浜線": {
+                    stations: ["新横浜"],
+                },
+                "相鉄新横浜線": {
+                    stations: ["新横浜"],
+                },
+                "横浜市営地下鉄ブルーライン": {
+                    stations: ["新横浜","横浜"],
+                },
+                "横浜高速鉄道みなとみらい線": {
+                    stations: ["横浜"],
+                },
+                "京急本線": {
+                    stations: ["横浜"],
+                },
+                "相鉄本線": {
+                    stations: ["横浜"],
+                },
+                "東京メトロ丸ノ内線": {
+                    stations: ["池袋","荻窪"],
+                },
+                "西武狭山線": {
+                    stations: ["西武球場前"],
+                },
+                "西武山口線": {
+                    stations: ["西武球場前"],
+                },
+                "東京モノレール": {
+                    stations: ["上北台"],
+                },
+                "北総線": {
+                    stations: ["小室"],
+                },
+                "千葉都市モノレール": {
+                    stations: ["千葉"],
+                },
+                "京成千葉線": {
+                    stations: ["千葉"],
+                },
+                "宇都宮ライトライン": {
+                    stations: ["芳賀町工業団地管理センター前"],
+                },
+                "東武日光線": {
+                    stations: ["栃鉄日光"],
+                },
+                "わたらせ渓谷鉄道": {
+                    stations: ["足尾"],
+                },
+                "あおなみ線": {
+                    stations: ["金城ふ頭","名古屋"],
+                },
+                "名古屋市営地下鉄東山線": {
+                    stations: ["名古屋"],
+                },
+                "肥薩オレンジ鉄道線": {
+                    stations: ["出水"],
+                },
+                "地下鉄西神山手線": {
+                    stations: ["湊川公園", "大倉山", "県庁前", "三宮", "新神戸"],
+                },
+                "神戸高速線": {
+                    stations: ["湊川", "新開地"],
+                },
+                "阪急神戸線": {
+                    stations: ["新開地", "神戸三宮"],
+                }
+                },
+            status: ["名鉄線: 平常", "天竜浜名湖鉄道: 平常", "大井川鉄道: 平常", "常総線: 平常", "真岡線: 平常", "北条線: 平常", "神戸電鉄 粟生線: 平常", "神戸電鉄 有馬線: 平常", "地下鉄西神山手線: 平常", "神戸高速線: 平常", "阪急神戸線: 平常"],
+            svg: `<p style="text-align:center; padding:20px;">私鉄路線の図面は準備中です。</p>`
+        },
+        jr_lines: {
+            name: "JR線",
+            routes: {
+                "JR山手線": {
+                    stations: ["上野", "日暮里", "田端", "池袋", "新宿", "渋谷", "品川", "東京", "秋葉原", "上野"],
+                },
+                "JR中央線": {
+                    stations: ["東京", "神田", "御茶ノ水", "四ツ谷", "新宿", "中野", "荻窪", "吉祥寺", "三鷹", "国分寺", "立川", "八王子","千葉","名古屋"],
+                },
+                "JR東海道線": {
+                    stations: ["東京", "品川", "川崎", "横浜", "大船", "藤沢", "茅ヶ崎", "平塚", "小田原", "熱海","静岡","金谷","掛川","新所原","二川","豊橋","蒲郡","名古屋"],
+                },
+                "JR白新線": {
+                    stations: ["黒山","新潟"],
+                },
+                "JR信越本線": {
+                    stations: ["新潟","柏崎","長岡"],
+                },
+                "JR越後線": {
+                    stations: ["新潟","柏崎"],
+                },
+                "JR上越線": {
+                    stations: ["長岡"],
+                },
+                "JR磐越西線": {
+                    stations: ["喜多方"],
+                },
+                "JR米坂線": {
+                    stations: ["西米沢"],
+                },
+                "JR仙石線": {
+                    stations: ["仙台"],
+                },
+                "JR東北新幹線": {
+                    stations: ["仙台"],
+                },
+                "JR東北本線": {
+                    stations: ["仙台"],
+                },
+                "JR仙山線": {
+                    stations: ["仙台"],
+                },
+                "JR京浜東北線": {
+                    stations: ["王子","横浜"],
+                },
+                "JR宇都宮線": {
+                    stations: ["上野","大宮"],
+                },
+                "JR高崎線": {
+                    stations: ["上野","大宮"],
+                },
+                "JR川越線": {
+                    stations: ["大宮"],
+                },
+                "JR埼京線": {
+                    stations: ["池袋","武蔵小杉"],
+                },
+                "JR武蔵野線": {
+                    stations: ["西浦和"],
+                },
+                "JR根岸線": {
+                    stations: ["横浜"],
+                },
+                "JR南武線": {
+                    stations: ["武蔵小杉","尻手"],
+                },
+                "JR横須賀線": {
+                    stations: ["武蔵小杉","横浜","千葉"],
+                },
+                "JR横浜線": {
+                    stations: ["新横浜","横浜"],
+                },
+                "JR飯田線": {
+                    stations: ["豊橋"],
+                },
+                "JR湘南新宿ライン": {
+                    stations: ["池袋","大宮","武蔵小杉","横浜"],
+                },
+                "JR上野東京ライン": {
+                    stations: ["上野"],
+                },
+                "JR京都線": {
+                    stations: ["大阪梅田","新大阪"],
+                },
+                "JRゆめ咲線": {
+                    stations: ["大阪梅田"],
+                },
+                "JR阪和線": {
+                    stations: ["大阪梅田"],
+                },
+                "JR東西線": {
+                    stations: ["大阪梅田","南森町"],
+                },
+                "JRおおさか東線": {
+                    stations: ["大阪梅田","新大阪"],
+                },
+                "JR神戸線": {
+                    stations: ["大阪梅田","神戸","神戸三宮"],
+                },
+                "JR宝塚線": {
+                    stations: ["大阪梅田","北伊丹"],
+                },
+                "JR大和路線": {
+                    stations: ["大阪難波","大阪梅田","平野北"],
+                },
+                "JR関西線": {
+                    stations: ["大阪難波","名古屋"],
+                },
+                "JR高山本線": {
+                    stations: ["高山"],
+                },
+                "JR大糸線": {
+                    stations: ["松本"],
+                },
+                "JR篠ノ井線": {
+                    stations: ["松本","長野"],
+                },
+                "JR小海線": {
+                    stations: ["佐久平"],
+                },
+                "JR城端線": {
+                    stations: ["福光"],
+                },
+                "JR埼京線": {
+                    stations: ["池袋","大宮"],
+                },
+                "JR京浜東北線": {
+                    stations: ["東十条","上野","大宮","王子","横浜"],
+                },
+                "JR成田線": {
+                    stations: ["千葉"],
+                },
+                "JR外房線": {
+                    stations: ["千葉"],
+                },
+                "JR内房線": {
+                    stations: ["千葉"],
+                },
+                "JR日光線": {
+                    stations: ["栃鉄日光"],
+                },
+                "JR総武本線": {
+                    stations: ["千葉"],
+                },
+                "JR姫新線": {
+                    stations: ["姫路", "佐用"],
+                },
+                "上越新幹線": {
+                    stations: ["長岡", "新潟","上野","大宮"],
+                },
+                "北陸新幹線": {
+                    stations: ["上野","大宮","佐久平","金沢","長野","上越妙高"],
+                },
+                "北海道新幹線": {
+                    stations: ["上野","大宮"],
+                },
+                "山形新幹線": {
+                    stations: ["上野","大宮"],
+                },
+                "秋田新幹線": {
+                    stations: ["上野","大宮"],
+                },
+                "東海道新幹線": {
+                    stations: ["新横浜","静岡","掛川","豊橋","名古屋","新大阪"],
+                },
+                "東北新幹線": {
+                    stations: ["大宮","上野"],
+                },
+                "JR総武快速線": {
+                    stations: ["東京", "千葉"],
+                    intervals: [38]
+                },
+                "JR学研都市線": {
+                    stations: ["松井山手"],
+                },
+                "JR三角線": {
+                    stations: ["熊本"],
+                },
+                "JR豊肥本線": {
+                    stations: ["熊本"],
+                },
+                "JR鹿児島本線": {
+                    stations: ["熊本"],
+                },
+                "JR常磐線": {
+                    stations: ["上野", "取手","亀有", "金町","北千住","南千住","仙台"],
+                }
+            },
+            status: ["山手線: 平常", "中央線: 平常", "東海道本線: 平常", "山陽・九州新幹線: 平常", "姫新線: 平常", "上越新幹線: 平常", "総武快速線: 平常", "常磐線: 平常"],
+            svg: `<svg class="route-map-svg" viewBox="0 0 600 600">
+                <circle cx="300" cy="300" r="200" fill="none" stroke="#2ecc71" stroke-width="10" />      
+                <text x="300" y="80" fill="#27ae60" font-size="24" font-weight="bold" text-anchor="middle">山手線</text>
+                <line x1="300" y1="300" x2="100" y2="300" stroke="#e67e22" stroke-width="10" />
+                <text x="120" y="280" fill="#d35400" font-size="20" font-weight="bold">中央線</text>
+                <line x1="300" y1="500" x2="300" y2="580" stroke="#f39c12" stroke-width="10" />
+                <text x="320" y="560" fill="#d35400" font-size="20" font-weight="bold">東海道本線</text>
+                ${[
+                    {name:"東京", x:473, y:400}, {name:"品川", x:300, y:500}, {name:"新宿", x:100, y:300}, {name:"池袋", x:127, y:200}, {name:"上野", x:300, y:100}
+                ].map(st => `<circle cx="${st.x}" cy="${st.y}" r="10" fill="white" stroke="#333" stroke-width="3" /><text x="${st.x+15}" y="${st.y+5}" font-size="14" font-weight="bold">${st.name}</text>`).join('')}
+            </svg>`
+        },
+    };
+
+    function getAllRoutesForDisplay() {
+        // もともとの companies データをコピー（元のデータは壊さないぴょん！）
+        let allData = { ...companies }; 
+        return { ...allData, ...transferOnlyLines };
+    }
+
+    let curComp = null;
+    const hs = document.getElementById('hSel'), ms = document.getElementById('mSel');
+    for(let i=0; i<24; i++) hs.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
+    for(let i=0; i<60; i++) ms.innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`;
+    hs.value = 12;
+
+    function selectCompany(id) {
+        if (id === 'all') {
+            curComp = {
+                name: "全路線 総合案内 (ねりか除く)",
+                routes: {},
+                status: []
+            };
+            for (const [cid, cdata] of Object.entries(companies)) {
+                if (cid === 'nerika') continue;
+                Object.assign(curComp.routes, cdata.routes);
+                curComp.status.push(...cdata.status);
+            }
+        } else {
+            curComp = companies[id];
+        }
+        document.getElementById('portalScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('appTitle').innerText = curComp.name;
+        document.getElementById('statusList').innerHTML = curComp.status.map(s => `<div style="padding:10px; border-left:5px solid var(--secondary); background:#f9f9f9; margin-bottom:5px;">${s}</div>`).join('');
+        document.getElementById('mapContainer').innerHTML = curComp.svg || '<p style="text-align:center; padding:20px;">全路線図は個別の会社ページでご確認ください。</p>';
+        
+        // Generate Legend
+        document.getElementById('mapLegend').innerHTML = Object.keys(curComp.routes).map(line => `<span class="line-badge ${line}">${line}</span>`).join('');
+
+        const stSet = new Set();
+        Object.values(curComp.routes).forEach(r => r.stations.forEach(s => stSet.add(s)));
+        document.getElementById('stationList').innerHTML = Array.from(stSet).map(s => `<option value="${s}">`).join('');
+        showPage('status');
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const target = document.getElementById(id);
+        if (target) target.classList.add('active');
+        
+        document.querySelectorAll('#topNav button').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById('btn-' + id);
+        if (btn) btn.classList.add('active');
+        
+        if (id === 'stopMap') renderStopMap();
+    }
+
+    function renderStopMap() {
+        let html = "";
+        for (const [lineName, data] of Object.entries(curComp.routes)) {
+            if (lineName === "他社線") continue;
+            html += `<div style="margin-bottom:40px;"><h3>${lineName}</h3>`;
+            if (data.services) {
+                const svcs = data.services;
+                const stations = data.stations;
+                const svcColors = { 
+                    "各駅停車": "#7f8c8d", "アルプス": "#7f8c8d", "しまばら": "#7f8c8d", "みの": "#7f8c8d", "かなざわ": "#7f8c8d",
+                    "準急": "#2ecc71", "快速": "#3498db", 
+                    "急行": "#e67e22", "はくさん": "#e67e22", "あまくさ": "#e67e22", "きそ": "#e67e22", "さく": "#e67e22",
+                    "快速急行": "#d35400",
+                    "特急": "#e74c3c", "たてやま": "#e74c3c", "やまと": "#e74c3c", "しらかわ": "#e74c3c",
+                    "スカイ": "#3498db"
+                };
+                
+                // --- 1. 全体の高さを計算（ここから上書き） ---
+                const maxTransfers = Math.max(...stations.map(st => {
+                    let count = 0;
+                    for (const [cKey, cVal] of Object.entries(getAllRoutesForDisplay())) {
+                        for (const [rName, rVal] of Object.entries(cVal.routes)) {
+                            if (rName !== lineName && rVal.stations && rVal.stations.includes(st)) {
+                                count++;
+                            }
+                        }
+                    }
+                    return count;
+                }), 0);
+
+                const width = stations.length * 100 + 150;
+                const transferAreaHeight = maxTransfers * 14; 
+                const height = svcs.length * 40 + 100 + transferAreaHeight;
+
+                let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+
+                // --- 2. 各駅の描画 ---
+                stations.forEach((st, i) => {
+                    const x = i * 100 + 100;
+                    
+                // --- 追加：駅ナンバリング（○と記号・番号） ---
+                    // --- ここから：路線ごとに記号と色を変える処理 ---
+                    let lineSymbol = "??"; 
+                    let lineColor = "#333"; 
+                    let numValue = i + 1; // 基本は 1, 2, 3...
+
+                    if (lineName === "中山道急幹線(直通)") {
+                        lineColor = "#E60012"; // 路線カラー
+                        
+                        if (i < 3) {
+                            // 最初の3駅（インデックス0, 1, 2）は NA 記号
+                            lineSymbol = "NA";
+                            numValue = i + 1; // 01, 02, 03
+                        } else {
+                            // 4駅目（インデックス3 / 高山駅）以降は NK 記号
+                            lineSymbol = "NK";
+                            numValue = i + 6;
+                            // 高山を NK05 にしたい場合、i(3) に 2 を足して 5 にする
+
+                        }
+                    } else if(lineName === "京浜日本本線") {
+                        lineSymbol = "KM";
+                        lineColor = "#0074BE"; 
+                    } else if (lineName === "関西日本鉄道") {
+                        lineSymbol = "KN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "北部線") {
+                        lineSymbol = "KN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "上野線") {
+                        lineSymbol = "KU";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "芋窪線") {
+                        lineSymbol = "KI";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "千葉日本線") {
+                        lineSymbol = "CJ";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "茂木日本線") {
+                        lineSymbol = "TM";
+                        lineColor = "#E60012"; 
+                    }
+                    else if (lineName === "日光日本線") {
+                        lineSymbol = "TN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "新潟線(新潟〜福祉大)") {
+                        lineSymbol = "HN";
+                        lineColor = "#E60012"; 
+                    } else if (lineName === "新潟線(福祉大〜黒山)") {
+                    lineSymbol = "HN";
+                    lineColor = "#E60012"; 
+                    
+                    // 福祉大がこの路線の「0番目(i=0)」なので、8にするために +8 する
+                    numValue = i + 8; 
+                }else if (lineName === "静岡線") {
+                        lineSymbol = "TS";
+                        lineColor = "#E60012"; 
+                    }
+                    else if (lineName === "静岡空港線") {
+                        lineSymbol = "TK";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "愛知線") {
+                        lineSymbol = "TA";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "名安線") {
+                        lineSymbol = "TM";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "名四線") {
+                        lineSymbol = "TY";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "播磨線") {
+                        lineSymbol = "KH";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "東平野線") {
+                        lineSymbol = "KP";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "神戸高速線") {
+                        lineSymbol = "KK";
+                        lineColor = "#E60012"; 
+                    }
+                    else if (lineName === "神丹線") {
+                        lineSymbol = "KS";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "関西難波線") {
+                        lineSymbol = "KN";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "梅難線") {
+                        lineSymbol = "KU";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "中山道急幹線") {
+                        lineSymbol = "NK";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "金沢支線") {
+                        lineSymbol = "NA";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "中部縦貫急幹線") {
+                        lineSymbol = "CK";
+                        lineColor = "#E60012"; 
+                    }else if (lineName === "西九州急幹線") {
+                        lineSymbol = "WK";
+                        lineColor = "#E60012"; 
+                    }
+                    // ※他の路線もここに else if で追加できるので随時追加する。！
+                    const stationNumber = String(numValue).padStart(2, '0'); // 01, 02...
+                    const numberingY = 15; // ナンバリングの中心高さ
+
+                    // 外枠の円（○）
+                    svg += `<circle cx="${x}" cy="${numberingY}" r="12" fill="white" stroke="#333" stroke-width="2" />`;
+                    // 路線記号と番号
+                    svg += `<text x="${x}" y="${numberingY + 4}" font-size="9" text-anchor="middle" font-weight="bold" fill="#333">${lineSymbol}${stationNumber}</text>`;
+
+                    // 縦線と駅名
+                    svg += `<line x1="${x}" y1="35" x2="${x}" y2="${svcs.length * 40 + 40}" stroke="#eee" stroke-width="2" />`;
+                    svg += `<text x="${x}" y="50" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>`;
+    
+                    // 縦線（開始位置を駅名の下 y=75 に調整）
+                    svg += `<line x1="${x}" y1="65" x2="${x}" y2="${svcs.length * 40 + 80}" stroke="#eee" stroke-width="2" />`;
+
+                    // 各駅ごとの乗換路線の表示
+                    let transferOffset = 0;
+                    const baseTransferY = svcs.length * 40 + 100;
+
+                    for (const [cKey, cVal] of Object.entries(getAllRoutesForDisplay())){
+                        for (const [rName, rVal] of Object.entries(cVal.routes)) {
+                            if (rName !== lineName && rVal.stations && rVal.stations.includes(st)) {
+                                svg += `<text x="${x}" y="${baseTransferY + transferOffset}" font-size="10" text-anchor="middle" fill="#888">● ${rName}</text>`;
+                                transferOffset += 14;
+                            }
+                        }
+                    }
+                });
+                // --- ここまで上書き ---
+
+                // Service Lines and Stop Circles
+                svcs.forEach((svc, si) => {
+                    const y = si * 40 + 80;
+                    const color = svcColors[svc.name] || "#333";
+                    svg += `<text x="5" y="${y + 5}" font-size="12" font-weight="bold" fill="${color}">${svc.name}</text>`;
+                    
+                    // Line spanning only from first to last stop
+                    const firstIdx = stations.indexOf(svc.stops[0]);
+                    const lastIdx = stations.indexOf(svc.stops[svc.stops.length - 1]);
+                    svg += `<line x1="${firstIdx * 100 + 100}" y1="${y}" x2="${lastIdx * 100 + 100}" y2="${y}" stroke="${color}" stroke-width="4" />`;
+                    
+                    stations.forEach((st, i) => {
+                        if (svc.stops.includes(st)) {
+                            svg += `<circle cx="${i * 100 + 100}" cy="${y}" r="6" fill="white" stroke="${color}" stroke-width="3" />`;
+                        }
+                    });
+                });
+                svg += `</svg>`;
+                html += `<div style="overflow-x:auto; background:white; padding:20px; border-radius:12px; border: 1px solid #eee;">${svg}</div>`;
+            } else {
+                html += `<div style="padding:15px; background:#f8f9fa; border-radius:10px; color:#666;">各駅停車のみ</div>`;
+            }
+            html += `</div>`;
+        }
+        document.getElementById('stopMapContainer').innerHTML = html;
+    }
+
+    function setRadio(v) { document.querySelectorAll('input[name="stype"]').forEach(r => r.checked = (r.value === v)); }
+
+    function shiftTime(minutes) {
+        const type = document.querySelector('input[name="stype"]:checked').value;
+        if(type === "始発" && minutes < 0) { setRadio("終電"); }
+        else if(type === "終電" && minutes > 0) { setRadio("始発"); }
+        else if(type === "始発" || type === "終電") {
+            setRadio("出発");
+            let bh = (type==="始発")?4:1, bm = (type==="始発")?30:0;
+            let tm = bh*60 + bm + minutes;
+            hs.value = Math.floor(tm/60); ms.value = tm%60;
+        } else {
+            let total = parseInt(hs.value)*60 + parseInt(ms.value) + minutes;
+            if(total<0) total += 1440; total %= 1440;
+            hs.value = Math.floor(total/60); ms.value = total%60;
+            if(hs.value == 4 && ms.value == 30) setRadio("始発");
+            else if(hs.value == 1 && ms.value == 0) setRadio("終電");
+        }
+        search();
+    }
+
+    function calcD(data, s, e, svcName, svcStops) {
+        if (s === e) return { time: 0, dist: 0 };
+        const n = data.stations.length;
+        const isLoop = data.stations[0] === data.stations[n-1];
+        
+        let distance = 0;
+        if (data.intervals) {
+            const min = Math.min(s, e), max = Math.max(s, e);
+            distance = data.intervals.slice(min, max).reduce((a, b) => a + b, 0);
+        } else {
+            let d = Math.abs(s - e);
+            if (isLoop) { d = Math.min(d, (n - 1) - d); }
+            distance = d * (data.interval || 1.5);
+        }
+
+        const speeds = {
+            "特急": 80, "快速急行": 60, "急行": 50, "準急": 40, "各駅停車": 30, "普通": 30,
+            "スカイ": 80, "みの": 80, "きそ": 60, "やまと": 80, "かなざわ": 60, "さく": 60, "しらかわ": 80, "しまばら": 60, "あまくさ": 80, "はくさん": 60, "たてやま": 80, "アルプス": 30
+        };
+        
+        const V = speeds[svcName] || 30;
+        let travelTime = (distance / V) * 60;
+        
+        // 加減速ロス(A)の定義: 加速性能と最高速度への到達時間を考慮
+        const stopPenalties = {
+            "特急": 1.0, "快速急行": 0.8, "急行": 0.8, "準急": 0.6, "各駅停車": 0.6, "普通": 0.6,
+            "スカイ": 1.0, "みの": 1.2, "きそ": 1.0, "やまと": 1.2, "かなざわ": 1.0, "さく": 1.0, "しらかわ": 1.2, "しまばら": 1.0, "あまくさ": 1.2, "はくさん": 1.0, "たてやま": 1.2, "アルプス": 0.6
+        };
+        const A = stopPenalties[svcName] || 0.75;
+        
+        let S = 0;
+        if (svcStops) {
+            const sName = data.stations[s], eName = data.stations[e];
+            const si = svcStops.indexOf(sName), ei = svcStops.indexOf(eName);
+            if (si !== -1 && ei !== -1) S = Math.abs(ei - si) + 1;
+        } else {
+            S = Math.abs(s - e) + 1;
+        }
+        
+        return { time: travelTime + A * S, dist: distance };
+    }
+
+    function calcFare(dist) {
+        if (dist <= 0) return 0;
+        if (dist <= 5) return 200;
+        if (dist <= 10) return 280;
+        if (dist <= 20) return 360;
+        if (dist <= 30) return 450;
+        if (dist <= 50) return 650;
+        if (dist <= 100) return 900;
+        return 1200;
+    }
+
+    function calcSurcharge(dist, lineName, svcName) {
+        if (dist <= 0) return 0;
+        
+        // 1. 急幹線料金 (新幹線クラスの種別、または急幹線と名のつく路線)
+        const kyukansenSvcs = ["みの", "きそ", "やまと", "かなざわ", "さく", "しらかわ", "しまばら", "あまくさ", "はくさん", "たてやま"];
+        if (lineName.includes("急幹線") || kyukansenSvcs.includes(svcName)) {
+            if (dist <= 200) return 1500;
+            if (dist <= 400) return 2500;
+            if (dist <= 700) return 3500;
+            return 4500;
+        }
+        
+        // 2. 特急料金 (在来線の優等種別)
+        const premiumSvcs = ["特急", "スカイ"];
+        if (premiumSvcs.includes(svcName)) {
+            if (dist <= 10) return 300;
+            if (dist <= 20) return 400;
+            if (dist <= 40) return 600;
+            if (dist <= 80) return 900;
+            return 1100;
+        }
+        
+        // 急行などは 0円
+        return 0;
+    }
+
+    function getMid(data, sIdx, eIdx, svcStops, svcName) {
+        const st = svcStops || data.stations;
+        const sName = data.stations[sIdx], eName = data.stations[eIdx];
+        const s = st.indexOf(sName), e = st.indexOf(eName);
+        if (s === -1 || e === -1 || s === e) return [];
+        
+        const res = [], n = st.length;
+        const isLoop = st[0] === st[n-1], loopLen = n - 1;
+        let diff = e - s, step = diff > 0 ? 1 : -1, dist = Math.abs(diff);
+        if (isLoop && dist > loopLen / 2) { step = -step; dist = loopLen - dist; }
+        
+        let curr = s;
+        for(let i = 1; i < dist; i++) {
+            curr = (curr + step + (isLoop ? loopLen : 0)) % (isLoop ? loopLen : n);
+            const name = st[curr];
+            const currIdx = data.stations.indexOf(name);
+            res.push({
+                name: name, 
+                type: "intermediate", 
+                timeOffset: calcD(data, sIdx, currIdx, svcName)
+            });
+        }
+        return res;
+    }
+
+    function getSnap(base, svc, durFromTerm, isArr) {
+        if (!svc) svc = { interval: 15, offset: 0 };
+        // base: 検索目標時刻, durFromTerm: 始発駅(index 0)からその駅までの走行時間
+        if (svc.specific) {
+            let opts = [];
+            for(let h=0; h<24; h++) svc.specific.forEach(m => opts.push(h*60 + m + durFromTerm));
+            opts.sort((a, b) => a - b);
+            if (isArr) {
+                let last = -1;
+                opts.forEach(o => { if (o <= base) last = o; });
+                if (last === -1) last = opts[opts.length-1] - 1440;
+                return last;
+            } else {
+                let first = 9999;
+                opts.forEach(o => { if (o >= base) first = Math.min(first, o); });
+                if (first === 9999) first = opts[0] + 1440;
+                return first;
+            }
+        }
+        const interval = svc.interval || 15, offset = (svc.offset || 0) + durFromTerm;
+        if (isArr) return Math.floor((base - offset) / interval) * interval + offset;
+        return Math.ceil((base - offset) / interval) * interval + offset;
+    }
+
+function search() {
+    const from = document.getElementById('fromSt').value;
+    const to = document.getElementById('toSt').value;
+    const via = document.getElementById('viaSt').value; // 経由地
+    if (!from || !to) return alert("駅名を入力してください");
+
+    const resultsArea = document.getElementById('transferResults');
+    resultsArea.innerHTML = `<div id="searching-status" style="text-align:center; padding:40px; color:#7f8c8d;">
+        <div style="font-size:2rem; margin-bottom:10px;">🔍</div>
+        <strong>経路を探索中...</strong><br>
+        <small id="search-progress">最適なルートを探しています。</small>
+    </div><div id="found-results"></div>`;
+
+    setTimeout(() => {
+        // --- 1. 準備：路線データと徒歩ペア ---
+        const getSvcs = (d) => d.services || [{ name: "各駅停車", stops: d.stations, offset: 0 }];
+        const allRoutes = [];
+        for (const [lineName, data] of Object.entries(curComp.routes)) {
+            let companyId = "unknown";
+            for (const [cid, cdata] of Object.entries(companies)) {
+                if (cdata.routes[lineName]) { companyId = cid; break; }
+            }
+            for (const svc of getSvcs(data)) {
+                allRoutes.push({ lineName, data, svc, companyId });
+            }
+        }
+
+        const walkPairs = [["水海道", "下館", 30], ["湊川", "湊川公園", 5], ["三宮", "神戸三宮", 0]];
+        const terminals = ["中央駅", "大宮", "名古屋", "新大阪", "横浜", "東京", "新宿", "品川", "渋谷", "上野", "池袋", "千葉", "神戸三宮", "三宮", "新開地", "金沢", "仙台", "静岡", "新潟", "高山", "松本","徳重","平和台","大師","西新井"];
+        
+        let queue = [{
+            currSt: from, dur: 0, dist: 0, score: 0, transfers: 0, steps: [],
+            visitedStations: new Set([from]), lastLineName: null, lastSvcName: null, lastCompanyId: null,
+            hasVia: via ? false : true // 経由地があればfalseからスタート
+        }];
+
+        const possibleRoutes = [];
+        const targetCount = 6;
+        const transferPenalty = 20;
+        const foundResultsDiv = document.getElementById('found-results');
+        const progressText = document.getElementById('search-progress');
+
+        // --- 2. HTML生成関数（renderRouteHtml） ---
+        function renderRouteHtml(res, idx, tags) {
+            const type = document.querySelector('input[name="stype"]:checked').value;
+            const hs = document.getElementById('startH'), ms = document.getElementById('startM');
+            const formatT = (m) => { 
+                if (isNaN(m)) return "--:--";
+                while(m < 0) m += 1440; m %= 1440; 
+                return `${Math.floor(m/60).toString().padStart(2,'0')}:${Math.floor(m%60).toString().padStart(2,'0')}`; 
+            };
+            let base = parseInt(hs.value)*60 + parseInt(ms.value);
+            let dm, am;
+            
+            const safeSvc = res.svc || { interval: 15, offset: 0 };
+            const safeDur = res.dur || 0;
+            const safeDurFrom = res.durFromTerm || 0;
+            const safeDurTo = res.durToTerm || 0;
+
+            if(type==="始発"){dm=getSnap(270, safeSvc, safeDurFrom, false); am=dm+safeDur;} 
+            else if(type==="終電"){dm=getSnap(60, safeSvc, safeDurFrom, true); am=dm+safeDur;}
+            else if(type==="到着"){
+                let arrival_svc = res.lastSvc || safeSvc;
+                let arrival_time = getSnap(base, arrival_svc, safeDurTo, true);
+                dm = arrival_time - safeDur; am = arrival_time;
+            } else {
+                dm = getSnap(base, safeSvc, safeDurFrom, false); am = dm + safeDur;
+            }
+            
+            const formatDur = (m) => {
+                const totalM = Math.ceil(m);
+                if (totalM < 60) return `${totalM}分`;
+                const h = Math.floor(totalM / 60);
+                const rm = totalM % 60;
+                return rm > 0 ? `${h}時間${rm}分` : `${h}時間`;
+            };
+
+            let tagHtml = "";
+            if (tags && tags.isFast) tagHtml += `<span class="spec-tag tag-fast">早</span>`;
+            if (tags && tags.isEasy) tagHtml += `<span class="spec-tag tag-easy">楽</span>`;
+            if (tags && tags.isCheap) tagHtml += `<span class="spec-tag tag-cheap">安</span>`;
+
+            const stepHtml = res.steps.map(s => {
+                let timeText = "";
+                if (s.role === 'transfer') {
+                    timeText = `<div style="display:flex; flex-direction:column; line-height:1.2;">
+                        <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + (s.arrivalOffset||0))} 着</span>
+                        <span class="time-info-text" style="font-size:0.85rem;">${formatT(dm + (s.departureOffset||0))} 発</span>
+                    </div>`;
+                } else {
+                    timeText = `<span class="time-info-text">${formatT(dm + (s.timeOffset||0))}</span>`;
+                }
+                if(s.type === "intermediate") return `<div class="station-item" style="opacity:0.8; margin-bottom:10px;"><div class="station-info-row">${timeText}<span class="station-name-text" style="font-size:1.1rem; font-weight:normal;">${s.name}</span></div></div>`;
+                let lineClass = s.lineName ? (s.lineName.match(/\(([^)]+)\)/)||[,""])[1] : "";
+                let badge = s.lineName ? `<span class="line-badge ${lineClass || 'default-line'}">${s.lineName}</span>` : '';
+                
+                let fareInfo = "";
+                if (s.legDist) {
+                    const b = calcFare(s.legDist);
+                    const sur = calcSurcharge(s.legDist, s.realLineName || "", s.realSvcName || "");
+                    fareInfo = `<div style="font-size:0.75rem; color:#7f8c8d; margin-left:65px;">${s.legDist.toFixed(1)}km / 運賃 ${b}円${sur > 0 ? ` + 特急料 ${sur}円` : ""}</div>`;
+                }
+
+                return `<div class="station-item ${s.type}"><div class="role-tag">${s.role==='boarding'?'【乗車】':s.role==='transfer'?'【乗換】':s.role}</div><div class="station-info-row">${timeText}<span class="station-name-text">${s.name}</span>${badge}</div>${fareInfo}${s.sub?`<div class="time-info-text" style="margin-left:65px; color:#666;">${s.sub}</div>`:''}</div>`;
+            }).join('');
+
+            const costStr = res.totalSurcharge > 0 ? `${res.totalFare}円 (運賃${res.totalBaseFare}+特急料${res.totalSurcharge})` : `${res.totalFare}円`;
+
+            return `<div class="route-result-item">
+                <div class="route-header"><span><span class="route-tag-id">経路 ${idx}</span><strong>${res.desc}</strong>${tagHtml}</span><div style="display:flex; align-items:center; gap:10px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(safeDur)} / ${res.totalFare}円</span><button onclick="buyTicket('${from}', '${to}', ${res.totalBaseFare}, ${res.totalSurcharge})" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div>
+                <div class="route-box"><span class="res-time-main">${formatT(dm)} ～ ${formatT(am)}</span><div style="font-size:0.9rem; color:#666; margin-bottom:10px;">${costStr}</div><div class="vertical-station-list">${stepHtml}</div></div>
+            </div>`;
+        }
+
+        // --- 3. 仕上げ関数（finishSearch） ---
+        function finishSearch() {
+            const status = document.getElementById('searching-status');
+            if (status) status.style.display = 'none';
+            if (possibleRoutes.length === 0) {
+                foundResultsDiv.innerHTML = "<p style='text-align:center; padding:20px;'>経路が見つかりませんでした。</p>";
+                return;
+            }
+
+            const allowTransferLines = ["北部線", "上野線", "京浜日本本線", "芋窪線", "千葉日本線", "茂木日本線", "日光日本線", "名四線", "静岡線", "静岡空港線", "愛知線", "名安線", "神丹線", "東平野線", "播磨線", "神戸高速線", "関西難波線", "梅難線", "新潟線", "中山道急幹線", "金沢支線", "西九州急幹線", "中部縦貫急幹線", "宇都宮ライトライン", "真岡線", "常総線", "大井川鉄道", "天竜浜名湖鉄道", "神戸電鉄 粟生線", "神戸電鉄 有馬線", "北条線", "山陽・九州新幹線", "桜通線","京成本線","京成成田スカイアクセス線","京成千葉線・千原線", "京成金町線","宇都宮ライトライン","JR日光線","JR常磐線","上越新幹線"];
+
+            const filteredRoutes = possibleRoutes.filter(r => {
+                const allLinesAllowed = r.steps.every(s => !s.realLineName || allowTransferLines.includes(s.realLineName));
+                const stations = r.steps.map(s => s.name);
+                const hasAllowedSection = (stations.includes("東京") && stations.includes("千葉")) || (stations.includes("長岡") && stations.includes("新潟"));
+                return allLinesAllowed || hasAllowedSection;
+            });
+
+            filteredRoutes.forEach(r => {
+                let tb = 0, ts = 0;
+                r.steps.forEach(s => { if (s.legDist) { tb += calcFare(s.legDist); ts += calcSurcharge(s.legDist, s.realLineName || "", s.realSvcName || ""); } });
+                r.totalBaseFare = tb; r.totalSurcharge = ts; r.totalFare = tb + ts;
+            });
+
+            if (filteredRoutes.length === 0) {
+                foundResultsDiv.innerHTML = "<p style='text-align:center; padding:20px;'>指定された路線の経路が見つかりませんでした。</p>";
+                return;
+            }
+
+            const minDur = Math.min(...filteredRoutes.map(r => r.dur));
+            const minTransfers = Math.min(...filteredRoutes.map(r => r.transfers));
+            const minCost = Math.min(...filteredRoutes.map(r => r.totalFare));
+            filteredRoutes.sort((a, b) => a.dur - b.dur);
+
+            let html = filteredRoutes.map((res, idx) => {
+                const tags = { isFast: res.dur === minDur, isEasy: res.transfers === minTransfers, isCheap: res.totalFare === minCost };
+                return renderRouteHtml(res, idx + 1, tags);
+            }).join('');
+            
+            html += `<div class="time-shift-buttons"><button class="btn-shift" onclick="shiftTime(-15)">1本前</button><button class="btn-shift" onclick="shiftTime(15)">1本後</button></div>`;
+            foundResultsDiv.innerHTML = html;
+        }
+
+        // --- 4. メイン探索ループ（processQueue） ---
+        function processQueue() {
+            let batch = 0;
+            while (queue.length > 0 && batch < 200) {
+                batch++;
+                const path = queue.shift();
+
+                if (path.currSt === to) {
+                    if (path.hasVia) {
+                        possibleRoutes.push(path);
+                        if (possibleRoutes.length >= targetCount) { finishSearch(); return; }
+                    }
+                    continue;
+                }
+
+                if (path.transfers > 8) continue;
+
+                for (const { lineName, data, svc, companyId } of allRoutes) {
+                    if (!svc.stops.includes(path.currSt)) continue;
+                    if (path.lastLineName === lineName && path.lastSvcName === svc.name) continue;
+
+                    let wait = 0;
+                    if (path.lastLineName && path.lastLineName !== lineName && path.lastLineName !== "walking") {
+                        wait = terminals.includes(path.currSt) ? 10 : 3;
+                        if (path.lastCompanyId && path.lastCompanyId !== companyId) wait += 2;
+                    }
+
+                    const fIdxReal = data.stations.indexOf(path.currSt);
+                    for (const targetSt of svc.stops) {
+                        if (targetSt === path.currSt || path.visitedStations.has(targetSt)) continue;
+
+                        const tIdxReal = data.stations.indexOf(targetSt);
+                        const leg = calcD(data, fIdxReal, tIdxReal, svc.name, svc.stops);
+                        const totalDur = path.dur + wait + leg.time;
+                        
+                        const mids = getMid(data, fIdxReal, tIdxReal, svc.stops, svc.name).map(m => ({
+                            ...m, timeOffset: m.timeOffset.time + path.dur + wait
+                        }));
+
+                        queue.push({
+                            currSt: targetSt, dur: totalDur, dist: path.dist + leg.dist,
+                            transfers: (path.lastLineName && path.lastLineName !== lineName) ? path.transfers + 1 : path.transfers,
+                            score: totalDur + (path.transfers * 20),
+                            lastLineName: lineName, lastSvcName: svc.name, lastCompanyId: companyId,
+                            hasVia: path.hasVia || targetSt === via,
+                            steps: [...path.steps, 
+                                { role: path.steps.length === 0 ? "boarding" : "transfer-info", lineName: `${svc.name} (${lineName})`, realLineName: lineName, realSvcName: svc.name, name: path.currSt, timeOffset: path.dur + wait, legDist: leg.dist },
+                                ...mids
+                            ],
+                            visitedStations: new Set([...path.visitedStations, targetSt]),
+                            firstSvc: path.steps.length === 0 ? svc : path.firstSvc,
+                            durFromTerm: path.steps.length === 0 ? calcD(data, 0, fIdxReal, svc.name, svc.stops).time : path.firstDurFromTerm,
+                            durToTerm: calcD(data, 0, data.stations.indexOf(targetSt), svc.name, svc.stops).time,
+                            lastSvc: svc
+                        });
+                    }
+                }
+
+                for (const [w1, w2, wDur] of walkPairs) {
+                    if (path.currSt === w1 || path.currSt === w2) {
+                        const tSt = (path.currSt === w1) ? w2 : w1;
+                        if (!path.visitedStations.has(tSt)) {
+                            queue.push({
+                                currSt: tSt, dur: path.dur + wDur, dist: path.dist, transfers: path.transfers, score: path.score + wDur + 5,
+                                lastLineName: "walking", hasVia: path.hasVia || tSt === via,
+                                steps: [...path.steps, { role: "transfer", name: `${path.currSt}→${tSt}`, sub: wDur===0?"同一駅":`徒歩 ${wDur}分`, timeOffset: path.dur + wDur }],
+                                visitedStations: new Set([...path.visitedStations, tSt]),
+                                firstSvc: path.firstSvc, firstDurFromTerm: path.firstDurFromTerm
+                            });
+                        }
+                    }
+                }
+                queue.sort((a, b) => a.score - b.score);
+                if (queue.length > 1500) queue = queue.slice(0, 1500);
+            }
+
+            if (queue.length > 0 && possibleRoutes.length < targetCount) {
+                progressText.innerText = `候補を収集中... (${possibleRoutes.length}件発見)`;
+                setTimeout(processQueue, 10);
+            } else { finishSearch(); }
+        }
+
+        processQueue(); // 実行開始
+    }, 100);
+}
+
+    function buyTicket(from, to, base, sur) {
+        const modal = document.createElement('div');
+        modal.id = 'ticketModal';
+        const total = base + sur;
+        modal.innerHTML = `
+            <div class="ticket">
+                <div class="ticket-header">日本鉄道 旅客鉄道株式会社</div>
+                <div class="ticket-main">
+                    <div class="ticket-st">${from} から</div>
+                    <div class="ticket-price">${to} まで</div>
+                    <div style="text-align: left; margin: 15px 0; font-size: 0.9rem; border-top: 1px dashed #5d4037; padding-top: 10px;">
+                        <div>乗車券：${base}円</div>
+                        ${sur > 0 ? `<div>特急券：${sur}円</div>` : ""}
+                        <div style="font-size: 1.8rem; font-weight: bold; margin-top: 10px;">合計 ${total}円</div>
+                    </div>
+                </div>
+                <div class="ticket-footer">${new Date().toLocaleDateString()} 発行</div>
+                <button class="btn-close-ticket" onclick="document.body.removeChild(this.parentElement.parentElement)">閉じる</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    </script>
+    </body>
+    </html>

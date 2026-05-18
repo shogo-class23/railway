@@ -2151,6 +2151,65 @@
         return 0;
     }
 
+    // 定期券購入・料金計算関数
+function buyCommuterPass(from, to, singleFare) {
+    // 1ヶ月の基準運賃（1日往復 × 30日 = 60回分として計算）
+    const baseMonthFare = singleFare * 2 * 30;
+
+    const type = prompt(
+        "定期券の種類を番号で入力してください：\n" +
+        "1: 通勤定期\n" +
+        "2: 通学定期\n" +
+        "3: 全線フリー定期"
+    );
+
+    if (!type) return; // キャンセル時
+
+    const months = prompt(
+        "期間を番号で入力してください：\n" +
+        "1: 1ヶ月\n" +
+        "3: 3ヶ月\n" +
+        "6: 6ヶ月"
+    );
+
+    if (!months || !['1', '3', '6'].includes(months)) {
+        alert("正しい期間を選択してください。");
+        return;
+    }
+
+    const m = parseInt(months);
+    let finalFare = 0;
+    let typeName = "";
+
+    if (type === '1') {
+        typeName = "通勤定期";
+        // 1ヶ月:60%, 3ヶ月:55%, 6ヶ月:50% (それぞれ月数分を掛ける)
+        if (m === 1) finalFare = baseMonthFare * 0.60 * 1;
+        if (m === 3) finalFare = baseMonthFare * 0.55 * 3;
+        if (m === 6) finalFare = baseMonthFare * 0.50 * 6;
+    } else if (type === '2') {
+        typeName = "通学定期";
+        // 1ヶ月:40%, 3ヶ月:35%, 6ヶ月:30% (それぞれ月数分を掛ける)
+        if (m === 1) finalFare = baseMonthFare * 0.40 * 1;
+        if (m === 3) finalFare = baseMonthFare * 0.35 * 3;
+        if (m === 6) finalFare = baseMonthFare * 0.30 * 6;
+    } else if (type === '3') {
+        typeName = "全線フリー定期";
+        // 1ヶ月ごとに基準の100%（追加）として計算
+        if (m === 1) finalFare = baseMonthFare * 1.00 * 1;
+        if (m === 3) finalFare = baseMonthFare * 1.00 * 3;
+        if (m === 6) finalFare = baseMonthFare * 1.00 * 6;
+    } else {
+        alert("正しい種類を選択してください。");
+        return;
+    }
+
+    // 端数を四捨五入
+    finalFare = Math.round(finalFare);
+
+    alert(`【定期券購入確認】\n区間：${from} ～ ${to}\n種類：${typeName} (${months}ヶ月)\n金額：${finalFare.toLocaleString()} 円\n\n購入が完了しました！`);
+}
+
     function getMid(data, sIdx, eIdx, svcStops, svcName) {
         const st = svcStops || data.stations;
         const sName = data.stations[sIdx], eName = data.stations[eIdx];
@@ -2685,12 +2744,16 @@ function finishSearch(route, startTime) {
             window.lastTo = to;
 
             const html = routeResults.map((route, idx) => {
-                const tags = {
-                    isFast: route.totalTime === minTime,
-                    isEasy: route.transferCount === minTransfers,
-                    isCheap: route.totalFare === minFare
-                };
-                return renderRouteHtml({ ...route, idx: idx + 1 }, from, to, tags);
+                const tags = { isFast: route.totalTime === minTime, isEasy: route.transferCount === minTransfers, isCheap: route.totalFare === minFare };
+                
+                // 1. まず通常通り経路のHTMLを作る
+                let routeHtml = renderRouteHtml({ ...route, idx: idx + 1 }, from, to, tags);
+                
+                // 2. 経路2（idxが0より大きい）の時だけ、手前に「1本前 / 1本後」ボタンを合体させる
+                if (idx > 0) {
+                    return `<div class="time-shift-buttons" style="text-align:center; margin: 15px 0;"><button class="btn-shift" onclick="shiftTime(-15)" style="background:#ecf0f1; border:1px solid #bdc3c7; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-right:8px;">1本前</button><button class="btn-shift" onclick="shiftTime(15)" style="background:#ecf0f1; border:1px solid #bdc3c7; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer;">1本後</button></div>` + routeHtml;
+                }
+                return routeHtml;
             }).join('');
 
             document.getElementById('searching-status').style.display = 'none';
@@ -2737,11 +2800,41 @@ function finishSearch(route, startTime) {
 
             const serviceSummary = result.segmentSummary ? `<div class="route-service-summary" style="font-size:0.9rem; color:#555; margin-top:6px;">${result.segmentSummary}</div>` : '';
             const tagItems = [];
-            if (tags.isFast) tagItems.push('<span style="background:#2ecc71; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">早い</span>');
-            if (tags.isCheap) tagItems.push('<span style="background:#3498db; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">安い</span>');
-            if (tags.isEasy) tagItems.push('<span style="background:#f39c12; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">乗換少</span>');
+            if (tags.isFast) tagItems.push('<span style="background:#2ecc71; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">早</span>');
+            if (tags.isCheap) tagItems.push('<span style="background:#3498db; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">安</span>');
+            if (tags.isEasy) tagItems.push('<span style="background:#f39c12; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">楽</span>');
             const tagHtml = tagItems.length ? `<div style="display:flex; gap:4px; margin-top:4px;">${tagItems.join('')}</div>` : '';
-            return `<div class="route-result-item"><div class="route-header"><span><span class="route-tag-id">経路 ${result.idx}</span><strong>${steps.filter(s => s.role === '乗換').length}回乗換</strong>${tagHtml}</span><div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(result.totalTime)} / ${result.totalFare}円</span>${serviceSummary}<button onclick="buyTicket('${from}','${to}',${result.totalFare},0)" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button><div style="display:flex; gap:4px; margin-top:4px;"><button onclick="shiftRouteTime(${result.idx}, -15)" style="background:#ecf0f1; border:1px solid #bdc3c7; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">1本前</button><button onclick="shiftRouteTime(${result.idx}, 15)" style="background:#ecf0f1; border:1px solid #bdc3c7; padding:4px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer;">1本後</button></div></div></div><div class="route-box"><span class="res-time-main">${formatT(depart)} ～ ${formatT(arrive)}</span><div style="font-size:0.9rem; color:#666; margin-bottom:10px;">${result.totalFare}円</div><div class="vertical-station-list">${stepHtml}</div></div></div>`;
+            // 1. 実際に乗った電車の名前（「京浜日本本線」や「新潟線」など）を取得します
+            const boardingStep = steps.find(s => s.role === '乗車');
+            const lineName = boardingStep ? boardingStep.line : '';
+
+            // 2. 電車の名前に合わせて、切符に書く会社名を自動で選びます
+            let detectedCompany = '日本鉄道 旅客鉄道株式会社'; 
+            
+            if (lineName.includes('北部') || lineName.includes('上野') || lineName.includes('京浜日本') || lineName.includes('芋窪')) {
+                detectedCompany = '京浜日本鉄道';
+            } else if (lineName.includes('千葉日本') || lineName.includes('取手')) {
+                detectedCompany = '千葉日本鉄道';
+            } else if (lineName.includes('茂木日本') || lineName.includes('日光日本')) {
+                detectedCompany = '栃木日本鉄道';
+            } else if (lineName.includes('名四') || lineName.includes('静岡') || lineName.includes('愛知') || lineName.includes('名安')) {
+                detectedCompany = '東海日本鉄道';
+            } else if (lineName.includes('神丹') || lineName.includes('東平野') || lineName.includes('播磨') || lineName.includes('神戸高速')) {
+                detectedCompany = '関西日本鉄道';
+            } else if (lineName.includes('新潟')) {
+                detectedCompany = '北陸日本鉄道';
+            } else if (lineName.includes('中山道') || lineName.includes('中部縦貫') || lineName.includes('西九州') || lineName.includes('急幹線')) {
+                detectedCompany = '日本急幹線';
+            } else if (lineName.includes('名鉄') || lineName.includes('天浜') || lineName.includes('大井川')) {
+                detectedCompany = '私鉄線';
+            } else if (lineName.includes('山手') || lineName.includes('中央')) {
+                detectedCompany = 'JR線';
+            } else if (lineName.includes('東西') || lineName.includes('南北') || lineName.includes('空港') || lineName.includes('都市') || lineName.includes('ねりか')) {
+                detectedCompany = 'ねりか区営地下鉄';
+            }
+
+            // 3. 決まった会社名（detectedCompany）を、切符の画面に引き渡して表示します
+            return `<div class="route-result-item"><div class="route-header"><span><span class="route-tag-id">経路 ${result.idx}</span><strong>${steps.filter(s => s.role === '乗換').length}回乗換</strong>${tagHtml}</span><div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(result.totalTime)} / ${result.totalFare}円</span>${serviceSummary}<div style="display:flex; gap:6px;"><button onclick="buyTicket('${from}','${to}',${result.totalFare},0, '${detectedCompany}')" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button><button onclick="buyCommuterPass('${from}','${to}',${result.totalFare})" style="background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">定期券</button></div></div></div><div class="route-box"><span class="res-time-main">${formatT(depart)} ～ ${formatT(arrive)}</span><div style="font-size:0.9rem; color:#666; margin-bottom:10px;">${result.totalFare}円</div><div class="vertical-station-list">${stepHtml}</div></div></div>`;
         }
     }
 
@@ -2783,7 +2876,7 @@ function finishSearch(route, startTime) {
         }
     }
 
-    function buyTicket(from, to, base, sur) {
+        function buyTicket(from, to, base, sur, company) {
         const modal = document.createElement('div');
         modal.id = 'ticketModal';
         const total = base + sur;
@@ -2792,9 +2885,12 @@ function finishSearch(route, startTime) {
             surchargeHtml = `<div>特急券：${sur}円</div>`;
         }
 
+        // 【重要】ここで会社名の受け取りと、空だった場合のデフォルト設定をします
+        const displayCompany = company || '日本鉄道 旅客鉄道株式会社';
+
         modal.innerHTML = `
             <div class="ticket">
-                <div class="ticket-header">日本鉄道 旅客鉄道株式会社</div>
+                <div class="ticket-header">${displayCompany}</div>
                 <div class="ticket-main">
                     <div class="ticket-st">${from} から</div>
                     <div class="ticket-price">${to} まで</div>

@@ -992,20 +992,33 @@
             `;
         }).join('')}
 
-        <path d="M850 300 L890 300 L890 1080" fill="none" stroke="#00b894" stroke-width="10" stroke-linecap="round" />
-        <text x="910" y="1140" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
+        <path d="M850 310 L890 310 L890 1080" fill="none" stroke="#00b894" stroke-width="10" stroke-linecap="round" />
+        <text x="910" y="1085" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
         ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
             let x, y;
-            if (i === 0) { x = 850; y = 300; } // 大阪梅田 (神丹線のi=20と同座標)
-            else if (i === 1) { x = 890; y = 300; } // 南森町 (神丹線のi=21と同座標)
-            else { x = 890; y = 300 + (i - 1) * 60; } // 垂直に降下
+            if (st === "大阪梅田") { 
+                x = 850; 
+                y = 310; 
+            } 
+            else if (st === "南森町") { 
+                x = 890; 
+                y = 310; 
+            } 
+            else { 
+                x = 890; 
+                y = 300 + (i - 1) * 60; 
+            }
             
             let labelHtml = `<text x="${x + 20}" y="${y + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>`;
-            // 重複駅と大池橋のラベル制御（大池橋は下に個別配置されているため除く）
             if (st === "大阪梅田" || st === "南森町" || st === "大池橋") labelHtml = ""; 
 
+            // 大阪梅田と南森町の場合は、重複を防ぐため、○（circle）のコードを返さずに空文字にします
+            if (st === "大阪梅田" || st === "南森町") {
+                return "";
+            }
+
             return `
-                <circle cx="${x}" cy="${y}" r="${st==='大池橋'||st==='大阪梅田'||st==='南森町'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
+                <circle cx="${x}" cy="${y}" r="${st==='大池橋'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
                 ${labelHtml}
             `;
         }).join('')}

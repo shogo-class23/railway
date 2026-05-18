@@ -319,7 +319,7 @@
     <h3>関西日本鉄道</h3>
     <h4>神丹線</h4>
     <p><strong>各駅停車:</strong> 神戸三宮, 新神戸, 摩耶, 六甲, 渦森, 柏堂, 甲陽園北, 上ヶ原, 甲東園口, 北武庫, 伊丹市, 北伊丹, 大阪空港, 西豊中, 新服部, 江坂, 新大阪, 南方, 豊崎, 東梅田, 大阪梅田, 南森町, 高麗橋, 松屋町, 大阪難波</p>
-  
+
     <h4>東平野線</h4>
     <p><strong>各駅停車:</strong> 大阪梅田, 南森町, 京橋, 森ノ宮新, 東森ノ宮, 玉造, 今里, 大池橋, 北巽, 南巽, 平野北, 平野南, 西瓜破, 北松原, 大堀</p>
     <h4>播磨線</h4>
@@ -953,7 +953,6 @@
                         { name: "特急", stops: ["神戸三宮", "上ヶ原", "大阪空港", "新大阪", "大阪梅田", "大阪難波"], offset: 6 }
                     ]
                 },
-
                 "東平野線": {
                     stations: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"],
                     intervals: [1, 2, 1.5, 0.5, 1, 1, 2, 1, 2, 1.5, 1, 1, 2, 3],
@@ -1746,7 +1745,7 @@
                     "北部線", "上野線", "京浜日本本線", "芋窪線", "千葉日本線", 
                     "茂木日本線", "日光日本線", "名四線", "静岡線", "静岡空港線", 
                     "愛知線", "名安線", "神丹線", "東平野線", "播磨線", 
-                    "神戸高速線", "新潟線", 
+                    "神戸高速線",  "新潟線", 
                     "中山道急幹線", "金沢支線", "西九州急幹線", "中部縦貫急幹線",
                 
                     "宇都宮ライトライン", "真岡線", "常総線",  "大井川鉄道", 
@@ -1839,7 +1838,7 @@
                     return count;
                 }), 0);
 
-                const width = stations.length * 150 + 150;
+                const width = stations.length * 100 + 150;
                 const transferAreaHeight = maxTransfers * 14; 
                 const height = svcs.length * 40 + 100 + transferAreaHeight;
 
@@ -1847,7 +1846,7 @@
 
                 // --- 2. 各駅の描画 ---
                 stations.forEach((st, i) => {
-                    const x = i * 150 + 100;
+                    const x = i * 100 + 100;
                     
                 // --- 追加：駅ナンバリング（○と記号・番号） ---
                     // --- ここから：路線ごとに記号と色を変える処理 ---
@@ -1931,7 +1930,7 @@
                     }
                     else if (lineName === "神丹線") {
                         lineSymbol = "KS";
-                        lineColor = "#E60012";  
+                        lineColor = "#E60012"; 
                     }else if (lineName === "中山道急幹線") {
                         lineSymbol = "NK";
                         lineColor = "#E60012"; 
@@ -1949,15 +1948,13 @@
                     const stationNumber = String(numValue).padStart(2, '0'); // 01, 02...
                     const numberingY = 15; // ナンバリングの中心高さ
 
-                    // 外枠の四角（□）
-                    // 中心を合わせるために、x座標とy座標からサイズ（24px）の半分（12px）を引いていますぴょん
-                    svg += `<rect x="${x - 12}" y="${numberingY - 12}" width="24" height="24" fill="white" stroke="#333" stroke-width="2" />`;
+                    // 外枠の円（○）
+                    svg += `<circle cx="${x}" cy="${numberingY}" r="12" fill="white" stroke="#333" stroke-width="2" />`;
                     // 路線記号と番号
                     svg += `<text x="${x}" y="${numberingY + 4}" font-size="9" text-anchor="middle" font-weight="bold" fill="#333">${lineSymbol}${stationNumber}</text>`;
 
                     // 縦線と駅名
                     svg += `<line x1="${x}" y1="35" x2="${x}" y2="${svcs.length * 40 + 40}" stroke="#eee" stroke-width="2" />`;
-
                     svg += `<text x="${x}" y="50" font-size="12" text-anchor="middle" font-weight="bold">${st}</text>`;
     
                     // 縦線（開始位置を駅名の下 y=75 に調整）
@@ -1970,7 +1967,7 @@
                     for (const [cKey, cVal] of Object.entries(getAllRoutesForDisplay())){
                         for (const [rName, rVal] of Object.entries(cVal.routes)) {
                             if (rName !== lineName && rVal.stations && rVal.stations.includes(st)) {
-                                svg += `<text x="${x-40}" y="${baseTransferY + transferOffset}" font-size="10" text-anchor="start" fill="#888">● ${rName}</text>`;
+                                svg += `<text x="${x}" y="${baseTransferY + transferOffset}" font-size="10" text-anchor="middle" fill="#888">● ${rName}</text>`;
                                 transferOffset += 14;
                             }
                         }
@@ -1987,11 +1984,11 @@
                     // Line spanning only from first to last stop
                     const firstIdx = stations.indexOf(svc.stops[0]);
                     const lastIdx = stations.indexOf(svc.stops[svc.stops.length - 1]);
-                    svg += `<line x1="${firstIdx * 150 + 100}" y1="${y}" x2="${lastIdx * 150 + 100}" y2="${y}" stroke="${color}" stroke-width="4" />`;
+                    svg += `<line x1="${firstIdx * 100 + 100}" y1="${y}" x2="${lastIdx * 100 + 100}" y2="${y}" stroke="${color}" stroke-width="4" />`;
                     
                     stations.forEach((st, i) => {
                         if (svc.stops.includes(st)) {
-                            svg += `<circle cx="${i * 150 + 100}" cy="${y}" r="6" fill="white" stroke="${color}" stroke-width="3" />`;
+                            svg += `<circle cx="${i * 100 + 100}" cy="${y}" r="6" fill="white" stroke="${color}" stroke-width="3" />`;
                         }
                     });
                 });
@@ -2113,65 +2110,6 @@
         return 0;
     }
 
-    // 定期券購入・料金計算関数
-function buyCommuterPass(from, to, singleFare) {
-    // 1ヶ月の基準運賃（1日往復 × 30日 = 60回分として計算）
-    const baseMonthFare = singleFare * 2 * 30;
-
-    const type = prompt(
-        "定期券の種類を番号で入力してください：\n" +
-        "1: 通勤定期\n" +
-        "2: 通学定期\n" +
-        "3: 全線フリー定期"
-    );
-
-    if (!type) return; // キャンセル時
-
-    const months = prompt(
-        "期間を番号で入力してください：\n" +
-        "1: 1ヶ月\n" +
-        "3: 3ヶ月\n" +
-        "6: 6ヶ月"
-    );
-
-    if (!months || !['1', '3', '6'].includes(months)) {
-        alert("正しい期間を選択してください。");
-        return;
-    }
-
-    const m = parseInt(months);
-    let finalFare = 0;
-    let typeName = "";
-
-    if (type === '1') {
-        typeName = "通勤定期";
-        // 1ヶ月:60%, 3ヶ月:55%, 6ヶ月:50% (それぞれ月数分を掛ける)
-        if (m === 1) finalFare = baseMonthFare * 0.60 * 1;
-        if (m === 3) finalFare = baseMonthFare * 0.55 * 3;
-        if (m === 6) finalFare = baseMonthFare * 0.50 * 6;
-    } else if (type === '2') {
-        typeName = "通学定期";
-        // 1ヶ月:40%, 3ヶ月:35%, 6ヶ月:30% (それぞれ月数分を掛ける)
-        if (m === 1) finalFare = baseMonthFare * 0.40 * 1;
-        if (m === 3) finalFare = baseMonthFare * 0.35 * 3;
-        if (m === 6) finalFare = baseMonthFare * 0.30 * 6;
-    } else if (type === '3') {
-        typeName = "全線フリー定期";
-        // 1ヶ月ごとに基準の100%（追加）として計算
-        if (m === 1) finalFare = baseMonthFare * 1.00 * 1;
-        if (m === 3) finalFare = baseMonthFare * 1.00 * 3;
-        if (m === 6) finalFare = baseMonthFare * 1.00 * 6;
-    } else {
-        alert("正しい種類を選択してください。");
-        return;
-    }
-
-    // 端数を四捨五入
-    finalFare = Math.round(finalFare);
-
-    alert(`【定期券購入確認】\n区間：${from} ～ ${to}\n種類：${typeName} (${months}ヶ月)\n金額：${finalFare.toLocaleString()} 円\n\n購入が完了しました！`);
-}
-
     function getMid(data, sIdx, eIdx, svcStops, svcName) {
         const st = svcStops || data.stations;
         const sName = data.stations[sIdx], eName = data.stations[eIdx];
@@ -2241,7 +2179,7 @@ function buyCommuterPass(from, to, singleFare) {
   const stationMap = {};
 
   for (const [lineName, data] of Object.entries(curComp.routes)) {
-    // if (!allowTransferLines.includes(lineName)) continue;
+    if (!allowTransferLines.includes(lineName)) continue;
     data.stations.forEach((st, idx) => {
       if (!stationMap[st]) stationMap[st] = [];
       stationMap[st].push({ lineName, data, idx });
@@ -2252,14 +2190,13 @@ function buyCommuterPass(from, to, singleFare) {
   let queue = [{
     station: from,
     path: [{ station: from, line: null }],
-    dist: 0,
-    transfers: 0
+    dist: 0
   }];
 
-  const visited = new Set([`${from}|null`]);
+  const visited = new Set([`${from}@`]);
   const results = [];
 
-  while (queue.length > 0 && results.length < 10) {
+  while (queue.length > 0) {
     const current = queue.shift();
 
     if (current.station === to) {
@@ -2278,8 +2215,8 @@ function buyCommuterPass(from, to, singleFare) {
 
       for (const nextIdx of neighbors) {
         const nextStation = data.stations[nextIdx];
-        const nextState = `${nextStation}|${lineName}`;
-        if (visited.has(nextState)) continue;
+        const visitedKey = `${nextStation}@${lineName}`;
+        if (visited.has(visitedKey)) continue;
 
         // 距離計算（intervals）
         let d = 0;
@@ -2290,150 +2227,120 @@ function buyCommuterPass(from, to, singleFare) {
           d = data.interval || 1.5;
         }
 
-        if (current.dist + d > 100) continue;  // 距離制限
-
-        // 乗り換え判定
-        const lastLine = current.path[current.path.length - 1].line;
-        const newTransfers = current.transfers + (lastLine !== null && lastLine !== lineName ? 1 : 0);
-
         queue.push({
           station: nextStation,
           path: [...current.path, { station: nextStation, line: lineName }],
-          dist: current.dist + d,
-          transfers: newTransfers
+          dist: current.dist + d
         });
 
-        visited.add(nextState);
+        visited.add(visitedKey);
       }
     }
   }
 
-  // スコア = dist + transfers * 20 でソート
-  results.sort((a, b) => (a.dist + a.transfers * 20) - (b.dist + b.transfers * 20));
-
-  return results.slice(0, 4); // ベスト4つ
+  return results;
 }
 
-function generateServiceCombinations(path) {
-  const segments = [];
-  let segmentStart = 0;
-  let currentLine = path[1].line;
-
-  for (let i = 1; i < path.length; i++) {
-    const nextLine = i + 1 < path.length ? path[i + 1].line : null;
-    const segmentEnds = nextLine !== currentLine || i === path.length - 1;
-
-    if (!segmentEnds) continue;
-
-    const sectionStations = [];
-    for (let j = segmentStart; j <= i; j++) {
-      sectionStations.push(path[j].station);
-    }
-
-    const data = curComp.routes[currentLine];
-    if (!data) return [];
-    const services = data.services || [{ name: "各駅停車", stops: data.stations }];
-    const validServices = services.filter(svc => svc.stops.every(st => sectionStations.includes(st)));
-    segments.push(validServices);
-
-    if (i < path.length - 1) {
-      segmentStart = i;
-      currentLine = nextLine;
-    }
-  }
-
-  // 組み合わせを生成 (最大4つ)
-  const combinations = [];
-  const maxComb = Math.min(4, segments.reduce((acc, seg) => acc * seg.length, 1));
-
-  if (segments.length === 1) {
-    segments[0].slice(0, maxComb).forEach(svc => combinations.push([svc.name]));
-  } else if (segments.length === 2) {
-    for (const s1 of segments[0]) {
-      for (const s2 of segments[1]) {
-        if (combinations.length >= maxComb) break;
-        combinations.push([s1.name, s2.name]);
-      }
-      if (combinations.length >= maxComb) break;
-    }
-  } else {
-    // 3区間以上は最適組み合わせのみ
-    const best = segments.map(seg => seg[0].name);
-    combinations.push(best);
-  }
-
-  return combinations;
-}
-
-function applyServiceToPath(path, serviceSelection) {
-  if (path.length < 2) return [];
-
+function applyServiceToPath(path) {
   const result = [];
-  let segmentStart = 0;
-  let currentLine = path[1].line;
-  let segmentIndex = 0;
 
-  const chooseService = (data, sectionStations, serviceName) => {
-    const services = data.services || [{ name: "各駅停車", stops: data.stations }];
-    if (serviceName) {
-      return services.find(s => s.name === serviceName && s.stops.every(st => sectionStations.includes(st)));
+  let i = 0;
+
+  while (i < path.length - 1) {
+    // 初回スタートは line が null なので、次の駅のラインで乗車区間を決める
+    if (path[i].line === null) {
+      const lineName = path[i + 1].line;
+      const data = curComp.routes[lineName];
+
+      let sectionStations = [path[i].station];
+      let j = i;
+      while (j < path.length - 1 && path[j + 1].line === lineName) {
+        sectionStations.push(path[j + 1].station);
+        j++;
+      }
+
+      const services = data.services || [
+        { name: "各駅停車", stops: data.stations }
+      ];
+
+      let bestService = null;
+      let bestSpeed = -1;
+      for (const svc of services) {
+        const ok = sectionStations.every(st => svc.stops.includes(st));
+        if (!ok) continue;
+        const speed = getSpeed(svc.name);
+        if (speed > bestSpeed) {
+          bestSpeed = speed;
+          bestService = svc;
+        }
+      }
+      if (!bestService) {
+        bestService = services.find(s => s.name === "各駅停車") || services[0];
+      }
+
+      result.push({
+        type: "ride",
+        line: lineName,
+        service: bestService.name,
+        stations: sectionStations
+      });
+
+      i = j;
+      continue;
     }
+
+    // 乗換判定
+    if (path[i].line !== path[i + 1].line) {
+      result.push({
+        type: "transfer",
+        station: path[i].station
+      });
+      i++;
+      continue;
+    }
+
+    const lineName = path[i].line;
+    const data = curComp.routes[lineName];
+
+    let sectionStations = [path[i].station];
+    let j = i;
+
+    // 同一路線をまとめる
+    while (
+      j < path.length - 1 &&
+      path[j].line === path[j + 1].line
+    ) {
+      sectionStations.push(path[j + 1].station);
+      j++;
+    }
+
+    const services = data.services || [
+      { name: "各駅停車", stops: data.stations }
+    ];
+
     let bestService = null;
     let bestSpeed = -1;
-    for (const s of services) {
-      if (!s.stops.every(st => sectionStations.includes(st))) continue;
-      const speed = getSpeed(s.name);
+    for (const svc of services) {
+      const ok = sectionStations.every(st => svc.stops.includes(st));
+      if (!ok) continue;
+      const speed = getSpeed(svc.name);
       if (speed > bestSpeed) {
         bestSpeed = speed;
-        bestService = s;
+        bestService = svc;
       }
     }
     if (!bestService) {
       bestService = services.find(s => s.name === "各駅停車") || services[0];
     }
-    return bestService;
-  };
-
-  for (let i = 1; i < path.length; i++) {
-    const nextLine = i + 1 < path.length ? path[i + 1].line : null;
-    const segmentEnds = nextLine !== currentLine || i === path.length - 1;
-
-    if (!segmentEnds) continue;
-
-    const sectionStations = [];
-    for (let j = segmentStart; j <= i; j++) {
-      sectionStations.push(path[j].station);
-    }
-
-    const data = curComp.routes[currentLine];
-    if (!data) return [];
-
-    let selectedService = undefined;
-    if (Array.isArray(serviceSelection)) {
-      selectedService = serviceSelection[segmentIndex];
-    } else {
-      selectedService = serviceSelection;
-    }
-
-    const svc = chooseService(data, sectionStations, selectedService);
-    if (!svc) return [];
 
     result.push({
       type: "ride",
-      line: currentLine,
-      service: svc.name,
+      line: lineName,
+      service: bestService.name,
       stations: sectionStations
     });
 
-    if (i < path.length - 1) {
-      result.push({
-        type: "transfer",
-        station: path[i].station
-      });
-      segmentStart = i;
-      currentLine = nextLine;
-      segmentIndex++;
-    }
+    i = j + 1;
   }
 
   return result;
@@ -2486,16 +2393,19 @@ function applyTime(schedule, startTime) {
     const data = curComp.routes[step.line];
     const service = data.services.find(s => s.name === step.service);
 
-    // 始発からの時間（calcD を使う）
+    // 始発からの時間（簡易）
     const fromIdx = data.stations.indexOf(step.stations[0]);
-    const durFromStart = calcD(data, 0, fromIdx, step.service, service.stops).time;
+    const durFromStart = calcSectionTime(
+      data,
+      data.stations.slice(0, fromIdx + 1),
+      step.service
+    );
 
     // 発車時刻をスナップ
     const depTime = getDepartureTime(currentTime, service, durFromStart);
 
     // 走行時間
-    const toIdx = data.stations.indexOf(step.stations[step.stations.length - 1]);
-    const travelTime = calcD(data, fromIdx, toIdx, step.service, service.stops).time;
+    const travelTime = calcSectionTime(data, step.stations, step.service);
 
     const arrTime = depTime + travelTime;
 
@@ -2588,17 +2498,15 @@ function convertToSteps(data) {
       });
 
       // 中間駅
-      const fromIdx = dataLine.stations.indexOf(step.stations[0]);
-      const toIdx = dataLine.stations.indexOf(step.stations[step.stations.length - 1]);
-      const mids = getMid(dataLine, fromIdx, toIdx, serviceStops, step.service);
-      for (const mid of mids) {
-        const isStop = serviceStops.includes(mid.name);
+      for (let i = 1; i < step.stations.length - 1; i++) {
+        const stationName = step.stations[i];
+        const isStop = serviceStops.includes(stationName);
         steps.push({
           role: isStop ? "停車" : "通過",
-          name: mid.name,
+          name: stationName,
           line: step.line,
           service: step.service,
-          time: step.departure + mid.timeOffset.time
+          stop: isStop
         });
       }
 
@@ -2625,8 +2533,8 @@ function convertToSteps(data) {
   return steps;
 }
 
-function buildRoute(path, serviceSelection, startTime) {
-  const withService = applyServiceToPath(path, serviceSelection);
+function buildRoute(path, startTime) {
+  const withService = applyServiceToPath(path);
   const withTime = applyTime(withService, startTime);
   const withFare = applyFare(withTime);
 
@@ -2635,9 +2543,6 @@ function buildRoute(path, serviceSelection, startTime) {
   const segmentSummary = segments.map(s => `${s.line} ${s.service}`).join(' → ');
 
   return {
-    path,
-    serviceSelection,
-    startTime,
     steps,
     totalFare: withFare.totalFare,
     totalTime: withTime[withTime.length - 1].arrival - startTime,
@@ -2679,43 +2584,23 @@ function finishSearch(route, startTime) {
                 return;
             }
 
-            const routeResults = routes.map(route => {
-                const pathStations = route.path.map(p => p.station);
-                const lines = Array.from(new Set(route.path.filter(p => p.line).map(p => p.line)));
-
-                if (lines.length === 1) {
-                    const lineName = lines[0];
-                    const data = curComp.routes[lineName];
-                    const services = data.services || [{ name: "各駅停車", stops: data.stations }];
-                    return services
-                        .filter(svc => svc.stops.every(st => pathStations.includes(st)))
-                        .map(svc => buildRoute(route.path, svc.name, baseTime));
-                } else {
-                    // 複数路線の場合、サービス組み合わせを生成
-                    const combinations = generateServiceCombinations(route.path);
-                    return combinations.map(comb => buildRoute(route.path, comb, baseTime));
-                }
-            }).flat().slice(0, 4).map((route, idx) => ({ idx: idx + 1, ...route }));
+            const routeResults = routes.slice(0, 4).map((route, idx) => {
+                const built = buildRoute(route.path, baseTime);
+                return { idx: idx + 1, ...built };
+            });
 
             const minTime = Math.min(...routeResults.map(r => r.totalTime));
             const minTransfers = Math.min(...routeResults.map(r => r.steps.filter(s => s.role === '乗換').length));
             const minFare = Math.min(...routeResults.map(r => r.totalFare));
 
-            window.lastRouteResults = routeResults;
-            window.lastFrom = from;
-            window.lastTo = to;
-
-            const html = routeResults.map((route, idx) => {
-                const tags = { isFast: route.totalTime === minTime, isEasy: route.transferCount === minTransfers, isCheap: route.totalFare === minFare };
-                
-                // 1. まず通常通り経路のHTMLを作る
-                let routeHtml = renderRouteHtml({ ...route, idx: idx + 1 }, from, to, tags);
-                
-                // 2. 経路2（idxが0より大きい）の時だけ、手前に「1本前 / 1本後」ボタンを合体させる
-                if (idx > 0) {
-                    return `<div class="time-shift-buttons" style="text-align:center; margin: 15px 0;"><button class="btn-shift" onclick="shiftTime(-15)" style="background:#ecf0f1; border:1px solid #bdc3c7; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer; margin-right:8px;">1本前</button><button class="btn-shift" onclick="shiftTime(15)" style="background:#ecf0f1; border:1px solid #bdc3c7; padding:6px 12px; border-radius:4px; font-size:0.8rem; cursor:pointer;">1本後</button></div>` + routeHtml;
-                }
-                return routeHtml;
+            const html = routeResults.map(route => {
+                const transferCount = route.steps.filter(s => s.role === '乗換').length;
+                const tags = {
+                    isFast: route.totalTime === minTime,
+                    isEasy: transferCount === minTransfers,
+                    isCheap: route.totalFare === minFare
+                };
+                return renderRouteHtml(route, from, to, tags);
             }).join('');
 
             document.getElementById('searching-status').style.display = 'none';
@@ -2750,7 +2635,7 @@ function finishSearch(route, startTime) {
                     return `<div class="station-item alighting-station"><div class="role-tag">【降車】</div><div class="station-info-row"><span class="time-info-text">${formatT(step.time)}</span><span class="station-name-text">${step.name}</span></div></div>`;
                 }
                 if (step.role === '停車') {
-                    return `<div class="station-item stop-station"><div class="role-tag">【停車】</div><div class="station-info-row"><span class="time-info-text">${formatT(step.time)}</span><span class="station-name-text">${step.name}</span></div></div>`;
+                    return `<div class="station-item stop-station"><div class="role-tag">【停車】</div><div class="station-info-row"><span class="station-name-text">${step.name}</span></div></div>`;
                 }
                 return `<div class="station-item pass-station"><div class="role-tag">【通過】</div><div class="station-info-row"><span class="station-name-text">${step.name}</span></div></div>`;
             }).join('');
@@ -2762,83 +2647,15 @@ function finishSearch(route, startTime) {
 
             const serviceSummary = result.segmentSummary ? `<div class="route-service-summary" style="font-size:0.9rem; color:#555; margin-top:6px;">${result.segmentSummary}</div>` : '';
             const tagItems = [];
-            if (tags.isFast) tagItems.push('<span style="background:#2ecc71; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">早</span>');
-            if (tags.isCheap) tagItems.push('<span style="background:#3498db; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">安</span>');
-            if (tags.isEasy) tagItems.push('<span style="background:#f39c12; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">楽</span>');
+            if (tags.isFast) tagItems.push('<span style="background:#2ecc71; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">早い</span>');
+            if (tags.isCheap) tagItems.push('<span style="background:#3498db; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">安い</span>');
+            if (tags.isEasy) tagItems.push('<span style="background:#f39c12; color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">乗換少</span>');
             const tagHtml = tagItems.length ? `<div style="display:flex; gap:4px; margin-top:4px;">${tagItems.join('')}</div>` : '';
-            // 1. 実際に乗った電車の名前（「京浜日本本線」や「新潟線」など）を取得します
-            const boardingStep = steps.find(s => s.role === '乗車');
-            const lineName = boardingStep ? boardingStep.line : '';
-
-            // 2. 電車の名前に合わせて、切符に書く会社名を自動で選びます
-            let detectedCompany = '日本鉄道 旅客鉄道株式会社'; 
-            
-            if (lineName.includes('北部') || lineName.includes('上野') || lineName.includes('京浜日本') || lineName.includes('芋窪')) {
-                detectedCompany = '京浜日本鉄道';
-            } else if (lineName.includes('千葉日本') || lineName.includes('取手')) {
-                detectedCompany = '千葉日本鉄道';
-            } else if (lineName.includes('茂木日本') || lineName.includes('日光日本')) {
-                detectedCompany = '栃木日本鉄道';
-            } else if (lineName.includes('名四') || lineName.includes('静岡') || lineName.includes('愛知') || lineName.includes('名安')) {
-                detectedCompany = '東海日本鉄道';
-            } else if (lineName.includes('神丹') || lineName.includes('東平野') || lineName.includes('播磨') || lineName.includes('神戸高速')) {
-                detectedCompany = '関西日本鉄道';
-            } else if (lineName.includes('新潟')) {
-                detectedCompany = '北陸日本鉄道';
-            } else if (lineName.includes('中山道') || lineName.includes('中部縦貫') || lineName.includes('西九州') || lineName.includes('急幹線')) {
-                detectedCompany = '日本急幹線';
-            } else if (lineName.includes('名鉄') || lineName.includes('天浜') || lineName.includes('大井川')) {
-                detectedCompany = '私鉄線';
-            } else if (lineName.includes('山手') || lineName.includes('中央')) {
-                detectedCompany = 'JR線';
-            } else if (lineName.includes('東西') || lineName.includes('南北') || lineName.includes('空港') || lineName.includes('都市') || lineName.includes('ねりか')) {
-                detectedCompany = 'ねりか区営地下鉄';
-            }
-
-            // 3. 決まった会社名（detectedCompany）を、切符の画面に引き渡して表示します
-            return `<div class="route-result-item"><div class="route-header"><span><span class="route-tag-id">経路 ${result.idx}</span><strong>${steps.filter(s => s.role === '乗換').length}回乗換</strong>${tagHtml}</span><div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(result.totalTime)} / ${result.totalFare}円</span>${serviceSummary}<div style="display:flex; gap:6px;"><button onclick="buyTicket('${from}','${to}',${result.totalFare},0, '${detectedCompany}')" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button><button onclick="buyCommuterPass('${from}','${to}',${result.totalFare})" style="background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">定期券</button></div></div></div><div class="route-box"><span class="res-time-main">${formatT(depart)} ～ ${formatT(arrive)}</span><div style="font-size:0.9rem; color:#666; margin-bottom:10px;">${result.totalFare}円</div><div class="vertical-station-list">${stepHtml}</div></div></div>`;
+            return `<div class="route-result-item"><div class="route-header"><span><span class="route-tag-id">経路 ${result.idx}</span><strong>${steps.filter(s => s.role === '乗換').length}回乗換</strong>${tagHtml}</span><div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;"><span style="color:#2980b9; font-weight:bold;">${formatDur(result.totalTime)} / ${result.totalFare}円</span>${serviceSummary}<button onclick="buyTicket('${from}','${to}',${result.totalFare},0)" style="background:var(--secondary); color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.8rem; cursor:pointer;">切符を買う</button></div></div><div class="route-box"><span class="res-time-main">${formatT(depart)} ～ ${formatT(arrive)}</span><div style="font-size:0.9rem; color:#666; margin-bottom:10px;">${result.totalFare}円</div><div class="vertical-station-list">${stepHtml}</div></div></div>`;
         }
     }
 
-    function shiftRouteTime(routeIdx, minutes) {
-        const route = window.lastRouteResults[routeIdx - 1];
-        if (!route) return;
-
-        const originalStartTime = route.originalStartTime || route.startTime || 0;
-        const newStartTime = originalStartTime + minutes;
-
-        // 新しいルートを構築
-        const newRoute = buildRoute(route.path, route.serviceSelection, newStartTime);
-        newRoute.idx = routeIdx;
-        newRoute.originalStartTime = originalStartTime;
-
-        // 結果を更新
-        window.lastRouteResults[routeIdx - 1] = newRoute;
-
-        // タグを再計算
-        const allRoutes = window.lastRouteResults;
-        const minTime = Math.min(...allRoutes.map(r => r.totalTime));
-        const minTransfers = Math.min(...allRoutes.map(r => r.steps.filter(s => s.role === '乗換').length));
-        const minFare = Math.min(...allRoutes.map(r => r.totalFare));
-
-        const transferCount = newRoute.steps.filter(s => s.role === '乗換').length;
-        const tags = {
-            isFast: newRoute.totalTime === minTime,
-            isEasy: transferCount === minTransfers,
-            isCheap: newRoute.totalFare === minFare
-        };
-
-        // HTMLを再生成
-        const html = renderRouteHtml(newRoute, window.lastFrom, window.lastTo, tags);
-
-        // DOMを更新
-        const routeItems = document.querySelectorAll('.route-result-item');
-        if (routeItems[routeIdx - 1]) {
-            routeItems[routeIdx - 1].outerHTML = html;
-        }
-    }
-
-        function buyTicket(from, to, base, sur, company) {
+    function buyTicket(from, to, base, sur) {
         const modal = document.createElement('div');
         modal.id = 'ticketModal';
         const total = base + sur;
@@ -2847,12 +2664,9 @@ function finishSearch(route, startTime) {
             surchargeHtml = `<div>特急券：${sur}円</div>`;
         }
 
-        // 【重要】ここで会社名の受け取りと、空だった場合のデフォルト設定をします
-        const displayCompany = company || '日本鉄道 旅客鉄道株式会社';
-
         modal.innerHTML = `
             <div class="ticket">
-                <div class="ticket-header">${displayCompany}</div>
+                <div class="ticket-header">日本鉄道 旅客鉄道株式会社</div>
                 <div class="ticket-main">
                     <div class="ticket-st">${from} から</div>
                     <div class="ticket-price">${to} まで</div>

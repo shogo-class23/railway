@@ -2290,7 +2290,6 @@ function buyCommuterPass(from, to, singleFare) {
           d = data.interval || 1.5;
         }
 
-        if (current.dist + d > 100) continue;  // 距離制限
 
         // 乗り換え判定
         const lastLine = current.path[current.path.length - 1].line;

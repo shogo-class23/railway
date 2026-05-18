@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -940,93 +940,112 @@
             status: ["名鉄線: 平常", "天竜浜名湖鉄道: 平常", "大井川鉄道: 平常", "常総線: 平常", "真岡線: 平常", "北条線: 平常", "神戸電鉄 粟生線: 平常", "神戸電鉄 有馬線: 平常", "地下鉄西神山手線: 平常", "神戸高速線: 平常", "阪急神戸線: 平常"],
             svg: `<p style="text-align:center; padding:20px;">私鉄路線の図面は準備中です。</p>`
         },
-        kansai: {
-            name: "関西日本鉄道",
-            routes: {
-                "神丹線": {
-                    stations: ["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"],
-                    intervals: [1.5, 2.5, 2.5, 1.5, 7, 2, 1, 1, 2, 2, 2, 3, 3, 1, 2, 3, 1, 1, 1, 1, 1.0, 1.0, 1.5, 1.5],
-                    services: [
-                        { name: "各駅停車", stops: ["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 0 },
-                        { name: "準急", stops: ["神戸三宮", "新神戸", "六甲", "柏堂", "上ヶ原", "伊丹市", "北伊丹", "大阪空港", "西豊中", "江坂", "新大阪", "南方", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 2 },
-                        { name: "急行", stops: ["神戸三宮", "新神戸", "上ヶ原", "伊丹市", "大阪空港", "江坂", "新大阪", "大阪梅田", "大阪難波"], offset: 4 },
-                        { name: "特急", stops: ["神戸三宮", "上ヶ原", "大阪空港", "新大阪", "大阪梅田", "大阪難波"], offset: 6 }
-                    ]
-                },
+ kansai: {
+    name: "関西日本鉄道",
+    routes: {
+        "神丹線": {
+            stations: ["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"],
+            intervals: [1.5, 2.5, 2.5, 1.5, 7, 2, 1, 1, 2, 2, 2, 3, 3, 1, 2, 3, 1, 1, 1, 1, 1.0, 1.0, 1.5, 1.5],
+            services: [
+                { name: "各駅停車", stops: ["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 0 },
+                { name: "準急", stops: ["神戸三宮", "新神戸", "六甲", "柏堂", "上ヶ原", "伊丹市", "北伊丹", "大阪空港", "西豊中", "江坂", "新大阪", "南方", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"], offset: 2 },
+                { name: "急行", stops: ["神戸三宮", "新神戸", "上ヶ原", "伊丹市", "大阪空港", "江坂", "新大阪", "大阪梅田", "大阪難波"], offset: 4 },
+                { name: "特急", stops: ["神戸三宮", "上ヶ原", "大阪空港", "新大阪", "大阪梅田", "大阪難波"], offset: 6 }
+            ]
+        },
+        "東平野線": {
+            stations: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"],
+            intervals: [1, 2, 1.5, 0.5, 1, 1, 2, 1, 2, 1.5, 1, 1, 2, 3],
+            services: [
+                { name: "各駅停車", stops: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"], offset: 0 },
+                { name: "準急", stops: ["大阪梅田", "京橋", "森ノ宮新", "今里", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"], offset: 2 },
+                { name: "急行", stops: ["大阪梅田", "南森町", "京橋", "今里", "大池橋", "北巽", "南巽", "大堀"], offset: 4 },
+                { name: "特急", stops: ["大阪梅田", "京橋", "今里", "大堀"], offset: 6 }
+            ]
+        },
+        "播磨線": {
+            stations: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"],
+            intervals: [20, 13, 7, 9],
+            services: [
+                { name: "各駅停車", stops: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"], offset: 0 },
+                { name: "急行", stops: ["佐用", "夢前", "北条町"], offset: 5 }
+            ]
+        },
+        "神戸高速線": {
+            stations: ["新開地", "神戸", "栄元町", "神戸三宮"],
+            intervals: [20, 13, 7, 9],
+            services: [
+                { name: "各駅停車", stops: ["新開地", "神戸", "栄元町", "神戸三宮"], offset: 0 }
+            ]
+        }
+    },
+    status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常", "神戸高速線: 平常"],
+    svg: `<svg class="route-map-svg" viewBox="-250 0 1850 1300">
 
-                "東平野線": {
-                    stations: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"],
-                    intervals: [1, 2, 1.5, 0.5, 1, 1, 2, 1, 2, 1.5, 1, 1, 2, 3],
-                    services: [
-                        { name: "各駅停車", stops: ["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"], offset: 0 },
-                        { name: "準急", stops: ["大阪梅田", "京橋", "森ノ宮新", "今里", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"], offset: 2 },
-                        { name: "急行", stops: ["大阪梅田", "南森町", "京橋", "今里", "大池橋", "北巽", "南巽", "大堀"], offset: 4 },
-                        { name: "特急", stops: ["大阪梅田", "京橋", "今里", "大堀"], offset: 6 }
-                    ]
-                },
-                "播磨線": {
-                    stations: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"],
-                    intervals: [20, 13, 7, 9],
-                    services: [
-                        { name: "各駅停車", stops: ["佐用", "安富山崎", "夢前", "新福崎", "北条町"], offset: 0 },
-                        { name: "急行", stops: ["佐用", "夢前", "北条町"], offset: 5 }
-                    ]
-                },
-                "神戸高速線": {
-                    stations: ["新開地", "神戸", "栄元町", "神戸三宮"],
-                    intervals: [2, 2, 2],
-                    services: [
-                        { name: "各駅停車", stops: ["新開地", "神戸", "栄元町", "神戸三宮"], offset: 0 }
-                    ]
-                }
-            },
-            status: ["神丹線: 平常", "東平野線: 平常", "播磨線: 平常", "神戸高速線: 平常"],
-            svg: `<svg class="route-map-svg" viewBox="-250 0 1850 1300">
+        <path d="M-190 300 L50 300" fill="none" stroke="#00cec9" stroke-width="10" stroke-linecap="round" />
+        <text x="-190" y="260" fill="#00cec9" font-size="24" font-weight="bold">神戸高速線</text>
+        ${["新開地", "神戸", "栄元町"].map((st, i) => {
+            let x = -190 + i * 80;
+            return `
+                <circle cx="${x}" cy="300" r="8" fill="white" stroke="#333" stroke-width="3" />
+                <text x="${x}" y="340" font-size="14" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, 340)">${st}</text>
+            `;
+        }).join('')}
 
-                <!-- 神戸高速線 -->
-                <path d="M-150 300 L50 300" fill="none" stroke="#00cec9" stroke-width="10" />
-                <text x="-150" y="270" fill="#00cec9" font-size="24" font-weight="bold">神戸高速線</text>
-                ${["新開地", "神戸", "栄元町"].map((st, i) => {
-                    let x = -150 + i * 80;
-                    return `
-                        <circle cx="${x}" cy="300" r="8" fill="white" stroke="#333" stroke-width="3" />
-                        <text x="${x}" y="340" font-size="14" text-anchor="middle" font-weight="bold" transform="rotate(-30, ${x}, 340)">${st}</text>
-                    `;
-                }).join('')}
+        <path d="M850 300 L890 300 L890 1080" fill="none" stroke="#00b894" stroke-width="10" stroke-linecap="round" />
+        <text x="910" y="1140" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
+        ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
+            let x, y;
+            if (i === 0) { x = 850; y = 300; } // 大阪梅田 (神丹線のi=20と同座標)
+            else if (i === 1) { x = 890; y = 300; } // 南森町 (神丹線のi=21と同座標)
+            else { x = 890; y = 300 + (i - 1) * 60; } // 垂直に降下
+            
+            let labelHtml = `<text x="${x + 20}" y="${y + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>`;
+            // 重複駅と大池橋のラベル制御（大池橋は下に個別配置されているため除く）
+            if (st === "大阪梅田" || st === "南森町" || st === "大池橋") labelHtml = ""; 
 
-                <!-- 東平野線 (南森町から垂直、無駄な線を削除) -->
-                <path d="M850 300 L900 300 L900 1200" fill="none" stroke="#00b894" stroke-width="10" />
-                <text x="920" y="1180" fill="#00b894" font-size="24" font-weight="bold" text-anchor="start">東平野線</text>
-                ${["大阪梅田", "南森町", "京橋", "森ノ宮新", "東森ノ宮", "玉造", "今里", "大池橋", "北巽", "南巽", "平野北", "平野南", "西瓜破", "北松原", "大堀"].map((st, i) => {
-                    let x, y;
-                    if (i === 0) { x = 850; y = 300; } // 大阪梅田
-                    else if (i === 1) { x = 900; y = 300; } // 南森町
-                    else { x = 900; y = 300 + (i - 1) * 60; } // 垂直
+            return `
+                <circle cx="${x}" cy="${y}" r="${st==='大池橋'||st==='大阪梅田'||st==='南森町'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
+                ${labelHtml}
+            `;
+        }).join('')}
+
+        <path d="M50 300 L1010 300" fill="none" stroke="#0984e3" stroke-width="10" stroke-linecap="round" />
+        <text x="50" y="260" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
+        ${["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"].map((st, i) => {
+            let x = 50 + i * 40; // 20番目の大阪梅田は850、21番目の南森町は890になります
+            let y = 300;
+            
+            let anchor = "middle", dx = 0, dy = 0, rotate = -45;
                     
-                    let labelHtml = `<text x="${x + 20}" y="${y + 5}" font-size="14" font-weight="bold" text-anchor="start">${st}</text>`;
-                    if (st === "大阪梅田" || st === "南森町" || st === "大池橋") labelHtml = ""; 
-
-                    return `
-                        <circle cx="${x}" cy="${y}" r="${st==='大池橋'||st==='大阪梅田'||st==='南森町'?12:8}" fill="white" stroke="#333" stroke-width="${st==='大池橋'?5:3}" />
-                        ${labelHtml}
-                    `;
-                }).join('')}
-
-                <!-- 神丹線 (水平 y=300 に配置) -->
-                <path d="M50 300 L1100 300" fill="none" stroke="#0984e3" stroke-width="10" />
-                <text x="50" y="270" fill="#0984e3" font-size="24" font-weight="bold">神丹線</text>
-                ${["神戸三宮", "新神戸", "摩耶", "六甲", "渦森", "柏堂", "甲陽園北", "上ヶ原", "甲東園口", "北武庫", "伊丹市", "北伊丹", "大阪空港", "西豊中", "新服部", "江坂", "新大阪", "南方", "豊崎", "東梅田", "大阪梅田", "南森町", "高麗橋", "松屋町", "大阪難波"].map((st, i) => {
-                    let x = 50 + i * 40;
-                    let y = 300;
-                    
-                    let anchor = "middle", dx = 0, dy = 0, rotate = -45;
-                    // 大阪梅田(index 20)から先を「上」に、回転も整理
-                    if (i >= 20) {
+                    // 1. 最優先で特定の個別駅の位置を設定します
+                    if (st === "大阪梅田") { 
+                        anchor = "middle"; 
+                        dx = -5; 
+                        dy = -25; 
+                        rotate = 0; 
+                    }
+                    else if (st === "南森町") { 
+                        anchor = "middle"; 
+                        dx = 5; 
+                        dy = -25; 
+                        rotate = 0; 
+                    }
+                    else if (st === "高麗橋") {
+                        // 他の駅名と被らないよう「斜め下」へ配置します
+                        anchor = "start";
+                        dx = 0;
+                        dy = 45;
+                        rotate = 0;
+                    }
+                    // 2. 個別設定以外の、東梅田より右側のエリア（松屋町や大阪難波など）の設定
+                    else if (i >= 20) {
+                        anchor = "middle";
                         dy = -25;
                         rotate = -30;
-                        if (st === "大阪梅田") { anchor = "end"; dx = -10; rotate = 0; }
-                        else if (st === "南森町") { anchor = "start"; dx = 10; rotate = 0; }
-                    } else {
+                    } 
+                    // 3. それより左側の標準的な駅の設定（上下交互に配置）
+                    else {
                         dy = i % 2 === 0 ? 45 : 75; 
                     }
 
@@ -1036,17 +1055,16 @@
                     `;
                 }).join('')}
 
-                <text x="920" y="665" fill="#333" font-size="14" font-weight="bold" text-anchor="start">大池橋</text>
+        <text x="910" y="665" fill="#333" font-size="14" font-weight="bold" text-anchor="start">大池橋</text>
 
-                <!-- 播磨線 (最下部) -->
-                <path d="M50 1200 L770 1200" fill="none" stroke="#a52a2a" stroke-width="10" />
-                <text x="50" y="1170" fill="#a52a2a" font-size="24" font-weight="bold">播磨線</text>
-                ${["佐用", "安富山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
-                    <circle cx="${50 + i * 180}" cy="1200" r="10" fill="white" stroke="#333" stroke-width="3" />
-                    <text x="${50 + i * 180}" y="1240" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
-                `).join('')}
-            </svg>`
-        },
+        <path d="M50 1200 L770 1200" fill="none" stroke="#a52a2a" stroke-width="10" stroke-linecap="round" />
+        <text x="50" y="1160" fill="#a52a2a" font-size="24" font-weight="bold">播磨線</text>
+        ${["佐用", "安富山崎", "夢前", "新福崎", "北条町"].map((st, i) => `
+            <circle cx="${50 + i * 180}" cy="1200" r="10" fill="white" stroke="#333" stroke-width="3" />
+            <text x="${50 + i * 180}" y="1240" font-size="16" text-anchor="middle" font-weight="bold">${st}</text>
+        `).join('')}
+    </svg>`
+},
         jr_lines: {
             name: "JR線",
             routes: {
